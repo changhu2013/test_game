@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html ng-app="test_game">
+  <head>
+    <title><%=locals.appName%></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="/bootstrap-3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bootstrap-treeview/bootstrap-treeview.min.css">
+  </head>
+  <body ng-controller="test_game_controller">
+    <!-- 提示信息 -->
+    <%if(locals.success && locals.success.length > 0){%>
+        <!--
+        <div class="alert alert-success"><%=locals.success%></div>
+        -->
+    <%}%>
+
+    <!-- 菜单 -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6 col-xs-6">
+                <h2><strong><%if(locals.user){%><%=locals.user.name%><%}else {%>匿名用户<%}%></strong></h2>
+            </div>
+            <div class="col-md-3 col-xs-3" style="margin-top:20px;">
+                <h5><a href="/honor/list">游戏规则</a></h5>
+            </div>
+            <div class="col-md-3 col-xs-3" style="margin-top:20px;">
+                <a href="/honor/list"><button type="button" class="btn btn-primary">荣誉榜</button></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 题目树内容 -->
+    <div class="container-fluid">
+        <div class="text-right">
+            <button type="button" class="btn btn-default" ng-click="showTreeView();">打开题目</button>
+        </div>
+        <div ng-show="showQuestionTreeFlag">
+            <label for="questiontree"></label>
+            <div id="questiontree"/></div>
+        </div>
+    </div>
+
+    <!-- 题目列表 -->
+    <div class="container-fluid">
+        <ul>
+            <li ng-repeat="question in questions">
+                {{question}}
+            </li>
+        </ul>
+    </div>
+
+    <!-- 引入的脚本 -->
+    <script src="/javascripts/angular.js"></script>
+    <script src="/javascripts/jquery-1.11.1.min.js"></script>
+    <script src="/bootstrap-3.2.0/js/bootstrap.min.js"></script>
+    <script src="/bootstrap-treeview/bootstrap-treeview.min.js"></script>
+    <script src="/ui-bootstrap-0.11.0/ui-bootstrap-tpls-0.11.0.js"></script>
+</body>
+
+<script type="text/javascript">
+angular.module('test_game', ['ui.bootstrap'])
+.controller('test_game_controller', ['$scope', '$http', function($scope, $http) {
+    //显示题目树标记
+    $scope.showQuestionTreeFlag = false;
+
+    $scope.questions = [];
+
+    //监听所选中的节点的变化
+    var onNodeSelected = function(event, node){
+        $http({
+            method : 'POST',
+            url : '/question/leaf',
+            params : {
+                id : node.id
+            },
+            cache : false,
+            timeout : 30000
+        }).success(function(data, status, headers, config){
+            $scope.questions = data;
+        });
+    };
+
+    //显示题目树
+    $scope.showTreeView = function(){
+        //修改显示题目树标记
+        $scope.showQuestionTreeFlag = !$scope.showQuestionTreeFlag;
+
+        //发送异步请求
+        $http({
+            method : 'POST',
+            url : '/question/tree',
+            cache : false,
+            timeout : 30000
+        }).success(function(data, status, headers, config){
+            $('#questiontree').treeview({
+                bootstrap2: false, 
+                color : '#808080',
+                showTags: true,
+                levels: 2,
+                data: data,
+                onNodeSelected : onNodeSelected
+            });
+        });
+    };
+    
+}]);
+</script>
+</html>
