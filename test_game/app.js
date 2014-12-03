@@ -18,7 +18,11 @@ var honor = require('./routes/honor');
 //题目
 var question = require('./routes/question');
 
+var war = require('./routes/war');
+
 var app = express();
+
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -58,6 +62,7 @@ app.use('/', routes);
 app.use('/users', users);
 app.use('/honor', honor);
 app.use('/question', question);
+app.use('/war', war);
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {

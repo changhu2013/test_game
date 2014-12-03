@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html ng-app="test_game">
+  <head>
+    <title><%=locals.appName%></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="/bootstrap-3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bootstrap-treeview/bootstrap-treeview.min.css">
+
+      <!-- 提前引入,防止FOUC问题出现 -->
+    <script src="/javascripts/angular.js"></script>
+  </head>
+  <body ng-controller="test_game_honorcontroller">
+
+  <div class="page-header text-center">
+      <h2>AAAA题集</h2>
+  </div>
+
+    <!-- 题目列表 -->
+    <div class="container-fluid">
+        <ul class="list-group">
+            <li class="list-group-item" ng-repeat="user in users">
+                <div class="row">
+                    <div class="col-md-4 col-xs-4" ng-cloak>
+                        {{user.name}}
+                    </div>
+                    <div class="col-md-4 col-xs-4" ng-cloak>
+                        对战：{{user.gameTime}}
+                    </div>
+                    <div class="col-md-4 col-xs-4" ng-cloak>
+                        积分：{{user.score}}
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <!-- 引入的脚本 -->
+
+    <script src="/javascripts/jquery-1.11.1.min.js"></script>
+    <script src="/bootstrap-3.2.0/js/bootstrap.min.js"></script>
+    <script src="/bootstrap-treeview/bootstrap-treeview.min.js"></script>
+    <script src="/ui-bootstrap-0.11.0/ui-bootstrap-tpls-0.11.0.js"></script>
+
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+</body>
+
+<script type="text/javascript">
+    var socket = io();
+    socket.on('push', function(msg){
+        alert(msg);
+    });
+
+angular.module('test_game', ['ui.bootstrap'])
+.controller('test_game_honorcontroller', ['$scope', '$http', function($scope, $http) {
+
+}]);
+</script>
+</html>
