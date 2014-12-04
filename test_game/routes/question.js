@@ -7,6 +7,7 @@ var router = express.Router();
 //显示题目树结构
 router.post('/tree', function(req, res) {
     
+    /*    
     var data = [{
         id : '0',
         text : 'A ',
@@ -23,6 +24,8 @@ router.post('/tree', function(req, res) {
     }];
     
     res.send(data);
+    */
+    res.render('war');
 });
 
 //显示题目
