@@ -18,7 +18,8 @@ var honor = require('./routes/honor');
 //题目
 var question = require('./routes/question');
 
-var war = require('./routes/war');
+//战场列表
+var wars = require('./routes/wars');
 
 var app = express();
 
@@ -62,7 +63,7 @@ app.use('/', routes);
 app.use('/users', users);
 app.use('/honor', honor);
 app.use('/question', question);
-app.use('/war', war);
+app.use('/wars', wars);
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {

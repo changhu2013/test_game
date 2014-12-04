@@ -9,28 +9,31 @@
       <!-- 提前引入,防止FOUC问题出现 -->
     <script src="/javascripts/angular.js"></script>
   </head>
-  <body ng-controller="test_game_honorcontroller">
+  <body ng-controller="test_game_warscontroller">
 
   <div class="page-header text-center">
-      <h2>AAAA题集</h2>
+      <h2>AAAA题集战场</h2>
   </div>
 
     <!-- 题目列表 -->
     <div class="container-fluid">
         <ul class="list-group">
-            <li class="list-group-item" ng-repeat="user in users">
-                <div class="row">
-                    <div class="col-md-4 col-xs-4" ng-cloak>
-                        {{user.name}}
+            <% data.forEach(function (war) {%>
+                <li class="list-group-item">
+                <div class="row war-wrap">
+                    <div class="col-md-3 col-xs-3 war-label">
+                        战场<%=war.wid%>
                     </div>
-                    <div class="col-md-4 col-xs-4" ng-cloak>
-                        对战：{{user.gameTime}}
-                    </div>
-                    <div class="col-md-4 col-xs-4" ng-cloak>
-                        积分：{{user.score}}
+                    <div class="col-md-9 col-xs-9 war-label">
+                        <% war.users.forEach(function (user) {%>
+                            <div class="col-md-4 col-xs-4 war-user">
+                                <%=user.name%>
+                            </div>
+                        <%})%>
                     </div>
                 </div>
             </li>
+            <%})%>
         </ul>
     </div>
 
@@ -45,14 +48,21 @@
 </body>
 
 <script type="text/javascript">
-    var socket = io();
+    /*var socket = io();
     socket.on('push', function(msg){
         alert(msg);
-    });
+    });*/
 
-angular.module('test_game', ['ui.bootstrap'])
-.controller('test_game_honorcontroller', ['$scope', '$http', function($scope, $http) {
-
-}]);
+    var gameApp = angular.module('test_game', ['ui.bootstrap']);
+    gameApp.controller('test_game_warscontroller', ['$scope', '$http', function($scope, $http) {
+        
+    }]);
 </script>
+
+  <style>
+
+
+
+  </style>
+
 </html>

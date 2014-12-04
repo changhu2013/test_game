@@ -18,9 +18,6 @@
 
     </div>
 
-
-
-
     <!-- 引入的脚本 -->
 
     <script src="/javascripts/jquery-1.11.1.min.js"></script>
@@ -30,26 +27,39 @@
 
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 
-    <script src="http://cdn.staticfile.org/angular-ui-router/0.2.10/angular-ui-router.min.js"></script>
+    <script src="http://cdn.bootcss.com/angular.js/1.3.0-beta.13/angular-route.min.js"></script>
 </body>
 
 <script type="text/javascript">
-    var socket = io();
-    socket.on('push', function(m){
+    var socket = io({
+        id:'lrcjfadv2qa_tlw0AAAA}'
+    });
+    socket.on('conn', function(m){
         alert(m)
     });
+
+    socket.on('disconn', function(m){
+        alert(m)
+    });
+
 
 var app = angular.module('test_game', ['ngRoute', 'ui.bootstrap']);
 
 app.config(function($routeProvider) {
     $routeProvider.when('/', {
-        templateUrl : '/honor',
+        templateUrl : '/',
         controller  : 'regController'
     });
 
     // route for the about page
     $routeProvider.when('/war', {
         templateUrl : '/war',
+        controller  : 'downloadController'
+    });
+
+    // route for the about page
+    $routeProvider.when('/honor', {
+        templateUrl : '/honor',
         controller  : 'downloadController'
     });
 
