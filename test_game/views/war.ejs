@@ -11,55 +11,125 @@
   </head>
   <body ng-controller="test_game_warscontroller">
 
-  <div class="page-header text-center">
-      <h2>AAAA题集战场-战场1</h2>
+  <div class="panel panel-default">
+      <div class="panel-heading">
+          <h3 class="panel-title text-center">AAAA题集战场-战场1</h3>
+      </div>
+      <div class="panel-body">
+
+          <section class="user-warp">
+              <dl class="user-items" ng-repeat="user in users">
+                  <dd class="user-item">
+                      <div class="item-layout">
+                          <div class="mask"></div>
+                      </div>
+                  </dd>
+              </dl>
+          </section>
+      </div>
+
+      <div class="tool-wrap">
+          <button class="btn btn-default btn-sm btn-xs" type="button">
+              拖后腿 <span class="badge">4</span>
+          </button>
+
+          <button class="btn btn-default btn-sm btn-xs" type="button">
+              20/50
+          </button>
+
+          <button class="btn btn-default btn-sm btn-xs" type="button">
+              43秒
+          </button>
+
+          <button class="btn btn-primary btn-sm btn-xs" type="button">
+              提交
+          </button>
+      </div>
+
+      <dl class="list-group">
+          <dt class="list-group-item">
+              题干
+          </dt>
+          <dd class="list-group-item">
+              答案
+          </dd>
+      </dl>
   </div>
 
-    <!-- 题目列表 -->
-    <div class="container-fluid">
-        <section class="user-warp">
-            <dl class="user-items">
-                <dd class="user-item">
-                    <div class="flag">
-                        <img src="" alt=""/>
-                    </div>
-                </dd>
-            </dl>
-        </section>
-
-        <dl class="list-group">
-            <dt class="list-group-item">
-                题干
-            </dt>
-            <dd class="list-group-item">
-                答案
-            </dd>
-        </dl>
-    </div>
-
     <!-- 引入的脚本 -->
-
     <script src="/javascripts/jquery-1.11.1.min.js"></script>
     <script src="/bootstrap-3.2.0/js/bootstrap.min.js"></script>
     <script src="/bootstrap-treeview/bootstrap-treeview.min.js"></script>
     <script src="/ui-bootstrap-0.11.0/ui-bootstrap-tpls-0.11.0.js"></script>
-
-    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="/socket.io-1.2.0.js"></script>
 </body>
 
 <script type="text/javascript">
     var socket = io();
-    socket.on('push', function(msg){
-        alert(msg);
-    });
-    $('#myModal').modal('toggle')
     var gameApp = angular.module('test_game', ['ui.bootstrap']);
     gameApp.controller('test_game_warscontroller', ['$scope', '$http', function($scope, $http) {
+        socket.on('hello', function(msg){
+            alert("返回:" + msg);
+            socket.emit('addwar', {
+                wid: '<%=wid%>'
+            });
+        });
+
+        socket.on('addwarsucc', function (msg) {
+            alert(msg);
+        });
     }]);
 </script>
 
   <style>
+      
+    .user-warp {
+        height: 160px;
+    }
+    .user-items {
+        display: -webkit-box;
+        display: -ms-box;
+        display: -moz-box;
+        display: box;
+    }
 
+    .user-items .user-item {
+        -webkit-box-flex: 1;
+        -moz-box-flex: 1;
+        -ms-box-flex: 1;
+        box-flex: 1;
+        height: 160px;
+    }
+
+    .user-items .user-item .item-layout {
+        position: relative;
+        height: 100%;
+        margin: 0 auto;
+        width: 80%;
+    }
+
+    .user-items .user-item .item-layout .mask{
+        background: blue;
+        width: 100%;
+        position: absolute;
+        bottom: 0;
+    }
+
+    .user-items .user-item:nth-of-type(1) .item-layout .mask{
+        height: 25%;
+    }
+
+    .user-items .user-item:nth-of-type(2) .item-layout .mask{
+        height: 44%;
+    }
+
+    .user-items .user-item:nth-of-type(3) .item-layout .mask{
+        height: 13%;
+    }
+
+    .user-items .user-item:nth-of-type(4) .item-layout .mask{
+        height: 82%;
+    }
 
 
   </style>

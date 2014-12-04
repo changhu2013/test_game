@@ -8,45 +8,22 @@ var router = express.Router();
 /* GET "users" listing. */
 router.get("/", function(req, res) {
 	var data = [{
-		"wid": "1",
-		"users": [{
-			"sid": "101",
-			"name": "张三"
-		}, {
-			"sid": "102",
-			"name": "李四"
-		}, {
-			"sid": "103",
-			"name": "王五"
-		}]
+		"sid": "101",
+		"name": "张三"
 	}, {
-		"wid": "2",
-		"users": [{
-			"sid": "101",
-			"name": "张三"
-		}, {
-			"sid": "103",
-			"name": "王五"
-		}]
+		"sid": "102",
+		"name": "李四"
 	}, {
-		"wid": "3",
-		"users": [{
-			"sid": "101",
-			"name": "张三"
-		}, {
-			"sid": "102",
-			"name": "李四"
-		}, {
-			"sid": "103",
-			"name": "王五"
-		}, {
-			"sid": "104",
-			"name": "赵六"
-		}]
+		"sid": "103",
+		"name": "王五"
+	}, {
+		"sid": "104",
+		"name": "赵六"
 	}];
 
 	res.render("war", {
-		data: data
+		data: data,
+		wid: req.query.wid
 	});
 });
 
