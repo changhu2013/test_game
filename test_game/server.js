@@ -13,6 +13,7 @@ io.on('connection', function(socket){
 
 io.on('disconnect', function(){
 	io.emit('disconn', "断开了");
+	console("断开了");
 });
 
 http.listen(3000);

@@ -12,29 +12,29 @@
   <body ng-controller="test_game_warscontroller">
 
   <div class="page-header text-center">
-      <h2>AAAA题集战场</h2>
+      <h2>AAAA题集战场-战场1</h2>
   </div>
 
     <!-- 题目列表 -->
     <div class="container-fluid">
-        <ul class="list-group">
-            <% data.forEach(function (war) {%>
-                <li class="list-group-item">
-                <div class="row war-wrap">
-                    <div class="col-md-3 col-xs-3 war-label">
-                        战场<%=war.wid%>
+        <section class="user-warp">
+            <dl class="user-items">
+                <dd class="user-item">
+                    <div class="flag">
+                        <img src="" alt=""/>
                     </div>
-                    <div class="col-md-9 col-xs-9 war-label">
-                        <% war.users.forEach(function (user) {%>
-                            <div class="col-md-4 col-xs-4 war-user">
-                                <%=user.name%>
-                            </div>
-                        <%})%>
-                    </div>
-                </div>
-            </li>
-            <%})%>
-        </ul>
+                </dd>
+            </dl>
+        </section>
+
+        <dl class="list-group">
+            <dt class="list-group-item">
+                题干
+            </dt>
+            <dd class="list-group-item">
+                答案
+            </dd>
+        </dl>
     </div>
 
     <!-- 引入的脚本 -->
@@ -43,16 +43,25 @@
     <script src="/bootstrap-3.2.0/js/bootstrap.min.js"></script>
     <script src="/bootstrap-treeview/bootstrap-treeview.min.js"></script>
     <script src="/ui-bootstrap-0.11.0/ui-bootstrap-tpls-0.11.0.js"></script>
+
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 </body>
+
 <script type="text/javascript">
     var socket = io();
     socket.on('push', function(msg){
         alert(msg);
     });
-
+    $('#myModal').modal('toggle')
     var gameApp = angular.module('test_game', ['ui.bootstrap']);
-        gameApp.controller('test_game_warscontroller', ['$scope', '$http', function($scope, $http) {
+    gameApp.controller('test_game_warscontroller', ['$scope', '$http', function($scope, $http) {
     }]);
 </script>
+
+  <style>
+
+
+
+  </style>
+
 </html>

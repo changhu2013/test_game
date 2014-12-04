@@ -45,9 +45,7 @@ router.get("/", function(req, res) {
 		}]
 	}];
 
-	//var wid = req.query.wid;
-
-	res.render("wars", {
+	res.render("war", {
 		data: data
 	});
 });
