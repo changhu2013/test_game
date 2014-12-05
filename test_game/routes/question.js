@@ -5,9 +5,12 @@ var querystring = require('querystring');
 var router = express.Router();
 
 //显示题目树结构
+router.get('/tree', function(req, res) {
+    res.render('question_tree');
+});
+
+//显示题目树结构
 router.post('/tree', function(req, res) {
-    
-    /*    
     var data = [{
         id : '0',
         text : 'A ',
@@ -21,12 +24,10 @@ router.post('/tree', function(req, res) {
             id : '3',
             text : 'A3'
         }]
-    }];
-    
+    }];    
     res.send(data);
-    */
-    res.render('war');
 });
+
 
 //显示题目
 router.post('/leaf', function(req, res){
