@@ -19,15 +19,13 @@
     <body ng-controller="main_controller">
         <!-- 提示信息 -->
         <%if(locals.success && locals.success.length > 0){%>
-            <!--
             <div class="alert alert-success"><%=locals.success%></div>
-            -->
         <%}%>
         <!-- 菜单 -->
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-6 col-xs-6">
-                    <h2><strong><%if(locals.user){%><%=locals.user.name%><%}else {%>匿名用户<%}%></strong></h2>
+                    <h2><strong><% if(locals.user){ %><%=locals.user.name%><% }%></strong></h2>
                 </div>
                 <div class="col-md-3 col-xs-3" style="margin-top:20px;font-size:10px;">
                     <a href="/honor/list">游戏规则</a>

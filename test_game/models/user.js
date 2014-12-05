@@ -1,12 +1,13 @@
 var mongodb = require('./db.js');
+var logger = require('./logger.js');
 
 function User(user){
     this.sid = user.sid;
     this.name = user.name;
+    this.job = user.job;
 }
 
 User.get = function get(sid, callback){
-
     mongodb.open(function(err, db){
         if(err){
             return callback(err);
