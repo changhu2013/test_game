@@ -1,0 +1,22 @@
+
+<ul class="nav nav-tabs nav-justified" role="tablist">
+                <li role="presentation" ><a href="#/settings">系统设置</a></li>
+                <li role="presentation"><a href="#/importusers">用户导入</a></li>
+                <li role="presentation" class="active"><a href="#/importquestions">题目导入</a></li>
+            </ul>
+
+
+<div class="container-fluid" style="margin-top:10px;">
+    <form class="form-horizontal" role="form" action="/admin/importquestions" method="POST">
+        <div class="form-group">
+            <label for="exampleInputFile">选择文件</label>
+            <input type="file" id="exampleInputFile">
+            <p class="help-block">文件格式为：csv</p>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-default">导入</button>
+            </div>
+        </div>
+    </form>
+</div>

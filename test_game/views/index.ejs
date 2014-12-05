@@ -1,126 +1,117 @@
 <!DOCTYPE html>
 <html ng-app="test_game">
-  <head>
-    <title><%=locals.appName%></title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <link rel="stylesheet" href="/bootstrap-3.2.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/bootstrap-treeview/bootstrap-treeview.min.css">
-  </head>
-  <body ng-controller="test_game_controller">
-    <!-- 提示信息 -->
-    <%if(locals.success && locals.success.length > 0){%>
-        <!--
-        <div class="alert alert-success"><%=locals.success%></div>
-        -->
-    <%}%>
-
-    <!-- 菜单 -->
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-6 col-xs-6">
-                <h2><strong><%if(locals.user){%><%=locals.user.name%><%}else {%>匿名用户<%}%></strong></h2>
+    <head>
+        <title><%=locals.appName%></title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <link rel="stylesheet" href="/bootstrap-3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/bootstrap-treeview/bootstrap-treeview.min.css">
+        <!-- 提前引入,防止FOUC -->
+        <script src="/javascripts/angular.js"></script>
+        <script src="http://cdn.staticfile.org/angular-ui-router/0.2.10/angular-ui-router.min.js"></script>
+        <!-- 引入的脚本 -->
+        <script src="/javascripts/jquery-1.11.1.min.js"></script>
+        <script src="/bootstrap-3.2.0/js/bootstrap.min.js"></script>
+        <script src="/bootstrap-treeview/bootstrap-treeview.min.js"></script>
+        <script src="/ui-bootstrap-0.11.0/ui-bootstrap-tpls-0.11.0.js"></script>
+        <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+        <script src="http://cdn.bootcss.com/angular.js/1.3.0-beta.13/angular-route.min.js"></script>
+    </head>
+    <body ng-controller="main_controller">
+        <!-- 提示信息 -->
+        <%if(locals.success && locals.success.length > 0){%>
+            <!--
+            <div class="alert alert-success"><%=locals.success%></div>
+            -->
+        <%}%>
+        <!-- 菜单 -->
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6 col-xs-6">
+                    <h2><strong><%if(locals.user){%><%=locals.user.name%><%}else {%>匿名用户<%}%></strong></h2>
+                </div>
+                <div class="col-md-3 col-xs-3" style="margin-top:20px;font-size:10px;">
+                    <a href="/honor/list">游戏规则</a>
+                </div>
+                <div class="col-md-3 col-xs-3" style="margin-top:20px;">
+                    <a href="/honor"><button type="button" class="btn btn-primary">荣誉榜</button></a>
+                </div>
             </div>
-            <div class="col-md-3 col-xs-3" style="margin-top:20px;">
-                <h5><a href="/honor/list">游戏规则</a></h5>
-            </div>
-            <div class="col-md-3 col-xs-3" style="margin-top:20px;">
-                <a href="/honor/list"><button type="button" class="btn btn-primary">荣誉榜</button></a>
+            <div class="row">
+                <a href="/">
+                    <center><button type="button" class="btn btn-primary" style="width:200px;">我的挑战</button></center>
+                </a>
             </div>
         </div>
-    </div>
-
-    <!-- 题目树内容 -->
-    <div class="container-fluid">
-        <div class="text-right">
-            <button type="button" class="btn btn-default" ng-click="showTreeView();">打开题目</button>
+        <div class="container-fluid" style="margin-top:10px;">
+            <div ng-view></div>
         </div>
-        <div ng-show="showQuestionTreeFlag">
-            <label for="questiontree"></label>
-            <div id="questiontree"/></div>
-        </div>
-    </div>
-
-    <!-- 题目列表 -->
-    <div class="container-fluid">
-        <table class="table table-striped table-hover">
-            <tr ng-repeat="question in questions">
-                <td>
-                    <div class="row">
-                        <div class="col-md-2">
-                            <h4><strong>{{question.title}}</strong></h4>
-                        </div>
-                        <div class="col-md-10">
-                            <div class="row">
-                                <div class="col-xs-6">
-                                    <p><strong>挑战积分:</strong>{{question.challenge}}</p>
-                                    <p><strong>在线人数:</strong>{{question.users}}</p>
-                                </div>
-                                <div class="col-xs-6">
-                                    <p><strong>练习积分<strong>{{question.training}}</p>
-                                </div>
-                            <div>
-                            
-                        </div>
-                    </div>
-                </td>
-            </tr>
-        <table>
-    </div>
-
-    <!-- 引入的脚本 -->
-    <script src="/javascripts/angular.js"></script>
-    <script src="/javascripts/jquery-1.11.1.min.js"></script>
-    <script src="/bootstrap-3.2.0/js/bootstrap.min.js"></script>
-    <script src="/bootstrap-treeview/bootstrap-treeview.min.js"></script>
-    <script src="/ui-bootstrap-0.11.0/ui-bootstrap-tpls-0.11.0.js"></script>
 </body>
-
 <script type="text/javascript">
-angular.module('test_game', ['ui.bootstrap'])
-.controller('test_game_controller', ['$scope', '$http', function($scope, $http) {
-    //显示题目树标记
-    $scope.showQuestionTreeFlag = false;
+    var socket = io();
+    socket.on('conn', function(m){
+        //alert(m)
+    });
+    socket.on('disconn', function(m){
+        //alert(m)
+    });
 
-    $scope.questions = [];
-
-    //监听所选中的节点的变化
-    var onNodeSelected = function(event, node){
-        $http({
-            method : 'POST',
-            url : '/question/leaf',
-            params : {
-                id : node.id
-            },
-            cache : false,
-            timeout : 30000
-        }).success(function(data, status, headers, config){
-            $scope.questions = data;
+    var app = angular.module('test_game', ['ngRoute', 'ui.bootstrap']);
+    app.config(['$routeProvider', function($routeProvider) {
+        $routeProvider.when('/question', {
+            templateUrl : '/question',
+            controller  : 'main_controller'
+        })
+        .when('/honor', {
+            templateUrl : '/honor',
+            controller  : 'main_controller'
+        })
+        .when('/war', {
+            templateUrl : '/war',
+            controller  : 'main_controller'
+        })
+        .otherwise({
+            redirectTo : '/question'
         });
-    };
+    }])
+    .controller('main_controller', ['$scope', '$http', function($scope, $http) {
+        //显示题目树标记
+        $scope.showQuestionTreeFlag = true;
+        $scope.questions = [];
 
-    //显示题目树
-    $scope.showTreeView = function(){
-        //修改显示题目树标记
-        $scope.showQuestionTreeFlag = !$scope.showQuestionTreeFlag;
-
-        //发送异步请求
-        $http({
-            method : 'POST',
-            url : '/question/tree',
-            cache : false,
-            timeout : 30000
-        }).success(function(data, status, headers, config){
-            $('#questiontree').treeview({
-                bootstrap2: false, 
-                color : '#808080',
-                showTags: true,
-                levels: 2,
-                data: data,
-                onNodeSelected : onNodeSelected
+        //监听所选中的节点的变化
+        var onNodeSelected = function(event, node){
+            $http({
+                method : 'POST',
+                url : '/question/leaf',
+                params : {
+                    id : node.id
+                },
+                cache : false,
+                timeout : 30000
+            }).success(function(data, status, headers, config){
+                $scope.questions = data;
             });
-        });
-    };
-    
-}]);
+        };
+        //显示题目树
+        $scope.showTreeView = function(){
+            //修改显示题目树标记
+            $scope.showQuestionTreeFlag = !$scope.showQuestionTreeFlag;
+            $http({
+                method : 'POST',
+                url : '/question/tree',
+                cache : false,
+                timeout : 30000
+            }).success(function(data, status, headers, config){
+                $('#questiontree').treeview({
+                    bootstrap2: false, 
+                    color : '#808080',
+                    showTags: true,
+                    levels: 2,
+                    data: data,
+                    onNodeSelected : onNodeSelected
+                });
+            });
+        };
+    }]);
 </script>
 </html>

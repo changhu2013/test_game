@@ -1,0 +1,46 @@
+
+<ul class="nav nav-tabs nav-justified" role="tablist">
+                <li role="presentation" class="active"><a href="#/settings">系统设置</a></li>
+                <li role="presentation"><a href="#/importusers">用户导入</a></li>
+                <li role="presentation"><a href="#/importquestions">题目导入</a></li>
+            </ul>
+    
+<div class="container-fluid" style="margin-top:10px;">
+    <form class="form-horizontal" role="form" action="/admin/settings" method="POST">
+        <div class="form-group">
+            <label for="inputHaoshi" class="col-sm-2 control-label">对战耗时权重</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" id="inputHaoshi" placeholder="">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputRenshu" class="col-sm-2 control-label">对战人数权重</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" id="inputRenshu" placeholder="">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputChenggong" class="col-sm-2 control-label">挑战成功权重</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" id="inputChenggong" placeholder="">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputBaomingJifen" class="col-sm-2 control-label">参战报名积分</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" id="inputBaomingJifen" placeholder="">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputChenggongBaifenbi" class="col-sm-2 control-label">挑战成功百分比</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" id="inputChenggongBaifenbi" placeholder="" value="60">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-default">保存</button>
+            </div>
+        </div>
+    </form>
+</div>

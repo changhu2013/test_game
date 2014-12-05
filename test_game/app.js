@@ -18,6 +18,15 @@ var honor = require('./routes/honor');
 //题目
 var question = require('./routes/question');
 
+//竞技场列表
+var wars = require('./routes/wars');
+
+//竞技场
+var war = require('./routes/war');
+
+//后台管理， 包括用户导入和题目导入
+var admin = require('./routes/admin');
+
 var app = express();
 
 // view engine setup
@@ -58,6 +67,9 @@ app.use('/', routes);
 app.use('/users', users);
 app.use('/honor', honor);
 app.use('/question', question);
+app.use('/wars', wars);
+app.use('/war', war);
+app.use('/admin', admin);
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {
