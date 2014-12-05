@@ -24,7 +24,7 @@ var wars = require('./routes/wars');
 //竞技场
 var war = require('./routes/war');
 
-//后台管理， 包括用户导入和题目导入
+//后台管理， 包括用户导入和题目导入,报表功能
 var admin = require('./routes/admin');
 
 var app = express();

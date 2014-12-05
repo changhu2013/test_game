@@ -1,3 +1,9 @@
+
+
+/*
+ *  后台管理页面，进行系统设置和用户信息，题目信息的导入
+ */
+
 var express = require('express');
 var url = require('url');
 var querystring = require('querystring');
@@ -41,6 +47,14 @@ router.post('/importquestions', function(req, res){
     //TODO : 实现读取文件内容将题目信息存入数据库
 
     res.redirect('/admin#/importquestions');
+});
+
+//系统报表
+router.get('/report', function(req, res){
+    console.log('report index');
+    //TODO : 生成报表
+    
+    res.render('report');
 });
 
 module.exports = router;

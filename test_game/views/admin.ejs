@@ -37,6 +37,10 @@
             templateUrl : '/admin/importquestions',
             controller  : 'main_controller'
         })
+        .when('/report', {
+            templateUrl : '/admin/report',
+            controller : 'main_controller'
+        })
         .otherwise({
             redirectTo : '/settings'
         });
