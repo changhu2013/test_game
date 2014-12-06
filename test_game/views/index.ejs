@@ -47,10 +47,10 @@
 <script type="text/javascript">
     var socket = io();
     socket.on('conn', function(m){
-        //alert(m)
+        alert(m)
     });
     socket.on('disconn', function(m){
-        //alert(m)
+        alert(m)
     });
 
     var app = angular.module('test_game', ['ngRoute', 'ui.bootstrap']);

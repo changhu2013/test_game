@@ -8,6 +8,8 @@ var express = require('express');
 var url = require('url');
 var querystring = require('querystring');
 
+var Settings = require('../models/settings.js');
+
 var router = express.Router();
 
 router.get('/', function(req, res){
@@ -16,7 +18,13 @@ router.get('/', function(req, res){
 });
 
 router.get('/settings', function(req, res) {
-    res.render('settings');
+    console.log(Settings);
+    Settings.get(function(err, settings){
+
+        console.log(settings);
+
+        res.render('settings', settings);
+    });
 });
 
 router.post('/settings', function(req, res){
