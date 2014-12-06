@@ -1,30 +1,25 @@
 var mongodb = require('./db.js');
 
-function User(user){
-    this.sid = user.sid;
-    this.name = user.name;
-    //职位
-    this.job = user.job;
-    //积分
-    this.score = user.score;
-    //挑战次数
-    this.battles = user.battles;
+function Category(cfg){
+    this.cid = cfg.cid;
+    this.pid = cfg.pid;
+    this.title = cfg.title;
 }
 
-User.get = function get(sid, callback){
+Category.get = function get(cid, callback){
     mongodb.open(function(err, db){
         if(err){
             return callback(err);
         }
-        db.collection('users', function(err, collection){
+        db.collection('categorys', function(err, collection){
             if(err){
                 mongodb.close();
                 return callback(err);
             }
-            collection.findOne({sid : sid}, function(err, doc){
+            collection.findOne({cid : cid}, function(err, doc){
                 mongodb.close();
                 if(doc){
-                    var user = new User(doc);
+                    var user = new Category(doc);
                     callback(err, user);
                 }else {
                     callback(err, null);
@@ -34,4 +29,4 @@ User.get = function get(sid, callback){
     });
 };
 
-module.exports = User;
+module.exports = Category;
