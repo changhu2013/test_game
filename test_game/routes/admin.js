@@ -1,5 +1,3 @@
-
-
 /*
  *  后台管理页面，进行系统设置和用户信息，题目信息的导入
  */
@@ -7,6 +5,12 @@
 var express = require('express');
 var url = require('url');
 var querystring = require('querystring');
+var path = require('path');
+var fs = require('fs');
+
+var multipart = require('connect-multiparty');
+var multipartMiddleware = multipart();
+
 
 var Settings = require('../models/settings.js');
 
@@ -38,8 +42,8 @@ router.get('/importusers', function(req, res){
     res.render('import_users');
 });
 
-router.post('/importusers', function(req, res){
-    
+router.post('/importusers', multipartMiddleware, function(req, res){
+    //var upfile = req.files.file;
     console.log('import users');
     //TODO : 实现读取文件内容将用户信息存入数据库
 
