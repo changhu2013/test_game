@@ -5,7 +5,6 @@ var querystring = require('querystring');
 var User = require('../models/user.js');
 var Logger = require('../models/logger.js');
 
-
 var router = express.Router();
 router.get('/', function(req, res) {
     //判断是否登录
