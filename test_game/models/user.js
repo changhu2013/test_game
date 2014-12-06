@@ -1,14 +1,14 @@
 var mongodb = require('./db.js');
 
-function User(user){
-    this.sid = user.sid;
-    this.name = user.name;
+function User(cfg){
+    this.sid = cfg.sid;
+    this.name = cfg.name;
     //职位
-    this.job = user.job;
+    this.job = cfg.job;
     //积分
-    this.score = user.score;
+    this.score = cfg.score;
     //挑战次数
-    this.battles = user.battles;
+    this.battles = cfg.battles;
 }
 
 User.get = function get(sid, callback){

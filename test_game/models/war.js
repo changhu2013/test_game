@@ -1,26 +1,31 @@
 var mongodb = require('./db.js');
 
-function Category(cfg){
-    this.cid = cfg.cid;
-    this.pid = cfg.pid;
-    this.title = cfg.title;
+function War(cfg){
+    this.wid = cfg.wid;
+    this.qsid = cfg.qsid;
+
+    this.start = cfg.start;
+
+    this.end = cfg.end;
+
+    this.users = cfg.users;
 }
 
-Category.get = function get(cid, callback){
+War.get = function get(wid, callback){
     mongodb.open(function(err, db){
         if(err){
             return callback(err);
         }
-        db.collection('categorys', function(err, collection){
+        db.collection('wars', function(err, collection){
             if(err){
                 mongodb.close();
                 return callback(err);
             }
-            collection.findOne({cid : cid}, function(err, doc){
+            collection.findOne({wid : wid}, function(err, doc){
                 mongodb.close();
                 if(doc){
-                    var c = new Category(doc);
-                    callback(err, c);
+                    var war = new War(doc);
+                    callback(err, war);
                 }else {
                     callback(err, null);
                 }
@@ -29,4 +34,4 @@ Category.get = function get(cid, callback){
     });
 };
 
-module.exports = Category;
+module.exports = War;
