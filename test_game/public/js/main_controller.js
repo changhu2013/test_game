@@ -5,28 +5,37 @@ main_controller = function($scope, $http) {
     //显示题目树标记
     $scope.showQuestionTreeFlag = true;
 
+    //题目集
+    $scope.questionstores = [];
+
     //显示题目树
     $scope.showTreeView = function(){
         //修改显示题目树标记
         $scope.showQuestionTreeFlag = !$scope.showQuestionTreeFlag;
 
-        function filter(treeId, parentNode, childNodes) {
-            if (!childNodes) return null;
-            for (var i=0, l=childNodes.length; i<l; i++) {
-                childNodes[i].name = childNodes[i].name.replace(/\.n/g, '.');
-            }
-            return childNodes;
-        }
-
+        var onMouseDown = function(event, eid, node){
+            $http({
+                url : '/question/store',
+                method : 'POST',
+                params : {
+                    qcid : node.qcid
+                },
+                cache : false,
+                timeout : 3000
+            }).success(function(data){
+                $scope.questionstores = data;
+            });
+        };
         var setting = {
             async: {
                 enable: true,
                 type: 'POST',
-                dataType : "json",
-                url:"/question/category",
-                autoParam:["id", "name=n", "level=lv"],
-                otherParam:{"otherParam":"zTreeAsyncTest"},
-                dataFilter: filter
+                dataType : 'json',
+                url:'/question/category',
+                autoParam:['pid', 'qcid']
+            },
+            callback : {
+                onMouseDown : onMouseDown
             }
         };
 

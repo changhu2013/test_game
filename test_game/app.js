@@ -1,5 +1,6 @@
 var MongoStore = require('connect-mongodb');
 var settings = require('./settings');
+var mongoose = require('mongoose');
 
 var express = require('express');
 var path = require('path');
@@ -14,13 +15,6 @@ var flash = require('connect-flash');
 var routes = require('./routes/index');
 //题目
 var question = require('./routes/question');
-
-//竞技场列表
-var wars = require('./routes/wars');
-
-//竞技场
-var war = require('./routes/war');
-
 //后台管理， 包括用户导入和题目导入,报表功能
 var admin = require('./routes/admin');
 
@@ -62,9 +56,10 @@ app.use(function(req, res, next){
 
 app.use('/', routes);
 app.use('/question', question);
-app.use('/wars', wars);
-app.use('/war', war);
 app.use('/admin', admin);
+
+//mongoose
+mongoose.connect('mongodb://' + settings.host + '/' + settings.db);
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {

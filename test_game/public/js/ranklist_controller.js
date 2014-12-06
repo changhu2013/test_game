@@ -1,0 +1,6 @@
+
+
+ranklist_controller = function(){
+
+
+}

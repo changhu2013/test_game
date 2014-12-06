@@ -1,0 +1,6 @@
+
+battle_controller = function(){
+
+
+
+};

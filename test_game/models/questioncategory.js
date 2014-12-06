@@ -1,12 +1,12 @@
-var mongodb = require('./db.js');
 
-function QuestionCategory(cfg){
-    //分类ID
-    this.qcid = cfg.qcid;
-    //父项ID
-    this.pid = cfg.pid;
-    //题目
-    this.title = cfg.title;
-}
+var mongoose = require('mongoose')
+    , Schema = mongoose.Schema
+    , ObjectId = Schema.ObjectId;
 
-module.exports = QuestionCategory;
+var QuestionCategory = new Schema({
+    qcid : String,
+    pid : String,
+    title : String
+});
+
+module.exports = mongoose.model('questioncategorys', QuestionCategory);

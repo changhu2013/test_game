@@ -1,17 +1,4 @@
-<!DOCTYPE html>
-<html ng-app="test_game">
-  <head>
-    <title><%=locals.appName%></title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <link rel="stylesheet" href="/bootstrap-3.2.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/bootstrap-treeview/bootstrap-treeview.min.css">
-
-      <!-- 提前引入,防止FOUC问题出现 -->
-    <script src="/javascripts/angular.js"></script>
-  </head>
-  <body ng-controller="test_game_warscontroller">
-
-  <div class="panel panel-default">
+<div class="panel panel-default">
       <div class="panel-heading">
           <h3 class="panel-title text-center">AAAA题集战场-战场1</h3>
       </div>
@@ -55,31 +42,6 @@
           </dd>
       </dl>
   </div>
-
-    <!-- 引入的脚本 -->
-    <script src="/javascripts/jquery-1.11.1.min.js"></script>
-    <script src="/bootstrap-3.2.0/js/bootstrap.min.js"></script>
-    <script src="/bootstrap-treeview/bootstrap-treeview.min.js"></script>
-    <script src="/ui-bootstrap-0.11.0/ui-bootstrap-tpls-0.11.0.js"></script>
-    <script src="/socket.io-1.2.0.js"></script>
-</body>
-
-<script type="text/javascript">
-    var socket = io();
-    var gameApp = angular.module('test_game', ['ui.bootstrap']);
-    gameApp.controller('test_game_warscontroller', ['$scope', '$http', function($scope, $http) {
-        socket.on('hello', function(msg){
-            alert("返回:" + msg);
-            socket.emit('addwar', {
-                wid: '<%=wid%>'
-            });
-        });
-
-        socket.on('addwarsucc', function (msg) {
-            alert(msg);
-        });
-    }]);
-</script>
 
   <style>
       
@@ -134,4 +96,3 @@
 
   </style>
 
-</html>

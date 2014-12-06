@@ -31,7 +31,11 @@
 
 <script type="text/javascript" src="/js/main_controller.js"></script>
 <script type="text/javascript" src="/js/honor_controller.js"></script>
-<script type="text/javascript" src="/js/battles_controller.js"></script>
+<script type="text/javascript" src="/js/mybattles_controller.js"></script>
+<script type="text/javascript" src="/js/warzone_controller.js"></script>
+<script type="text/javascript" src="/js/battle_controller.js"></script>
+<script type="text/javascript" src="/js/ranklist_controller.js"></script>
+<script type="text/javascript" src="/js/drillwar_controller.js"></script>
 <script type="text/javascript">
 
     var socket = io();
@@ -50,17 +54,33 @@
         }).when('/honor', {
             templateUrl : '/honor', //荣誉榜
             controller  : 'honor_controller'
-        }).when('/battles', {
-            templateUrl : '/battles', //我的挑战
-            controller  : 'battles_controller'
+        }).when('/mybattles', {
+            templateUrl : '/mybattles', //我的挑战
+            controller  : 'mybattles_controller'
         }).when('/manual', {
             templateUrl : '/manual' //游戏说明
+        }).when('/warzone', {
+            templateUrl : '/warzone', //某一题集下的对战房间
+            controller  : 'warzone_controller'
+        }).when('/battle', {
+            templateUrl : '/battle',  //战场
+            controller  : 'battle_controller'
+        }).when('/ranklist', {
+            templateUrl : '/ranklist', //某考题集积分排行榜
+            controller  : 'ranklist_controller'
+        }).when('/drillwar', {
+            templateUrl : '/drillwar', //某一题集下的练兵场
+            controller  : 'drillwar_controller'
         }).otherwise({
             redirectTo : '/main'
         });
     }]).controller('main_controller', ['$scope', '$http', main_controller])
-            .controller('honor_controller', ['$scope', '$http', main_controller])
-            .controller('battles_controller', ['$scope', '$http', main_controller]);
+            .controller('honor_controller', ['$scope', '$http', honor_controller])
+            .controller('mybattles_controller', ['$scope', '$http', mybattles_controller])
+            .controller('warzone_controller', ['$scope', '$http', warzone_controller])
+            .controller('ranklist_controller', ['$scope', '$http', ranklist_controller])
+            .controller('drillwar_controller', ['$scope', '$http', drillwar_controller])
+            .controller('battle_controller', ['$scope', '$http', battle_controller]);
 
 </script>
 </html>

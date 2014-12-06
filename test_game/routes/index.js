@@ -46,9 +46,36 @@ router.get('/honor', function (req, res) {
 });
 
 //我的挑战
-router.get('/battles', function(req, res){
+router.get('/mybattles', function(req, res){
     console.log('我的挑战');
-    res.render('battles');
+    res.render('mybattles');
+});
+
+//某题集下的对战房间
+router.get('/warzone', function(req, res){
+    var query = url.parse(req.url, true).query;
+    var qcid = query.qcid;
+
+    console.log('某题集下的对战房间 ' + qcid);
+    res.render('warzone');
+});
+
+//战场
+router.get('/battle', function(req, res){
+    console.log('战场');
+    res.render('battle');
+});
+
+//排行榜
+router.get('/ranklist', function(req, res){
+    console.log('排行榜');
+    res.render('ranklist');
+});
+
+//练兵场
+router.get('/drillwar', function(req, res){
+    console.log('练兵场');
+    res.render('drillwar');
 });
 
 //游戏规则

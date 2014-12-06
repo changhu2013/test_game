@@ -1,30 +1,18 @@
-var mongodb = require('./db.js');
 
-function QuestionStore(cfg){
+var mongoose = require('mongoose')
+    , Schema = mongoose.Schema
+    , ObjectId = Schema.ObjectId;
 
-    //题集ID
-    this.qsid = cfg.qsid;
+var QuestionStore = new Schema({
+    qsid : String,
+    qcid : String,
+    title : String,
+    drillScore : Number,
+    battleScore : Number,
+    maxTime : Number,
+    bounty : Number,
+    papers : String
+});
 
-    //分类
-    this.cid = cfg.cid;
+module.exports = mongoose.model('questionstores', QuestionStore);
 
-    //说明
-    this.title = cfg.title;
-
-    //练习积分
-    this.drillScore = cfg.drillScore;
-
-    //挑战积分
-    this.battleScore = cfg.battleScore;
-
-    //最大挑战时长
-    this.maxTime = cfg.maxTime;
-
-    //悬赏分
-    this.bounty = cfg.bounty;
-
-    //随即题目集
-    this.papers = cfg.papers;
-};
-
-module.exports = QuestionStore;

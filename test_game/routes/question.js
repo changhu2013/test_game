@@ -1,44 +1,31 @@
 var express = require('express');
 var url = require('url');
-var querystring = require('querystring');
+
+var QuestionCategory = require('../models/questioncategory.js');
+var QuestionStore = require('../models/questionstore.js');
 
 var router = express.Router();
 
 //显示题目树结构
 router.post('/category', function(req, res) {
-
-    var query = url.parse(req.url, true).query;
-    console.log(query);
-
-    var data = [{ id:'0331',	name:'n3.3.n1',	isParent:true},
-        { id:'0332',	name:'n3.3.n2',	isParent:false},
-        { id:'0333',	name:'n3.3.n3',	isParent:true},
-        { id:'0334',	name:'n3.3.n4',	isParent:false}];
-    console.log(data);
-
-    res.send(data);
-});
-
-
-//显示题目
-router.post('/leaf', function(req, res){
-    var query = url.parse(req.url, true).query;
-    console.log(query);
-    if(query && query.id){
-        var data = [{
-            title : 'AAAA题目集 ' + query.id,
-            challenge : 25,
-            training : 2,
-            users : 16
-        }, {
-            title : 'BBBB题目集',
-            challenge : 25,
-            training : 2,
-            users : 14
-        }];
-        res.send(data)
+    var pid = req.body.qcid;
+    if(!pid){
+        pid = '0';
     }
+    console.log('pid:' + pid);
+    QuestionCategory.find({pid : pid}, function(err, categorys){
+        res.send(categorys);
+    });
 });
 
+//获取某类型题目集
+router.post('/store', function(req, res){
+    var query = url.parse(req.url, true).query;
+    var qcid = query.qcid;
+    console.log('qcid:' + qcid);
+    QuestionStore.find({qcid:qcid}, function(err, stores){
+        res.send(stores);
+    });
+});
 
 module.exports = router;

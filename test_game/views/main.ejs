@@ -1,4 +1,3 @@
-
 <div class="row">
     <div class="col-md-6 col-xs-6">
         <h2><strong><% if(user){ %><%=user.name%><% }%></strong></h2>
@@ -10,30 +9,39 @@
         <a href="#/honor"><button type="button" class="btn btn-primary">荣誉榜</button></a>
     </div>
 </div>
+<div class="row">
+    <div class="col-md-6, col-xs-6">
+        积分：<%=user.score || 0%>
+    </div>
+    <div class="col-md-6, col-xs-6">
+        挑战：<%=user.battles || 0%>
+    </div>
+</div>
 <center style="margin-top: 20px;">
-    <a href="#/battles" ><button type="button" class="btn btn-default" style="width:200px;">我的挑战</button></a>
+    <a href="#/mybattles" ><button type="button" class="btn btn-default" style="width:200px;">我的挑战</button></a>
 </center>
 <div class="text-right" style="margin-top: 20px;">
     <button type="button" class="btn btn-default" ng-click="showTreeView();">打开题目</button>
 </div>
-<div ng-show="showQuestionTreeFlag">
+<div ng-show="showQuestionTreeFlag" class="ztree">
     <div id="questioncategory"/></div>
 </div>
 <table class="table table-striped table-hover">
-    <tr ng-repeat="question in questions">
+    <tr ng-repeat="store in questionstores">
         <td>
             <div class="row">
                 <div class="col-md-2">
-                    <h4><strong>{{question.title}}</strong></h4>
+                    <a href="#/warzone?qcid={{store.qcid}}">
+                        <h4><strong>{{store.title}}</strong></h4>
+                    </a>
                 </div>
                 <div class="col-md-10">
                     <div class="row">
                         <div class="col-xs-6">
-                            <p><strong>挑战积分:</strong>{{question.challenge}}</p>
-                            <p><strong>在线人数:</strong>{{question.users}}</p>
+                            <p><strong>挑战积分:</strong>{{store.battleScore}}</p>
                         </div>
                         <div class="col-xs-6">
-                            <p><strong>练习积分<strong>{{question.training}}</p>
+                            <p><strong>练习积分<strong>{{store.drillScore}}</p>
                         </div>
                     </div>
                 </div>
