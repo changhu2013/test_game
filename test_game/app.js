@@ -57,9 +57,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //通用变量
 app.use(function(req, res, next){
+    /*
     res.locals.appName = 'test game';
     res.locals.success = req.flash('success');
     res.locals.user = req.session?req.session.user:null;
+    */
     next();
 });
 
