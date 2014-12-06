@@ -5,21 +5,17 @@ var querystring = require('querystring');
 var router = express.Router();
 
 //显示题目树结构
-router.post('/tree', function(req, res) {
-    var data = [{
-        id : '0',
-        text : 'A ',
-        nodes : [{
-            id : '1',
-            text : 'A1'
-        }, {
-            id : '2',
-            text : 'A2'
-        }, {
-            id : '3',
-            text : 'A3'
-        }]
-    }];    
+router.post('/category', function(req, res) {
+
+    var query = url.parse(req.url, true).query;
+    console.log(query);
+
+    var data = [{ id:'0331',	name:'n3.3.n1',	isParent:true},
+        { id:'0332',	name:'n3.3.n2',	isParent:false},
+        { id:'0333',	name:'n3.3.n3',	isParent:true},
+        { id:'0334',	name:'n3.3.n4',	isParent:false}];
+    console.log(data);
+
     res.send(data);
 });
 

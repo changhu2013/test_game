@@ -4,15 +4,18 @@
         <title><%=locals.appName%></title>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
         <link rel="stylesheet" href="/bootstrap-3.2.0/css/bootstrap.min.css">
-        <link rel="stylesheet" href="/bootstrap-treeview/bootstrap-treeview.min.css">
+        <link rel="stylesheet" href="/zTree/css/zTreeStyle/zTreeStyle.css" type="text/css">
+
         <!-- 提前引入,防止FOUC -->
         <script src="/javascripts/angular.js"></script>
         <script src="http://cdn.staticfile.org/angular-ui-router/0.2.10/angular-ui-router.min.js"></script>
         <!-- 引入的脚本 -->
         <script src="/javascripts/jquery-1.11.1.min.js"></script>
+        <script type="text/javascript" src="/zTree/js/jquery.ztree.core-3.5.js"></script>
+
         <script src="/bootstrap-3.2.0/js/bootstrap.min.js"></script>
-        <script src="/bootstrap-treeview/bootstrap-treeview.min.js"></script>
         <script src="/ui-bootstrap-0.11.0/ui-bootstrap-tpls-0.11.0.js"></script>
+
         <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
         <script src="http://cdn.bootcss.com/angular.js/1.3.0-beta.13/angular-route.min.js"></script>
     </head>
@@ -58,9 +61,6 @@
     }]).controller('main_controller', ['$scope', '$http', main_controller])
             .controller('honor_controller', ['$scope', '$http', main_controller])
             .controller('battles_controller', ['$scope', '$http', main_controller]);
-
-
-
 
 </script>
 </html>
