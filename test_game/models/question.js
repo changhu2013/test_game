@@ -1,8 +1,14 @@
 var mongodb = require('./db.js');
 
 function Question(cfg){
+
+    //题目ID
     this.qid = cfg.qid;
+
+    //题集ID
     this.qsid = cfg.qsid;
+
+    //题干部分
     this.title = cfg.title;
 
     //选项

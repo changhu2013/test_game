@@ -12,9 +12,6 @@ var session = require('express-session');
 var flash = require('connect-flash');
 
 var routes = require('./routes/index');
-var users = require('./routes/users');
-//荣誉榜
-var honor = require('./routes/honor');
 //题目
 var question = require('./routes/question');
 
@@ -64,8 +61,6 @@ app.use(function(req, res, next){
 });
 
 app.use('/', routes);
-app.use('/users', users);
-app.use('/honor', honor);
 app.use('/question', question);
 app.use('/wars', wars);
 app.use('/war', war);

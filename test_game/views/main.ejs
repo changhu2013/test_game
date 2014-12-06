@@ -1,4 +1,19 @@
- <div class="text-right">
+
+<div class="row">
+    <div class="col-md-6 col-xs-6">
+        <h2><strong><% if(user){ %><%=user.name%><% }%></strong></h2>
+    </div>
+    <div class="col-md-3 col-xs-3" style="margin-top:20px;font-size:10px;">
+        <a href="#/manual">游戏规则</a>
+    </div>
+    <div class="col-md-3 col-xs-3" style="margin-top:20px;">
+        <a href="#/honor"><button type="button" class="btn btn-primary">荣誉榜</button></a>
+    </div>
+</div>
+<center style="margin-top: 20px;">
+    <a href="#/battles" ><button type="button" class="btn btn-default" style="width:200px;">我的挑战</button></a>
+</center>
+<div class="text-right" style="margin-top: 20px;">
     <button type="button" class="btn btn-default" ng-click="showTreeView();">打开题目</button>
 </div>
 <div ng-show="showQuestionTreeFlag">
@@ -8,7 +23,7 @@
 <table class="table table-striped table-hover">
     <tr ng-repeat="question in questions">
         <td>
-        	<div class="row">
+            <div class="row">
                 <div class="col-md-2">
                     <h4><strong>{{question.title}}</strong></h4>
                 </div>
@@ -21,7 +36,7 @@
                         <div class="col-xs-6">
                             <p><strong>练习积分<strong>{{question.training}}</p>
                         </div>
-                    <div>
+                    </div>
                 </div>
             </div>
         </td>

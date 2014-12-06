@@ -21,95 +21,46 @@
         <%if(locals.success && locals.success.length > 0){%>
             <div class="alert alert-success"><%=locals.success%></div>
         <%}%>
-        <!-- 菜单 -->
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-6 col-xs-6">
-                    <h2><strong><% if(user){ %><%=user.name%><% }%></strong></h2>
-                </div>
-                <div class="col-md-3 col-xs-3" style="margin-top:20px;font-size:10px;">
-                    <a href="/honor/list">游戏规则</a>
-                </div>
-                <div class="col-md-3 col-xs-3" style="margin-top:20px;">
-                    <a href="/honor"><button type="button" class="btn btn-primary">荣誉榜</button></a>
-                </div>
-            </div>
-            <div class="row">
-                <a href="/">
-                    <center><button type="button" class="btn btn-primary" style="width:200px;">我的挑战</button></center>
-                </a>
-            </div>
-        </div>
         <div class="container-fluid" style="margin-top:10px;">
             <div ng-view></div>
         </div>
 </body>
+
+<script type="text/javascript" src="/js/main_controller.js"></script>
+<script type="text/javascript" src="/js/honor_controller.js"></script>
+<script type="text/javascript" src="/js/battles_controller.js"></script>
 <script type="text/javascript">
+
     var socket = io();
     socket.on('conn', function(m){
-        alert(m)
+        //alert(m)
     });
     socket.on('disconn', function(m){
-        alert(m)
+        //alert(m)
     });
 
     var app = angular.module('test_game', ['ngRoute', 'ui.bootstrap']);
     app.config(['$routeProvider', function($routeProvider) {
-        $routeProvider.when('/question', {
-            templateUrl : '/question',
+        $routeProvider.when('/main', { //主界面
+            templateUrl : '/main',
             controller  : 'main_controller'
-        })
-        .when('/honor', {
-            templateUrl : '/honor',
-            controller  : 'main_controller'
-        })
-        .when('/war', {
-            templateUrl : '/war',
-            controller  : 'main_controller'
-        })
-        .otherwise({
-            redirectTo : '/question'
+        }).when('/honor', {
+            templateUrl : '/honor', //荣誉榜
+            controller  : 'honor_controller'
+        }).when('/battles', {
+            templateUrl : '/battles', //我的挑战
+            controller  : 'battles_controller'
+        }).when('/manual', {
+            templateUrl : '/manual' //游戏说明
+        }).otherwise({
+            redirectTo : '/main'
         });
-    }])
-    .controller('main_controller', ['$scope', '$http', function($scope, $http) {
-        //显示题目树标记
-        $scope.showQuestionTreeFlag = true;
-        $scope.questions = [];
+    }]).controller('main_controller', ['$scope', '$http', main_controller])
+            .controller('honor_controller', ['$scope', '$http', main_controller])
+            .controller('battles_controller', ['$scope', '$http', main_controller]);
 
-        //监听所选中的节点的变化
-        var onNodeSelected = function(event, node){
-            $http({
-                method : 'POST',
-                url : '/question/leaf',
-                params : {
-                    id : node.id
-                },
-                cache : false,
-                timeout : 30000
-            }).success(function(data, status, headers, config){
-                $scope.questions = data;
-            });
-        };
-        //显示题目树
-        $scope.showTreeView = function(){
-            //修改显示题目树标记
-            $scope.showQuestionTreeFlag = !$scope.showQuestionTreeFlag;
-            $http({
-                method : 'POST',
-                url : '/question/tree',
-                cache : false,
-                timeout : 30000
-            }).success(function(data, status, headers, config){
-                $('#questiontree').treeview({
-                    bootstrap2: false, 
-                    color : '#808080',
-                    showTags: true,
-                    levels: 2,
-                    data: data,
-                    onNodeSelected : onNodeSelected
-                });
-            });
-        };
-    }]);
+
+
+
 </script>
 </html>

@@ -33,4 +33,28 @@ router.get('/', function(req, res) {
     }
 });
 
+//主界面
+router.get('/main', function(req, res){
+    console.log('主界面');
+    res.render('main');
+});
+
+//荣誉榜
+router.get('/honor', function (req, res) {
+    console.log('荣誉榜');
+    res.render('honor');
+});
+
+//我的挑战
+router.get('/battles', function(req, res){
+    console.log('我的挑战');
+    res.render('battles');
+});
+
+//游戏规则
+router.get('/manual', function(req, res){
+    console.log('游戏规则');
+    res.render('manual');
+});
+
 module.exports = router;

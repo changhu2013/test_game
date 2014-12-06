@@ -5,11 +5,6 @@ var querystring = require('querystring');
 var router = express.Router();
 
 //显示题目树结构
-router.get('/', function(req, res) {
-    res.render('question');
-});
-
-//显示题目树结构
 router.post('/tree', function(req, res) {
     var data = [{
         id : '0',
