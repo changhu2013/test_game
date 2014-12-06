@@ -17,6 +17,7 @@
     "stylus": "0.42.3",
     "connect-mongodb": ">= 0.1.7",
     "mongodb": ">= 0.9.9",
-    "connect-flash" : "~0.1.1"
+    "connect-flash" : "~0.1.1",
+    "socket.io": "~1.2.1"
   }
 }
