@@ -3,7 +3,20 @@
 main_controller = function($scope, $http) {
 
     //显示题目树标记
-    $scope.showQuestionTreeFlag = true;
+    $scope.showQuestionTreeFlag = false;
+
+    //最近挑战
+    $scope.lastBattles =[];
+
+    //发送请求获取最近挑战
+    $http({
+        url : '/battle/finished',
+        method : 'POST',
+        cache : false,
+        timeout : 3000
+    }).success(function(data){
+        $scope.lastBattles = data;
+    });
 
     //题目集
     $scope.questionstores = [];

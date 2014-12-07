@@ -6,12 +6,16 @@ mongoose.connect('mongodb://' + settings.host + '/' + settings.db);
 require('./models/questioncategory.js');
 require('./models/questionstore.js');
 require('./models/question.js');
+require('./models/battle.js');
 
 
 var QuestionCategory = mongoose.model('QuestionCategory');
 var QuestionStore = mongoose.model('QuestionStore');
 var Question = mongoose.model('Question');
 
+var Battle = mongoose.model('Battle');
+
+/*
 for(var i = 0 ;i < 10; i++){
 
     var qc = new QuestionCategory();
@@ -73,7 +77,24 @@ for(var i = 0 ;i < 10; i++){
         }
     }
 }
+*/
 
+for(var i = 0 ; i < 10; i++){
+
+    var b = new Battle();
+    b.bid = '' + i;
+    b.sid = '1';
+    b.qsid = '1';
+    b.qstitle = 'AAAAA题集';
+    b.status = i > 7 ? 'N' : i > 3 ? 'F' : 'I';
+
+    b.drillScore = 12;
+    b.battleScore = 100;
+
+    b.save(function(err){
+        if(err) throw err;
+    });
+}
 
 
 

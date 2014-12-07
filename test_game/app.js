@@ -15,6 +15,8 @@ var flash = require('connect-flash');
 var routes = require('./routes/index');
 //题目
 var question = require('./routes/question');
+//挑战
+var battle = require('./routes/battle');
 //后台管理， 包括用户导入和题目导入,报表功能
 var admin = require('./routes/admin');
 
@@ -56,6 +58,7 @@ app.use(function(req, res, next){
 
 app.use('/', routes);
 app.use('/question', question);
+app.use('/battle', battle);
 app.use('/admin', admin);
 
 //mongoose

@@ -1,3 +1,31 @@
-<div>
-    我的挑战
+<div class="container">
+    <a class="href" href="#/main">返回</a>
+    <h5>我的挑战</h5>
+    <table class="table">
+        <tr ng-repeat="battle in battles">
+            <td>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <p><strong>题集:</strong></p>{{battle.qsname}}
+                    </div>
+                    <div class="col-xs-6">
+                        <p><strong>悬赏分:</strong></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <p><strong>挑战积分</strong>{{battle.battleScore}}</p>
+                    </div>
+                    <div class="col-xs-6">
+                        <p><strong>练习积分</strong>{{battle.drillScore}}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <a href="#battle?bid={{battle.bid}}">
+                        <button class="btn btn-default">应战</button>
+                    </a>
+                </div>
+            </td>
+        </tr>
+    </table>
 </div>
