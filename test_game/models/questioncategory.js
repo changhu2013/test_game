@@ -6,8 +6,8 @@ var mongoose = require('mongoose')
 var QuestionCategory = new Schema({
     qcid : String,
     pid : String,
-    title : String,
-    isParent : Boolean
+    title : String
 });
+
 
 mongoose.model('QuestionCategory', QuestionCategory, 'questioncategorys');

@@ -8,11 +8,28 @@
 
 <div class="container-fluid" style="margin-top:10px;">
     <form class="form-horizontal" role="form" action="/admin/importquestions" method="POST">
-        <div class="form-group">
-            <label for="exampleInputFile">选择文件</label>
-            <input type="file" id="exampleInputFile">
-            <p class="help-block">文件格式为：csv</p>
+
+        <div class="row">
+            <div class="col-sm-4 col-md-4">
+                <div class="ztree-wrap">
+                    <div class="ztree-bd">
+                        <div class="ztree">
+                            <div id="questioncategory">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 col-md-4">
+                <div class="form-group">
+                    <label for="exampleInputFile">选择文件</label>
+                    <input type="file" id="exampleInputFile">
+                    <p class="help-block">文件格式为：csv</p>
+                </div>
+            </div>
         </div>
+
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
                 <button type="submit" class="btn btn-default">导入</button>
