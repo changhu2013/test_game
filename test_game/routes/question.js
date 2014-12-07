@@ -1,10 +1,13 @@
 var express = require('express');
 var url = require('url');
+var mongoose = require('mongoose');
 
-var QuestionCategory = require('../models/questioncategory.js');
-var QuestionStore = require('../models/questionstore.js');
+require('../models/questioncategory.js');
+require('../models/questionstore.js');
 
 var router = express.Router();
+var QuestionCategory = mongoose.model('QuestionCategory');
+var QuestionStore = mongoose.model('QuestionStore');
 
 //显示题目树结构
 router.post('/category', function(req, res) {
