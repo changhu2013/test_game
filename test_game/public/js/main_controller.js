@@ -34,6 +34,11 @@ main_controller = function($scope, $http) {
                 url:'/question/category',
                 autoParam:['pid', 'qcid']
             },
+            data : {
+              key : {
+                  name : 'title'
+              }
+            },
             callback : {
                 onMouseDown : onMouseDown
             }
