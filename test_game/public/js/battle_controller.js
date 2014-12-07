@@ -1,6 +1,4 @@
 
 battle_controller = function(){
 
-
-
 };

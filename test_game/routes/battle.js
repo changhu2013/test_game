@@ -31,4 +31,17 @@ router.post('/new', function(req, res){
     });
 });
 
+//获取某题集下的正在进行的挑战
+router.post('/qstore', function(req, res){
+    var query = url.parse(req.url, true).query;
+    var qsid = query.qsid;
+    console.log('qsid:' + qsid);
+    Battle.find({
+        qsid : qsid,
+        status : 'I'
+    }, function(err, battles){
+        res.send(battles);
+    });
+});
+
 module.exports = router;
