@@ -1,14 +1,6 @@
 
 
 main_controller = function($scope, $http, $timeout) {
-    socket.on('new connect', function(m){
-        $scope.msg = m;
-        $scope.tipHeight = '2em';
-        $timeout(function () {
-            $scope.tipHeight = '0';
-            $scope.msg = '';
-        }, 2000);
-    });
 
     //显示题目树标记
     $scope.showQuestionTreeFlag = false;
