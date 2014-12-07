@@ -14,17 +14,19 @@ main_controller = function($scope, $http) {
         $scope.showQuestionTreeFlag = !$scope.showQuestionTreeFlag;
 
         var onMouseDown = function(event, eid, node){
-            $http({
-                url : '/question/store',
-                method : 'POST',
-                params : {
-                    qcid : node.qcid
-                },
-                cache : false,
-                timeout : 3000
-            }).success(function(data){
-                $scope.questionstores = data;
-            });
+            if(node){
+                $http({
+                    url : '/question/store',
+                    method : 'POST',
+                    params : {
+                        qcid : node.qcid
+                    },
+                    cache : false,
+                    timeout : 3000
+                }).success(function(data){
+                    $scope.questionstores = data;
+                });
+            }
         };
         var setting = {
             async: {

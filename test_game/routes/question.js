@@ -17,10 +17,6 @@ router.post('/category', function(req, res) {
         pid = '0';
     }
     console.log('pid:' + pid);
-    /*QuestionCategory.find({pid : pid}, function(err, categorys){
-        res.send(categorys);
-    });*/
-
     mongoose.model('QuestionCategory').find({
         pid: pid
     }, function (err, data) {
