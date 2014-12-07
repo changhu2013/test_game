@@ -74,7 +74,7 @@
         }).when('/warzone/:qsid', {
             templateUrl : '/warzone', //某一题集下的对战房间
             controller  : 'warzone_controller'
-        }).when('/battle', {
+        }).when('/battle/:bid', {
             templateUrl : '/battle',  //战场
             controller  : 'battle_controller'
         }).when('/ranklist', {
@@ -92,7 +92,7 @@
             .controller('warzone_controller', ['$scope', '$http', '$routeParams', warzone_controller])
             .controller('ranklist_controller', ['$scope', '$http', ranklist_controller])
             .controller('drillwar_controller', ['$scope', '$http', drillwar_controller])
-            .controller('battle_controller', ['$scope', '$http', battle_controller]);
+            .controller('battle_controller', ['$scope', '$http', '$routeParams', battle_controller]);
 
 </script>
 </html>
