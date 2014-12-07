@@ -1,0 +1,68 @@
+@charset "utf-8";
+
+/* 通用的提示信息 */
+.tips {
+  position: fixed;
+  width: 100%;
+  text-align: center;
+  top: 0;
+  font-size: 1em;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.5);
+  left: 0;
+  height: 0;
+  line-height: 2em;
+  transition: all linear 0.2s;
+}
+
+
+body {
+  background: #f7f7f7;
+}
+
+header {
+  height: 2em;
+  line-height: 2em;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-box;
+  display: box;
+  border-bottom: 1px solid rgb(56,190,255);
+  .user {
+    -webkit-box-flex: 1;
+    -moz-box-flex: 1;
+    -ms-box-flex: 1;
+    box-flex: 1;
+  }
+
+  .other {
+    position: relative;
+    margin: 0.2em 0.5em;
+    width: 1.3em;
+    height: 1.3em;
+    border-radius: 50%;
+    border:1px solid rgb(56,190,255);
+    .arrow {
+      position: absolute;
+      top:0.3em;
+      left:0.4em;
+      width: 0.6em;
+      height: 0.6em;
+      border-top:1px solid rgb(56,190,255);
+      border-left:1px solid rgb(56,190,255);
+      transform: rotate(-45deg);
+      -webkit-transform: rotate(-45deg);
+      -moz-transform: rotate(-45deg);
+      -ms-transform: rotate(-45deg);
+
+      transition: all linear 0.2s;
+      &:hover {
+        top:0.2em;
+        left: 0.3em;
+        transform: rotate(-135deg);
+      }
+    }
+  }
+}
+
+
