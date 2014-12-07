@@ -2,6 +2,7 @@ var mongoose = require('mongoose')
     , Schema = mongoose.Schema
     , ObjectId = Schema.ObjectId;
 
+var Mixed = mongoose.Schema.Types.Mixed;
 var Battle = new Schema({
     bid : String,
 
@@ -24,7 +25,7 @@ var Battle = new Schema({
     battleScore : Number,
 
     //对手信息
-    rivals : String,
+    rivals : Mixed,
 
     //挑战者,即发起挑战的人
     challenger : String
