@@ -59,8 +59,7 @@ router.get('/mybattles', function(req, res){
 
 //某题集下的对战房间
 router.get('/warzone', function(req, res){
-    console.log('进入某题集的战区');
-    var query = url.parse(req.url, true).query;
+    console.log('某题集下的对战房间');
     res.render('warzone');
 });
 

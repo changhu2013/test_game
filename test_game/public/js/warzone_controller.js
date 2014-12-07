@@ -3,13 +3,14 @@
  * @param $scope
  * @param $http
  */
-warzone_controller = function($scope, $http){
+warzone_controller = function($scope, $http, $routeParams){
+
     $scope.battles = [];
     $http({
         url : '/battle/qstore',
         method : 'POST',
         params : {
-            qsid : '1'
+            qsid : $routeParams.qsid
         },
         cache : false,
         timeout : 3000
