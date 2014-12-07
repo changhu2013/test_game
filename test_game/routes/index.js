@@ -4,7 +4,7 @@ var url = require('url');
 var querystring = require('querystring');
 
 var Logger = require('../models/logger.js');
-
+require('../models/user.js');
 var router = express.Router();
 router.get('/', function(req, res) {
     //判断是否登录
@@ -17,9 +17,9 @@ router.get('/', function(req, res) {
             req.flash('success', '错误的sid');
             res.render('index', {user : null});
         }else {
-            var User = mongoose.model('user');
+            var User = mongoose.model('User');
             User.find({
-                sid: sid
+                sid: sid + ''
             }, function (err, user) {
                 if(err){
                     req.flash('success', '未找到sid:' + sid + '的用户');

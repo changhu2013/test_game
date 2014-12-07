@@ -6,6 +6,7 @@ var express = require('express');
 var mongoose = require('mongoose');
 var url = require('url');
 var querystring = require('querystring');
+var path = require('path');
 var fs = require('fs');
 
 //上传相关的中间键
@@ -13,7 +14,7 @@ var multipart = require('connect-multiparty');
 var multipartMiddleware = multipart();
 
 var Settings = require('../models/settings.js');
-
+require('../models/user.js');
 var router = express.Router();
 
 router.get('/', function(req, res){
@@ -38,18 +39,10 @@ router.post('/settings', function(req, res){
     res.redirect('/admin#/settings');
 })
 
-/**
- * @method GET
- * @url /importusers
- */
 router.get('/importusers', function(req, res){
     res.render('import_users');
 });
 
-/**
- * @method POST
- * @url /importusers
- */
 router.post('/importusers', multipartMiddleware, function(req, res){
     console.log('import users');
     var temp_path = req.files.file.path;
@@ -58,7 +51,7 @@ router.post('/importusers', multipartMiddleware, function(req, res){
             var users = content.split('\r\n');
             for(var i= 1,len=users.length;i<len;i++){
                 var userArr = users[i].split(',');
-                var User = mongoose.model('user');
+                var User = mongoose.model('User');
                 var user = new User();
                 user.sid = userArr[0];
                 user.name = userArr[1];
@@ -68,6 +61,7 @@ router.post('/importusers', multipartMiddleware, function(req, res){
                 });
             }
             console.log('上传成功');
+
             // 删除临时文件
             fs.unlink(temp_path);
         });
