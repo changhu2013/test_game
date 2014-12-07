@@ -13,8 +13,9 @@ var fs = require('fs');
 var multipart = require('connect-multiparty');
 var multipartMiddleware = multipart();
 
-var Settings = require('../models/settings.js');
+require('../models/setting.js');
 require('../models/user.js');
+
 var router = express.Router();
 
 router.get('/', function(req, res){
@@ -23,21 +24,15 @@ router.get('/', function(req, res){
 });
 
 router.get('/settings', function(req, res) {
-    console.log(Settings);
-    Settings.get(function(err, settings){
-
-        console.log(settings);
-
-        res.render('settings', settings);
-    });
+    console.log('admin settings')
+    res.render('settings');
 });
 
 router.post('/settings', function(req, res){
     console.log('save settings');
     //保存设置信息
-
     res.redirect('/admin#/settings');
-})
+});
 
 router.get('/importusers', function(req, res){
     res.render('import_users');
