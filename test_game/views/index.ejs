@@ -17,14 +17,34 @@
 
         <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
         <script src="http://cdn.bootcss.com/angular.js/1.3.0-beta.13/angular-route.min.js"></script>
+
+        <style>
+            .tips {
+                position: fixed;
+                width: 100%;
+                text-align: center;
+                top: 0;
+                font-size: 1em;
+                color: #fff;
+                background: rgba(0, 0, 0, 0.5);
+                left: 0;
+                height: 0;
+                line-height: 2em;
+                transition: all linear 0.2s;
+            }
+        </style>
     </head>
-    <body ng-controller="main_controller">
+<body ng-controller="main_controller">
         <!-- 提示信息 -->
         <%if(locals.success && locals.success.length > 0){%>
             <div class="alert alert-success"><%=locals.success%></div>
         <%}%>
         <div class="container-fluid" style="margin-top:10px;">
             <div ng-view></div>
+        </div>
+
+        <div class="tips" style="height: {{tipHeight}};">
+            {{msg}}
         </div>
 </body>
 
@@ -36,14 +56,7 @@
 <script type="text/javascript" src="/js/ranklist_controller.js"></script>
 <script type="text/javascript" src="/js/drillwar_controller.js"></script>
 <script type="text/javascript">
-
     var socket = io();
-    socket.on('conn', function(m){
-        //alert(m)
-    });
-    socket.on('disconn', function(m){
-        //alert(m)
-    });
 
     var app = angular.module('test_game', ['ngRoute', 'ui.bootstrap']);
     app.config(['$routeProvider', function($routeProvider) {
@@ -73,7 +86,7 @@
         }).otherwise({
             redirectTo : '/main'
         });
-    }]).controller('main_controller', ['$scope', '$http', main_controller])
+    }]).controller('main_controller', ['$scope', '$http', '$timeout', main_controller])
             .controller('honor_controller', ['$scope', '$http', honor_controller])
             .controller('mybattles_controller', ['$scope', '$http', mybattles_controller])
             .controller('warzone_controller', ['$scope', '$http', warzone_controller])

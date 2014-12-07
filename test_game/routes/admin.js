@@ -37,7 +37,10 @@ router.post('/settings', function(req, res){
 });
 
 router.get('/importusers', function(req, res){
-    res.render('import_users');
+    res.render('import_users', {
+        success: true,
+        msg: '上传成功'
+    });
 });
 
 router.post('/importusers', multipartMiddleware, function(req, res){
@@ -45,9 +48,9 @@ router.post('/importusers', multipartMiddleware, function(req, res){
     var temp_path = req.files.file.path;
     if (temp_path) {
         fs.readFile(temp_path, 'utf-8', function(err, content) {
-            var users = content.split('\r\n');
+            var users = content.split('\n');
             var User = mongoose.model('User');
-            for(var i= 1,len=users.length;i<len;i++){
+            for(var i= 0,len=users.length;i<len;i++){
                 var userArr = users[i].split(',');
                 var user = new User();
                 user.sid = userArr[0];
@@ -57,8 +60,6 @@ router.post('/importusers', multipartMiddleware, function(req, res){
                     if(err) throw err;
                 });
             }
-            console.log('上传成功');
-
             // 删除临时文件
             fs.unlink(temp_path);
         });

@@ -4,11 +4,13 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 global.io = io;
 io.on('connection', function(socket){
+
+	//像其他所有客户端广播(不包含自己)
+	socket.broadcast.emit('new connect', '有人进来了');
+
 	 /*socket.join('room');
 	 io.sockets.in('room').emit('new user', '这是房间room');*/
-
 	io.emit('conn', socket.id);
-	socket.emit('hello', 'nihao');
 	socket.on('addwar', function(obj){
 		var wid = obj.wid;
 		socket.join('room-' + wid);
