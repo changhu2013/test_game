@@ -14,5 +14,5 @@ var QuestionStore = new Schema({
     papers : String
 });
 
-module.exports = mongoose.model('questionstores', QuestionStore);
+mongoose.model('QuestionStore', QuestionStore, 'questionstores');
 

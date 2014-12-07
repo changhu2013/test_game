@@ -9,4 +9,5 @@ var QuestionCategory = new Schema({
     title : String
 });
 
-module.exports = mongoose.model('questioncategorys', QuestionCategory);
+
+mongoose.model('QuestionCategory', QuestionCategory, 'questioncategorys');

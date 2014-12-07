@@ -13,4 +13,4 @@ var UserSchema = new Schema({
  * @arg2 Schema名
  * @arg3 collection名 如果未指定,则会在数据库中将arg1小写+s作为conllection的名
  */
-mongoose.model('User', UserSchema, 'user');
+mongoose.model('User', UserSchema, 'users');

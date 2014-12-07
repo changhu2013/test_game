@@ -1,32 +1,33 @@
-var mongodb = require('./db.js');
+var mongoose = require('mongoose')
+    , Schema = mongoose.Schema
+    , ObjectId = Schema.ObjectId;
 
-function Battle(cfg){
-
-    this.bid = cfg.bid;
+var Battle = new Schema({
+    bid : String,
 
     //接收挑战的人的ID
-    this.sid = cfg.sid;
+    sid : String,
 
     //题集ID
-    this.qsid = cfg.qsid;
+    qsid : String,
 
     //开始时间
-    this.start = cfg.start;
+    start : Date,
 
     //结束时间
-    this.end = cfg.end;
+    end : Date,
 
     //练习得分
-    this.drillScore = cfg.drillScore;
+    drillScore : Number,
 
     //挑战得分
-    this.battleScore = cfg.battleScore;
+    battleScore : Number,
 
     //对手信息
-    this.rivals = cfg.rivals;
+    rivals : String,
 
     //挑战者,即发起挑战的人
-    this.challenger = cfg.challenger;
-}
+    challenger : String
+});
 
-module.exports = Battle;
+mongoose.model('Battle', Battle, 'battles');
