@@ -6,7 +6,6 @@ var express = require('express');
 var mongoose = require('mongoose');
 var url = require('url');
 var querystring = require('querystring');
-var path = require('path');
 var fs = require('fs');
 
 //上传相关的中间键
@@ -15,7 +14,6 @@ var multipartMiddleware = multipart();
 
 var Settings = require('../models/settings.js');
 
-var encoding = require('encoding');// 解决乱码
 var router = express.Router();
 
 router.get('/', function(req, res){
@@ -40,20 +38,23 @@ router.post('/settings', function(req, res){
     res.redirect('/admin#/settings');
 })
 
+/**
+ * @method GET
+ * @url /importusers
+ */
 router.get('/importusers', function(req, res){
     res.render('import_users');
 });
 
+/**
+ * @method POST
+ * @url /importusers
+ */
 router.post('/importusers', multipartMiddleware, function(req, res){
     console.log('import users');
-    req.setEncoding('utf-8');//请求编码
-    //TODO : 实现读取文件内容将用户信息存入数据库
     var temp_path = req.files.file.path;
     if (temp_path) {
         fs.readFile(temp_path, 'utf-8', function(err, content) {
-
-            console.log(encoding.convert(content, 'gb2312'));
-
             var users = content.split('\r\n');
             for(var i= 1,len=users.length;i<len;i++){
                 var userArr = users[i].split(',');
@@ -67,7 +68,6 @@ router.post('/importusers', multipartMiddleware, function(req, res){
                 });
             }
             console.log('上传成功');
-
             // 删除临时文件
             fs.unlink(temp_path);
         });
