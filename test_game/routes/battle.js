@@ -2,20 +2,48 @@ var express = require('express');
 var mongoose = require('mongoose');
 var url = require('url');
 
-require('../models/Battle.js');
+require('../models/battle.js');
+require('../models/questionstore.js');
 
 var router = express.Router();
 var Battle = mongoose.model('Battle');
+var QuestionStore = mongoose.model('QuestionStore');
 
-//最近挑战
-router.post('/finished', function(req, res) {
-    console.log('last battles....');
+//最近参加的战区
+router.post('/laststore', function(req, res) {
+    console.log('查询最近参加的战区');
     var user = req.session.user;
-    Battle.find({
-        status : 'F',
-        sid : user.sid
-    }, function(err, battles){
-        res.send(battles);
+    //分组查询最近的挑战
+    Battle.aggregate({
+        $match : {
+            status : 'F',
+            sid : user.sid
+        }
+    }).group({
+        _id : '$qsid',
+        lastTime : {$max : '$end'} //最近一次参加的时间
+    }).exec(function(err, battles){
+        battles = battles || [];
+        var qsids = [];
+        for(var k = 0; k < battles.length; k++){
+            qsids.push(battles[k]._id);
+        }
+        console.log(qsids);
+        QuestionStore.find({
+            qsid : {
+                $in : qsids
+            }
+        }, function(err, stores){
+            for(var i = 0; i < battles.length; i++){
+                var b = battles[i];
+                for(var j = 0 ;j < stores.length; j++){
+                    var s = stores[j];
+                    b.store = s;
+                }
+            }
+            console.log(battles);
+            res.send(battles);
+        });
     });
 });
 

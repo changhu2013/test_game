@@ -7,6 +7,7 @@ var QuestionStore = new Schema({
     qsid : String,
     qcid : String,
     title : String,
+    onLineUserNum: Number, //在线用户数
     drillScore : Number, //练习积分
     battleScore : Number, //挑战积分
     maxTime : Number, // 最大挑战时间

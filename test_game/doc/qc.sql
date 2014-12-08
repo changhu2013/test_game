@@ -7,13 +7,11 @@ db.questioncategorys.insert({qcid: "13", pid: "0", title: "安全监管部", isP
 
 db.questioncategorys.insert({qcid: "20", pid: "10", title: "财务会计", isParent: true});
 db.questioncategorys.insert({qcid: "21", pid: "10", title: "财务会计", isParent: true});
-
 db.questioncategorys.insert({qcid: "22", pid: "11", title: "客服开发", isParent: true});
 db.questioncategorys.insert({qcid: "23", pid: "11", title: "客服代表", isParent: true});
 
 db.questioncategorys.insert({qcid: "24", pid: "12", title: "调度主管", isParent: true});
 db.questioncategorys.insert({qcid: "25", pid: "12", title: "车务主管", isParent: true});
-
 db.questioncategorys.insert({qcid: "26", pid: "13", title: "押运员", isParent: true});
 db.questioncategorys.insert({qcid: "27", pid: "13", title: "安全主任", isParent: true});
 

@@ -165,6 +165,7 @@ for (var i in qcids) {
             qsid: '' + (qsid++),
             qcid: qcids[i],
             title: '题目集_' + qsid,
+            onLineUserNum : g * 2, //在线用户数
             drillScore: 2,
             battleScore: 20,
             maxTime: 1200,
@@ -219,7 +220,9 @@ for (var i in qcids) {
                 qstitle : '题目集_' + qsid,
                 status: bid > 15 ? 'N' : bid > 10 ? 'F' : 'I',
                 drillScore: k,
-                battleScore: k * 5
+                battleScore: k * 5,
+                start : new Date(),
+                end : new Date()
             });
             b.save(function (err) {
                 if (err) throw err;

@@ -1,16 +1,14 @@
-
-
 main_controller = function($scope, $http, $timeout) {
 
     //显示题目树标记
     $scope.showQuestionTreeFlag = false;
 
-    //最近挑战
-    $scope.lastBattles =[];
+    //最近参加的挑战
+    $scope.lastBattles = [];
 
-    //发送请求获取最近挑战
+    //发送请求获取最近参加的战区
     $http({
-        url : '/battle/finished',
+        url : '/battle/laststore',
         method : 'POST',
         cache : false,
         timeout : 3000
