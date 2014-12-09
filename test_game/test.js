@@ -28,6 +28,7 @@ query.exec(function (err, result) {
 });
 */
 
+/*
 Battle.aggregate({
     $match : {
         status : 'F',
@@ -58,4 +59,14 @@ Battle.aggregate({
         }
         console.log(battles);
     });
+});
+
+*/
+
+User.find().limit(10).sort({
+    score : 'desc'
+}).exec(function(err, users){
+    for(var i in users){
+        console.log(users[i].sid);
+    }
 });

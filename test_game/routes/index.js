@@ -7,6 +7,7 @@ require('../models/Log.js');
 require('../models/user.js');
 
 io = global.io;
+var User = mongoose.model('User');
 
 var router = express.Router();
 router.get('/', function(req, res) {
@@ -21,7 +22,6 @@ router.get('/', function(req, res) {
             req.flash('success', '错误的sid');
             res.render('index');
         }else {
-            var User = mongoose.model('User');
             User.findOne({
                 sid: sid
             }, function (err, user) {
@@ -47,8 +47,20 @@ router.get('/main', function(req, res){
 
 //荣誉榜
 router.get('/honor', function (req, res) {
-    console.log('荣誉榜');
     res.render('honor');
+});
+
+//获取荣誉榜用户列表
+router.post('/honor/users', function(req, res){
+    var query = url.parse(req.url, true).query;
+    console.log(query);
+    var skip = query.skip || 0;
+    var limit = query.limit  || 10;
+    User.find().skip(skip).limit(limit).sort({
+        score : 'desc'
+    }).exec(function(err, users){
+        res.send(users);
+    });
 });
 
 //我的挑战

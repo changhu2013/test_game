@@ -1,4 +1,30 @@
-
-<div class="page-header text-center">
-    <h2>荣誉榜</h2>
+<div class="container">
+    <div class="row">
+        <h4>荣誉榜</h4>
+    </div>
+    <table class="table">
+        <tr ng-repeat="user in users">
+            <td>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <p><strong>用户：</strong>{{user.name}}</p>
+                    </div>
+                    <div class="col-xs-6">
+                        <p><strong>岗位:</strong>{{user.job}}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <p><strong>积分：</strong>{{user.score}}</p>
+                    </div>
+                    <div class="col-xs-6">
+                        <p><strong>挑战:</strong>{{user.battles}}</p>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <div class="row">
+        <p class="text-center btn-link" ng-click="more()">更多</p>
+    </div>
 </div>
