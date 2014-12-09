@@ -7,14 +7,16 @@ main_controller = function ($scope, $http, $timeout) {
     $scope.lastStoreBattles = [];
 
     //显示最近战区更多按钮
-    $scope.showBattleMore = true;
+    $scope.showBattleMore = false;
     $scope.skipBattle = 0;
-    $scope.limitBattle = 10;
+    $scope.limitBattle = 5;
 
     var loadBattlesCallback = function (data) {
         if (data instanceof Array) {
             if (data.length < $scope.skipBattle) {
                 $scope.showBattleMore = false;
+            }else {
+                $scope.showBattleMore = true;
             }
             $scope.skipBattle = $scope.skipBattle + data.length;
             $scope.lastStoreBattles = $scope.lastStoreBattles.concat(data);
@@ -40,6 +42,9 @@ main_controller = function ($scope, $http, $timeout) {
         loadBattles();
     };
 
+    //主动加载一次数据
+    loadBattles();
+
     /**********************************************/
 
     //题目集
@@ -49,14 +54,16 @@ main_controller = function ($scope, $http, $timeout) {
     $scope.qcid = null;
 
     //题目集分页
-    $scope.showStoreMore = true; //显示题目集更多按钮
+    $scope.showStoreMore = false; //显示题目集更多按钮
     $scope.skipStore = 0;
-    $scope.limitStore = 1;
+    $scope.limitStore = 5;
 
     var loadStoreCallback = function (data) {
         if (data instanceof Array) {
             if (data.length < $scope.limitStore) {
                 $scope.showStoreMore = false; //没有了, 隐藏更多按钮
+            }else {
+                $scope.showStoreMore = true;
             }
             $scope.skipStore = $scope.skipStore + data.length;
             $scope.questionstores = $scope.questionstores.concat(data);
@@ -89,7 +96,8 @@ main_controller = function ($scope, $http, $timeout) {
             if (node) {
                 $scope.qcid = node.qcid;
                 $scope.skipStore = 0;
-                $scope.showStoreMore = true;
+                $scope.showStoreMore = false;
+                $scope.questionstores = [];
                 loadStore();
             }
         };
