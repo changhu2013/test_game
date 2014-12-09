@@ -59,7 +59,7 @@ router.post('/new', function(req, res){
         status : 'N',
         sid : user.sid
     }, function(err, battles){
-        res.send(battles);
+        res.send(util.toJSON(battles));
     });
 });
 
@@ -72,7 +72,7 @@ router.post('/qstore', function(req, res){
         qsid : qsid,
         status : 'I'
     }, function(err, battles){
-        res.send(battles);
+        res.send(util.toJSON(battles));
     });
 });
 
