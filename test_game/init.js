@@ -17,11 +17,13 @@ var Question = mongoose.model('Question');
 var Battle = mongoose.model('Battle');
 
 //删除之前数据
+/*
 User.collection.drop();
 QuestionCategory.collection.drop();
 QuestionStore.collection.drop();
 Question.collection.drop();
 Battle.collection.drop();
+*/
 
 for(var i = 1; i < 100; i++){
     //测试用户
@@ -231,4 +233,19 @@ for (var i in qcids) {
             })
         }
     }
+}
+
+//生成参加战区记录
+for(var i = 0 ; i < 12; i++){
+    var sb = new StoreBattle({
+        qsid : '' + i,
+        sid : '1',
+        bid : '' + i,
+        maxBattleScore : i * i,
+        maxDrillScore : i + 122,
+        lastTime : new Date(2014, i, 1)
+    });
+    sb.save(function (err) {
+        if(err) throw err;
+    });
 }
