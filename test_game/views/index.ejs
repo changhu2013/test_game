@@ -98,7 +98,7 @@
         }).when('/ranklist', {
             templateUrl : '/ranklist', //某考题集积分排行榜
             controller  : 'ranklist_controller'
-        }).when('/drillwar', {
+        }).when('/drillwar/:qsid', {
             templateUrl : '/drillwar', //某一题集下的练兵场
             controller  : 'drillwar_controller'
         }).otherwise({

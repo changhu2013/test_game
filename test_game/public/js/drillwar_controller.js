@@ -1,6 +1,4 @@
 
 drillwar_controller = function(){
 
-
-
 };

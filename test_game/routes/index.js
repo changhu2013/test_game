@@ -72,7 +72,9 @@ router.get('/mybattles', function(req, res){
 //某题集下的对战房间
 router.get('/warzone', function(req, res){
     console.log('某题集下的对战房间');
-    res.render('warzone');
+    res.render('warzone', {
+        qsid: 1
+    });
 });
 
 //战场
@@ -90,6 +92,8 @@ router.get('/ranklist', function(req, res){
 //练兵场
 router.get('/drillwar', function(req, res){
     console.log('练兵场');
+
+
     res.render('drillwar');
 });
 
