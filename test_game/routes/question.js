@@ -26,12 +26,17 @@ router.post('/category', function(req, res) {
 
 //获取某类型题目集
 router.post('/store', function(req, res){
-    var query = url.parse(req.url, true).query;
-    var qcid = query.qcid;
-    console.log('qcid:' + qcid);
-    QuestionStore.find({qcid:qcid}, function(err, stores){
+    var query = url.parse(req.url, true).query,
+        qcid = query.qcid,
+        skip = query.skip || 0,
+        limit = query.limit || 10;
+    console.log(query);
+    QuestionStore.find({
+        qcid:qcid
+    }).skip(skip).limit(limit).exec(function(err, stores){
         res.send(stores);
     });
+
 });
 
 module.exports = router;
