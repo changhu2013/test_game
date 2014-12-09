@@ -23,17 +23,19 @@ QuestionStore.collection.drop();
 Question.collection.drop();
 Battle.collection.drop();
 
-//测试用户
-var user = new User({
-    sid: '1',
-    name: '张三',
-    job: '程序员',
-    score: 100,
-    battles: 78
-});
-user.save(function (err) {
-    if (err) throw err;
-});
+for(var i = 1; i < 100; i++){
+    //测试用户
+    var user = new User({
+        sid: '' + i,
+        name: '张三_' + i,
+        job: '程序员',
+        score: 100 + i*2,
+        battles: 78 + i
+    });
+    user.save(function (err) {
+        if (err) throw err;
+    });
+}
 
 //测试题目分类
 new QuestionCategory({
