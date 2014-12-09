@@ -8,6 +8,8 @@
         <link rel="stylesheet" href="/bootstrap-3.2.0/css/bootstrap.min.css">
         <link rel="stylesheet" href="/zTree/css/zTreeStyle/zTreeStyle.css" type="text/css">
 
+        <script src="/javascripts/moment-with-locales.min.js"></script>
+
         <script src="/javascripts/jquery-1.11.1.min.js"></script>
         <script src="/javascripts/angular.js"></script>
 
@@ -61,6 +63,10 @@
 <script type="text/javascript" src="/js/ranklist_controller.js"></script>
 <script type="text/javascript" src="/js/drillwar_controller.js"></script>
 <script type="text/javascript">
+
+    //设置时间本地化
+    moment.locale('zh-cn');
+
     var socket = io();
     var oTips = $('.tips');
     socket.on('new connect', function(m){
@@ -69,8 +75,6 @@
             oTips.css('height', '0').text('');
         }, 2000);
     });
-
-
 
     var app = angular.module('test_game', ['ngRoute', 'ui.bootstrap']);
     app.config(['$routeProvider', function($routeProvider) {

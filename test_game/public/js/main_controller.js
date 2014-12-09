@@ -65,6 +65,7 @@ main_controller = function ($scope, $http, $timeout) {
             }else {
                 $scope.showStoreMore = true;
             }
+
             $scope.skipStore = $scope.skipStore + data.length;
             $scope.questionstores = $scope.questionstores.concat(data);
         }
