@@ -4,7 +4,7 @@ main_controller = function ($scope, $http, $timeout) {
     $scope.showQuestionTreeFlag = false;
 
     //最近参加的挑战
-    $scope.lastBattles = [];
+    $scope.lastStoreBattles = [];
 
     //显示最近战区更多按钮
     $scope.showBattleMore = true;
@@ -17,7 +17,7 @@ main_controller = function ($scope, $http, $timeout) {
                 $scope.showBattleMore = false;
             }
             $scope.skipBattle = $scope.skipBattle + data.length;
-            $scope.lastBattles = $scope.lastBattles.concat(data);
+            $scope.lastStoreBattles = $scope.lastStoreBattles.concat(data);
         }
     };
 
