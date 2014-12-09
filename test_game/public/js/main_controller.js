@@ -59,4 +59,14 @@ main_controller = function($scope, $http, $timeout) {
 
         $.fn.zTree.init($("#questioncategory"), setting);
     };
+    
+    $scope.expandMenu = function () {
+        if($scope.expandClass){
+            $scope.expandClass = '';
+            $scope.showPageHref = '';
+        } else {
+            $scope.expandClass = 'expand';
+            $scope.showPageHref = true;
+        }
+    }
 };
