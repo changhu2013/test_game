@@ -2,6 +2,9 @@
 
 honor_controller = function($scope, $http) {
 
+    //显示更多按钮
+    $scope.showMore = true;
+
     //荣誉榜用户列表
     $scope.users = [];
     $scope.skip = 0;
@@ -9,6 +12,9 @@ honor_controller = function($scope, $http) {
 
     var callback = function(data){
         if(data instanceof Array){
+            if(data.length < $scope.limit){
+                $scope.showMore = false;
+            }
             $scope.skip = $scope.skip + data.length;
             $scope.users = $scope.users.concat(data);
         }
