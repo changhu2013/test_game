@@ -70,10 +70,11 @@ router.get('/mybattles', function(req, res){
 });
 
 //某题集下的对战房间
-router.get('/warzone', function(req, res){
+router.get('/warzone/:qsid', function(req, res){
     console.log('某题集下的对战房间');
+    var qsid = req.params.qsid;
     res.render('warzone', {
-        qsid: 1
+        qsid: qsid
     });
 });
 
@@ -90,10 +91,8 @@ router.get('/ranklist', function(req, res){
 });
 
 //练兵场
-router.get('/drillwar', function(req, res){
-    console.log('练兵场');
-
-
+router.get('/drillwar/:qsid', function(req, res){
+    console.log(req.params.qsid + '题集下的练兵场');
     res.render('drillwar');
 });
 

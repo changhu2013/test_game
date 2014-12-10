@@ -8,6 +8,7 @@ require('./models/questioncategory.js');
 require('./models/questionstore.js');
 require('./models/question.js');
 require('./models/battle.js');
+require('./models/storebattle.js');
 
 
 var User = mongoose.model('User');
@@ -15,6 +16,7 @@ var QuestionCategory = mongoose.model('QuestionCategory');
 var QuestionStore = mongoose.model('QuestionStore');
 var Question = mongoose.model('Question');
 var Battle = mongoose.model('Battle');
+var StoreBattle = mongoose.model('StoreBattle');
 
 //删除之前数据
 /*
