@@ -8,10 +8,12 @@ require('../models/Log.js');
 require('../models/user.js');
 require('../models/storebattle.js');
 require('../models/battle.js');
+require('../models/question.js');
 
 io = global.io;
 var User = mongoose.model('User');
 var Battle = mongoose.model('Battle');
+var Question = mongoose.model('Question');
 
 var router = express.Router();
 router.get('/', function(req, res) {
@@ -124,6 +126,28 @@ router.get('/drillwar/:qs_id', function(req, res){
 router.get('/manual', function(req, res){
     console.log('游戏规则');
     res.render('manual');
+});
+
+//校验答案
+router.post('/question/valianswer', function (req, res) {
+    console.log('校验答案');
+    var _id = req.query._id;
+    var answer = req.query.answer;
+
+    Question.findOne({
+        _id: Question.ObjectId(_id)
+    }, function(err, data){
+        console.log(data);
+        if(data){
+            res.send({
+                success: true
+            });
+        } else {
+            res.send({
+                success: false
+            })
+        }
+    })
 });
 
 module.exports = router;

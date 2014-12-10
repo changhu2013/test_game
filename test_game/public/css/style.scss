@@ -170,3 +170,22 @@ header {
 .user-items .user-item:nth-of-type(4) .item-layout .mask{
   height: 82%;
 }
+
+
+.questions-items {
+  padding: 5px;
+  .questions-item {
+    display: none;
+    &:first-of-type {
+      display: block;
+    }
+    p {
+      margin: 5px 0;
+      padding: 5px;
+      &.selected {
+        background: #269abc;
+        color: #fff;
+      }
+    }
+  }
+}

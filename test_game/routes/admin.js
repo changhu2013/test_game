@@ -106,9 +106,13 @@ router.post('/importquestions', multipartMiddleware, function(req, res){
                 for(var i= 0,len=content.length;i<len;i++){
                     content[i]['qsid'] = qsid;
                     var question = new Question(content[i]);
-                    question.save(function (err) {
-                        if(err) throw err;
-                    });
+                    (function(i){
+                        question.save(function (err, question, numberAffected) {
+                            if(err) throw err;
+                            content[i]['_id'] = question.get('_id').toString();
+                            delete content[i]['answer'];
+                        });
+                    })(i);
                 }
 
                 var questStoreDir = 'f:\\qs'; //文件保存里面

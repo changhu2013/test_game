@@ -29,21 +29,21 @@
             43秒
         </button>
 
-        <button class="btn btn-primary btn-sm btn-xs" type="button">
+        <button class="btn btn-primary btn-sm btn-xs" type="button" ng-click="doReply();">
             提交
         </button>
     </div>
 
-    <ul class="questions-items" style="padding: 5px;">
+    <ul class="questions-items">
         <% qStore.forEach(function(question){%>
-        <li>
+        <li class="questions-item">
             <dl class="list-group">
                 <dt class="list-group-item">
                     <%=question.title%>
                 </dt>
                 <dd class="list-group-item">
                     <% for(var p in question.opts) {%>
-                        <p  data-answer="<%=p%>"><%=p%>、<%=question.opts[p]%></p>
+                        <p class="questions-opt" data-_id=<%=question._id%> data-answer="<%=p%>"><%=p%>、<%=question.opts[p]%></p>
                     <%}%>
                 </dd>
             </dl>
