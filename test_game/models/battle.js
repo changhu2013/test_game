@@ -4,7 +4,6 @@ var mongoose = require('mongoose')
 
 var Mixed = mongoose.Schema.Types.Mixed;
 var Battle = new Schema({
-    bid : String,
 
     //接收挑战的人的ID
     sid : String,

@@ -219,8 +219,8 @@ for (var i in qcids) {
         qsid++;
         //测试挑战数据
         for (var k = 0; k < 5; k++) {
+            bid++;
             var b = new Battle({
-                bid: '' + (bid++),
                 sid: '1',
                 qsid: '' + qsid,
                 qstitle : '题目集_' + qsid,
@@ -236,13 +236,13 @@ for (var i in qcids) {
         }
     }
 }
+/*
 
 //生成参加战区记录
 for(var i = 0 ; i < 12; i++){
     var sb = new StoreBattle({
         qsid : '' + i,
         sid : '1',
-        bid : '' + i,
         maxBattleScore : i * i,
         maxDrillScore : i + 122,
         lastTime : new Date(2014, i, 1)
@@ -250,4 +250,4 @@ for(var i = 0 ; i < 12; i++){
     sb.save(function (err) {
         if(err) throw err;
     });
-}
+}*/
