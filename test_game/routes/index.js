@@ -2,6 +2,7 @@ var express = require('express');
 var mongoose = require('mongoose');
 var url = require('url');
 var querystring = require('querystring');
+var fs = require('fs');
 
 require('../models/Log.js');
 require('../models/user.js');
@@ -73,18 +74,29 @@ router.get('/mybattles', function(req, res){
 });
 
 //某题集下的对战房间
-router.get('/warzone/:qsid', function(req, res){
+router.get('/warzone/:qs_id', function(req, res){
     console.log('某题集下的对战房间');
-    var qsid = req.params.qsid;
+    var qs_id = req.params.qs_id;
     res.render('warzone', {
-        qsid: qsid
+        //qs_id: 表示模型questionstores下的_id
+        qs_id: qs_id
     });
 });
 
 //战场
-router.get('/battle', function(req, res){
+router.get('/battle/:qs_id', function(req, res){
     console.log('战场');
-    res.render('battle');
+    //1.拿到题集编号
+    var qs_id = req.params.qs_id;
+    //2.通过题集编号去获取试卷号:然后随机一套试卷(当前默认的题集编号为:0-19)
+    var paperId = parseInt(Math.random() * 20); //试卷ID
+    var path = 'f:\\qs\\' + qs_id + '\\' + paperId + '.json';
+    var data=fs.readFileSync(path, "utf-8");
+    console.log(data);
+    res.render('drillwar', {
+        users: [req.session.user],
+        qStore: JSON.parse(data) //题目
+    });
 });
 
 //排行榜
@@ -94,10 +106,17 @@ router.get('/ranklist', function(req, res){
 });
 
 //练兵场
-router.get('/drillwar/:qsid', function(req, res){
-    var qsid = req.params.qsid;
+router.get('/drillwar/:qs_id', function(req, res){
+    //1.拿到题集编号
+    var qs_id = req.params.qs_id;
+    //2.通过题集编号去获取试卷号:然后随机一套试卷(当前默认的题集编号为:0-19)
+    var paperId = parseInt(Math.random() * 20); //试卷ID
+    var path = 'f:\\qs\\' + qs_id + '\\' + paperId + '.json';
+    var data=fs.readFileSync(path, "utf-8");
+    console.log(data);
     res.render('drillwar', {
-        users: [req.session.user]
+        users: [req.session.user],
+        qStore: JSON.parse(data) //题目
     });
 });
 

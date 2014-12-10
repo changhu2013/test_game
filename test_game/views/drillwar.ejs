@@ -34,12 +34,20 @@
         </button>
     </div>
 
-    <dl class="list-group">
-        <dt class="list-group-item">
-            题干
-        </dt>
-        <dd class="list-group-item">
-            答案
-        </dd>
-    </dl>
+    <ul class="questions-items" style="padding: 5px;">
+        <% qStore.forEach(function(question){%>
+        <li>
+            <dl class="list-group">
+                <dt class="list-group-item">
+                    <%=question.title%>
+                </dt>
+                <dd class="list-group-item">
+                    <% for(var p in question.opts) {%>
+                        <p  data-answer="<%=p%>"><%=p%>、<%=question.opts[p]%></p>
+                    <%}%>
+                </dd>
+            </dl>
+        </li>
+        <%})%>
+    </ul>
 </div>

@@ -110,7 +110,7 @@ router.post('/importquestions', multipartMiddleware, function(req, res){
                         if(err) throw err;
                     });
                 }
-                
+
                 var questStoreDir = 'f:\\qs'; //文件保存里面
                 //根据题集生成文件夹
                 questStoreDir += '\\' + qsid;
@@ -140,23 +140,17 @@ router.post('/importquestions', multipartMiddleware, function(req, res){
                             qNo.push(rand);
                         }
 
-                        var str = "[";
+                        var arr = [];
                         for(var i= 0,len=content.length;i<len;i++){
                             if(qNo.indexOf(i) > -1){
                                 var a = content[i];
-                                str += JSON.stringify(a);
+                                arr.push(JSON.stringify(a));
                             }
                         }
-                        str += "]";
-
+                        var str = '[' + arr.join(',') + ']';
                         var fn = questStoreDir + '\\' + k + '.json';
-                        console.log(fn);
-
-                        console.log(str);
-
                         fs.writeFile(fn, str, function (e) {
                             if(e) throw e;
-                            console.log("写入文件ok");
                         });
                     }
                 });

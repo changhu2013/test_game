@@ -89,9 +89,9 @@
             controller  : 'mybattles_controller'
         }).when('/manual', {
             templateUrl : '/manual' //游戏说明
-        }).when('/warzone/:qsid', {
+        }).when('/warzone/:qs_id', {
             templateUrl : function (params) {
-                return '/warzone/' + params['qsid']
+                return '/warzone/' + params['qs_id']
             }, //某一题集下的对战房间
             controller  : 'warzone_controller'
         }).when('/battle/:bid', {
@@ -100,9 +100,9 @@
         }).when('/ranklist', {
             templateUrl : '/ranklist', //某考题集积分排行榜
             controller  : 'ranklist_controller'
-        }).when('/drillwar/:qsid', {
+        }).when('/drillwar/:qs_id', {
             templateUrl : function (params) {
-                return '/drillwar/' + params['qsid']
+                return '/drillwar/' + params['qs_id']
             }, //某一题集下的练兵场
             controller  : 'drillwar_controller'
         }).otherwise({

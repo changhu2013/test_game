@@ -28,14 +28,14 @@
         <h5>题目集</h5>
     </div>
     <div class="ztree panel">
-        <div id="questioncategory"/></div>
+        <div id="questioncategory"></div>
 </div>
 <table class="table table-striped table-hover">
     <tr ng-repeat="store in questionstores">
         <td>
             <div class="row">
                 <div class="col-md-2">
-                    <a href="#/warzone/{{store.qsid}}">
+                    <a href="#/warzone/{{store._id}}">
                         <h4><strong>{{store.title}}</strong></h4>
                     </a>
                 </div>
