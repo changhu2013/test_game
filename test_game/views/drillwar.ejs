@@ -4,12 +4,18 @@
     </div>
     <div class="panel-body">
         <section class="user-warp">
-            <dl class="user-items" ng-repeat="user in users">
-                <dd class="user-item">
-                    <div class="item-layout">
-                        <div class="mask"></div>
-                    </div>
-                </dd>
+            <dl class="user-items">
+                <% users.forEach(function(u){ %>
+                    <dd class="user-item">
+                        <div class="item-layout">
+                            <% if(user.id == u.id){ %>
+                                <div class="mask current"></div>
+                            <%} else {%>
+                                <div class="mask"></div>
+                            <%}%>
+                        </div>
+                    </dd>
+                <%})%>
             </dl>
         </section>
     </div>
@@ -37,57 +43,3 @@
         </dd>
     </dl>
 </div>
-
-<style>
-
-    .user-warp {
-        height: 160px;
-    }
-    .user-items {
-        display: -webkit-box;
-        display: -ms-box;
-        display: -moz-box;
-        display: box;
-    }
-
-    .user-items .user-item {
-        -webkit-box-flex: 1;
-        -moz-box-flex: 1;
-        -ms-box-flex: 1;
-        box-flex: 1;
-        height: 160px;
-    }
-
-    .user-items .user-item .item-layout {
-        position: relative;
-        height: 100%;
-        margin: 0 auto;
-        width: 80%;
-    }
-
-    .user-items .user-item .item-layout .mask{
-        background: blue;
-        width: 100%;
-        position: absolute;
-        bottom: 0;
-    }
-
-    .user-items .user-item:nth-of-type(1) .item-layout .mask{
-        height: 25%;
-    }
-
-    .user-items .user-item:nth-of-type(2) .item-layout .mask{
-        height: 44%;
-    }
-
-    .user-items .user-item:nth-of-type(3) .item-layout .mask{
-        height: 13%;
-    }
-
-    .user-items .user-item:nth-of-type(4) .item-layout .mask{
-        height: 82%;
-    }
-
-
-</style>
-

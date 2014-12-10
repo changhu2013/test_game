@@ -5,9 +5,12 @@ var querystring = require('querystring');
 
 require('../models/Log.js');
 require('../models/user.js');
+require('../models/storebattle.js');
+require('../models/battle.js');
 
 io = global.io;
 var User = mongoose.model('User');
+var Battle = mongoose.model('Battle');
 
 var router = express.Router();
 router.get('/', function(req, res) {
@@ -92,8 +95,10 @@ router.get('/ranklist', function(req, res){
 
 //练兵场
 router.get('/drillwar/:qsid', function(req, res){
-    console.log(req.params.qsid + '题集下的练兵场');
-    res.render('drillwar');
+    var qsid = req.params.qsid;
+    res.render('drillwar', {
+        users: [req.session.user]
+    });
 });
 
 //游戏规则
