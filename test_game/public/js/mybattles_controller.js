@@ -5,7 +5,7 @@ mybattles_controller = function($scope, $http) {
     $scope.battles = [];
 
     $http({
-        url : '/battle/new',
+        url : '/mybattles',
         method : 'POST',
         cache : false,
         timeout : 3000

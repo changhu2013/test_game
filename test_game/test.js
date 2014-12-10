@@ -78,7 +78,7 @@ var Battle = mongoose.model('Battle');
  */
 
 //生成测试记录
-/*
+
  for(var i = 0 ; i < 12; i++){
  var sb = new StoreBattle({
  qsid : '' + i,
@@ -92,7 +92,7 @@ var Battle = mongoose.model('Battle');
  if(err) throw err;
  });
  }
- */
+
 /*
  StoreBattle.find({
  sid : '1'
