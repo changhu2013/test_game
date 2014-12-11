@@ -17,8 +17,8 @@ var multipart = require('connect-multiparty');
 var multipartMiddleware = multipart();
 
 
-var createPaperNum = 20; //每个题集下生成多少套题目
-var paperQuestionNum = 20; //每套题有多少个题
+var createPaperNum = Setting.get('paperNum'); //每个题集下生成多少套题目
+var paperQuestionNum = Setting.get('battleQuestionNum'); //每套题有多少个题
 
 require('../models/setting.js');
 require('../models/user.js');
@@ -162,63 +162,68 @@ router.post('/importquestions', multipartMiddleware, function(req, res){
                 //题目保存
                 for(var i= 0,len=content.length;i<len;i++){
                     content[i]['qsid'] = qsid;
-                    var question = new Question(content[i]);
+                    /*var question = new Question(content[i]);
                     (function(i){
                         question.save(function (err, question, numberAffected) {
                             if(err) throw err;
                             content[i]['_id'] = question.get('_id').toString();
                             delete content[i]['answer'];
                         });
-                    })(i);
+                    })(i);*/
                 }
-
-                var questStoreDir = 'f:\\qs'; //文件保存里面
-                //根据题集生成文件夹
-                questStoreDir += '\\' + qsid;
-                fileutil.mkdirs(questStoreDir, 0755, function(){
-
-                    //生成试卷
-                    for(var k=0;k<createPaperNum;k++){
-                        var qNo = [];
-                        // 循环N次生成随机数
-                        for(var i = 0 ; ; i++){
-                            //生成随机数个数
-                            if(qNo.length< paperQuestionNum){
-                                generateRandom(content.length);
-                            }else{
-                                break;
-                            }
-                        }
-
-                        // 生成随机数的方法
-                        function generateRandom(count){
-                            var rand = parseInt(Math.random()*count);
-                            for(var i = 0 ; i < qNo.length; i++){
-                                if(qNo[i] == rand){
-                                    return false;
+                Question.create(content, function () {
+                    var params = arguments;
+                    if(params[0]){
+                        throw params[0];
+                    }
+                    for(var i= 0,len=content.length;i<len;i++){
+                        content[i]['_id'] = params[i+1].get('_id').toString();
+                         delete content[i]['answer'];
+                    }
+                    var questStoreDir = 'f:\\qs'; //文件保存里面
+                    //根据题集生成文件夹
+                    questStoreDir += '\\' + qsid;
+                    fileutil.mkdirs(questStoreDir, 0755, function(){
+                        //生成试卷
+                        for(var k=0;k<createPaperNum;k++){
+                            var qNo = [];
+                            // 循环N次生成随机数
+                            for(var i = 0 ; ; i++){
+                                //生成随机数个数
+                                if(qNo.length< paperQuestionNum){
+                                    generateRandom(content.length);
+                                }else{
+                                    break;
                                 }
                             }
-                            qNo.push(rand);
-                        }
 
-                        var arr = [];
-                        for(var i= 0,len=content.length;i<len;i++){
-                            if(qNo.indexOf(i) > -1){
-                                var a = content[i];
-                                arr.push(JSON.stringify(a));
+                            // 生成随机数的方法
+                            function generateRandom(count){
+                                var rand = parseInt(Math.random()*count);
+                                for(var i = 0 ; i < qNo.length; i++){
+                                    if(qNo[i] == rand){
+                                        return false;
+                                    }
+                                }
+                                qNo.push(rand);
                             }
+
+                            var arr = [];
+                            for(var i= 0,len=content.length;i<len;i++){
+                                if(qNo.indexOf(i) > -1){
+                                    var a = content[i];
+                                    arr.push(JSON.stringify(a));
+                                }
+                            }
+                            var str = '[' + arr.join(',') + ']';
+                            var fn = questStoreDir + '\\' + k + '.json';
+                            fs.writeFile(fn, str, function (e) {
+                                if(e) throw e;
+                            });
                         }
-                        var str = '[' + arr.join(',') + ']';
-                        var fn = questStoreDir + '\\' + k + '.json';
-                        fs.writeFile(fn, str, function (e) {
-                            if(e) throw e;
-                        });
-                    }
+                    });
                 });
-
             });
-
-
             // 删除临时文件
             fs.unlink(temp_path);
         });
