@@ -17,8 +17,6 @@ router.post('/laststore', function(req, res) {
     var query = url.parse(req.url, true).query,
         skip = query.skip || 0,
         limit = query.limit || 10;
-
-    console.log(query);
     var user = req.session.user;
     StoreBattle.find({
         sid : user.sid
@@ -28,10 +26,11 @@ router.post('/laststore', function(req, res) {
         battles = util.toJSON(battles);
         var qsids = [];
         for(var k = 0; k < battles.length; k++){
-            qsids.push(battles[k].qsid);
+            var t = battles[k].qsid;
+            qsids.push(t);
         }
         QuestionStore.find({
-            qsid : {
+            _id : {
                 $in : qsids
             }
         }, function(err, stores){
@@ -40,7 +39,7 @@ router.post('/laststore', function(req, res) {
                 var b = battles[i];
                 for(var j = 0 ;j < stores.length; j++){
                     var s = stores[j];
-                    if(b.qsid == s.qsid){
+                    if(b.qsid == s._id){
                         b.store = s;
                         break;
                     }

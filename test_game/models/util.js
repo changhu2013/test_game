@@ -15,17 +15,21 @@ var dateFormat = function(date){
 
 var toJSON = function(schema){
     var temp = {};
-    if(schema && schema._doc){
-        var doc = schema._doc;
-        for(var k in doc){
-            var v = schema.get(k);
-            if(v instanceof Date){//先判断是否是日期类型
-                temp[k] = dateFormat(v);
-            }else if(v instanceof Object){//在判断是不是一个对象
-                temp[k] = toJSON(v);
-            }else {
-                temp[k] = v;
+    if(schema){
+        if(schema._doc){
+            var doc = schema._doc;
+            for(var k in doc){
+                var v = schema.get(k);
+                if(v instanceof Date){//先判断是否是日期类型
+                    temp[k] = dateFormat(v);
+                }else if(v instanceof Object){//在判断是不是一个对象
+                    temp[k] = toJSON(v);
+                }else {
+                    temp[k] = v;
+                }
             }
+        }else {
+            return schema.toString();
         }
     }
     return temp;

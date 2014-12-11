@@ -119,6 +119,7 @@ var Battle = mongoose.model('Battle');
 //var a = util.dateFormat(new Date());
 //console.log(a);
 
+/*
 Setting.set('timeScorePct', 0.2);
 Setting.set('userScorePct', 0.3);
 Setting.set('succScorePct', 0.4);
@@ -131,3 +132,11 @@ Setting.set('paperNum', 200);
 Setting.set('battleQuestionNum', 20);
 
 console.log(Setting.data);
+*/
+
+
+StoreBattle.find({}).limit(1).exec(function(err, battles){
+ battles = util.toJSON(battles);
+ console.log(battles);
+});
+
