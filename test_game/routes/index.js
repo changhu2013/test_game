@@ -2,17 +2,18 @@ var express = require('express');
 var mongoose = require('mongoose');
 var url = require('url');
 var querystring = require('querystring');
-var util = require('../models/util.js');
+var fs = require('fs');
 
 require('../models/Log.js');
 require('../models/user.js');
-require('../models/battle.js');
 require('../models/storebattle.js');
+require('../models/battle.js');
+require('../models/question.js');
 
 io = global.io;
 var User = mongoose.model('User');
 var Battle = mongoose.model('Battle');
-var StoreBattle = mongoose.model('StoreBattle');
+var Question = mongoose.model('Question');
 
 var router = express.Router();
 router.get('/', function(req, res) {
@@ -64,7 +65,7 @@ router.post('/honor/users', function(req, res){
     User.find().skip(skip).limit(limit).sort({
         score : 'desc'
     }).exec(function(err, users){
-        res.send(util.toJSON(users));
+        res.send(users);
     });
 });
 
@@ -73,57 +74,31 @@ router.get('/mybattles', function(req, res){
     console.log('我的挑战');
     res.render('mybattles');
 });
-router.post('/mybattles', function (req, res) {
-    var query = url.parse(req.url, true).query;
-    console.log(query);
-    var skip = query.skip || 0;
-    var limit = query.limit  || 10;
-    var user = req.session.user;
-    Battle.find({
-        status : 'N',
-        sid : user.sid
-    }).skip(skip).limit(limit).exec(function(err, battles){
-        battles = util.toJSON(battles);
-        var qsids = [];
-        for(var i = 0; i < battles.length; i++){
-            var b = battles[i];
-            qsids.push(b.qsid);
-        }
-        StoreBattle.find({
-            qsid : {
-                $in : qsids
-            }
-        }).exec(function(err, stores){
-            stores = util.toJSON(stores);
-            for(var j = 0; j < battles.length; j++){
-                var b = battles[j];
-                for(var k = 0; k < stores.length; k++){
-                    var s = stores[k];
-                    if(b.qsid == s.qsid){
-                        b.store = s;
-                        break;
-                    }
-                }
-            }
-            res.send(battles);
-        });
-
-    });
-});
 
 //某题集下的对战房间
-router.get('/warzone/:qsid', function(req, res){
+router.get('/warzone/:qs_id', function(req, res){
     console.log('某题集下的对战房间');
-    var qsid = req.params.qsid;
+    var qs_id = req.params.qs_id;
     res.render('warzone', {
-        qsid: qsid
+        //qs_id: 表示模型questionstores下的_id
+        qs_id: qs_id
     });
 });
 
 //战场
-router.get('/battle', function(req, res){
+router.get('/battle/:qs_id', function(req, res){
     console.log('战场');
-    res.render('battle');
+    //1.拿到题集编号
+    var qs_id = req.params.qs_id;
+    //2.通过题集编号去获取试卷号:然后随机一套试卷(当前默认的题集编号为:0-19)
+    var paperId = parseInt(Math.random() * 20); //试卷ID
+    var path = 'f:\\qs\\' + qs_id + '\\' + paperId + '.json';
+    var data=fs.readFileSync(path, "utf-8");
+    console.log(data);
+    res.render('drillwar', {
+        users: [req.session.user],
+        qStore: JSON.parse(data) //题目
+    });
 });
 
 //排行榜
@@ -133,15 +108,46 @@ router.get('/ranklist', function(req, res){
 });
 
 //练兵场
-router.get('/drillwar/:qsid', function(req, res){
-    console.log(req.params.qsid + '题集下的练兵场');
-    res.render('drillwar');
+router.get('/drillwar/:qs_id', function(req, res){
+    //1.拿到题集编号
+    var qs_id = req.params.qs_id;
+    //2.通过题集编号去获取试卷号:然后随机一套试卷(当前默认的题集编号为:0-19)
+    var paperId = parseInt(Math.random() * 20); //试卷ID
+    var path = 'f:\\qs\\' + qs_id + '\\' + paperId + '.json';
+    var data=fs.readFileSync(path, "utf-8");
+    console.log(data);
+    res.render('drillwar', {
+        users: [req.session.user],
+        qStore: JSON.parse(data) //题目
+    });
 });
 
 //游戏规则
 router.get('/manual', function(req, res){
     console.log('游戏规则');
     res.render('manual');
+});
+
+//校验答案
+router.post('/question/valianswer', function (req, res) {
+    console.log('校验答案');
+    var _id = req.query._id;
+    var answer = req.query.answer;
+
+    Question.findOne({
+        _id: Question.ObjectId(_id)
+    }, function(err, data){
+        console.log(data);
+        if(data){
+            res.send({
+                success: true
+            });
+        } else {
+            res.send({
+                success: false
+            })
+        }
+    })
 });
 
 module.exports = router;

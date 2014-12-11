@@ -22,6 +22,9 @@ var Setting = new Schema({
     //成功百分比
     userSuccPct : Number,
 
+    //每个题集下生成的试卷的数量
+    paperNum: Number,
+
     //每个挑战题目数量
     battleQuestionNum : Number
 });
