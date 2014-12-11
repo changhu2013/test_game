@@ -1,6 +1,16 @@
+<input type="hidden" value="<%=bid%>" ng-model="battle_bid"/>
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h3 class="panel-title text-center"><%=qstitle%>-练兵场</h3>
+        <div class="row">
+            <div class="col-md-2 col-xs-2">
+                <button class="btn btn-default btn-sm btn-xs" type="button" ng-click="goOutBattle();">
+                    撤退
+                </button>
+            </div>
+            <div class="col-md-10 col-xs-10">
+                <h3 class="panel-title text-center"><%=qstitle%>-练兵场</h3>
+            </div>
+        </div>
     </div>
     <div class="panel-body">
         <section class="user-warp">

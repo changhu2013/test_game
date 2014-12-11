@@ -1,4 +1,3 @@
-
 drillwar_controller = function($scope, $http){
 	$scope.questionIndex = 1; //题目序号
 	$scope.timer = 1; //定时器
@@ -65,4 +64,19 @@ drillwar_controller = function($scope, $http){
 		oQuestionOpt.removeClass('selected');
 		$(this).addClass('selected');
 	});
+
+	//退出or逃跑
+	$scope.goOutBattle = function () {
+		$http({
+			url: '/question/gooutbattle',
+			method: 'POST',
+			params: {
+				bid: $scope.battle_bid
+			},
+			cache: false,
+			timeout: 3000
+		}).success(function () {
+			
+		});
+	}
 };

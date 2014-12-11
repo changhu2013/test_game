@@ -9,11 +9,43 @@ require('../models/user.js');
 require('../models/storebattle.js');
 require('../models/battle.js');
 require('../models/question.js');
+require('../models/questionstore.js');
 
 io = global.io;
 var User = mongoose.model('User');
 var Battle = mongoose.model('Battle');
 var Question = mongoose.model('Question');
+var QuestionStore = mongoose.model('QuestionStore');
+var StoreBattle = mongoose.model('StoreBattle');
+
+
+//保存题集下战场的记录(包括练习和联网对战)
+var questionBattleData = [];
+/*var questionBattleData = {
+    //战场ID
+    bid: {
+        users: {
+            sid: {
+                qsid : 'xxxxx',
+                //道具数量
+                property: 2,
+                //进度
+                progress: 50,
+                //连续答对的题目
+                serialValidity: 0,
+                //答对题目
+                validity:[],
+
+                //打错题目
+                mistake: [],
+
+                //状态: I-正在进行 E-跑路
+                status: 'I'
+            }
+        }
+    }
+};*/
+
 
 var router = express.Router();
 router.get('/', function(req, res) {
@@ -114,11 +146,71 @@ router.get('/drillwar/:qs_id', function(req, res){
     //2.通过题集编号去获取试卷号:然后随机一套试卷(当前默认的题集编号为:0-19)
     var paperId = parseInt(Math.random() * 20); //试卷ID
     var path = 'f:\\qs\\' + qs_id + '\\' + paperId + '.json';
-    var data=fs.readFileSync(path, "utf-8");
-    console.log(data);
-    res.render('drillwar', {
-        users: [req.session.user],
-        qStore: JSON.parse(data) //题目
+    var questionData = fs.readFileSync(path, "utf-8");
+    /*console.log(data);*/
+
+    QuestionStore.findById(qs_id, function (err, questionStoreData) {
+        if(err) return;
+        //存储对战信息
+        var nowTime = new Date();
+        var battle = new Battle();
+        battle['sid'] = req.session.user.sid;
+        battle['sname'] = req.session.user.name;
+        battle['status'] = 'I'; //正在进行状态
+        battle['qsid'] = qs_id; //题集ID
+        battle['qstitle'] = questionStoreData.get('title');
+        battle['start'] = nowTime;//挑战开始时间
+
+        battle.save(function (err, battleData) {
+            //该战役的ID
+            var bid = battleData.get('_id').toString();
+            var sid = req.session.user.sid;
+            StoreBattle.findOne({'sid': sid}, function (err, storeBattleData) {
+                if(storeBattleData){
+                    StoreBattle.update({
+                        sid: sid,
+                        qsid: qs_id,
+                        bid: bid,
+                        lastTime: battleData.get('start')
+                    }, function (err, data) {
+                        res.render('drillwar', {
+                            users: [req.session.user],
+                            bid: bid,
+                            qstitle: questionStoreData.get('title'),
+                            qStore: JSON.parse(questionData) //题目
+                        });
+                    });
+                } else {
+                    var storeBattle = new StoreBattle();
+                    storeBattle['sid'] = sid;
+                    storeBattle['qsid'] = qs_id;
+                    storeBattle['bid'] = bid;
+                    storeBattle['lastTime'] = battleData.get('start');
+                    storeBattle.save(function (err , data) {
+                        res.render('drillwar', {
+                            users: [req.session.user],
+                            bid: bid,
+                            qstitle: questionStoreData.get('title'),
+                            qStore: JSON.parse(questionData) //题目
+                        });
+                    });
+                }
+            });
+
+            questionBattleData[bid] = {};
+            var users = {};
+            users[sid] = {};
+            users[sid] = {
+                qsid: qs_id,
+                property: 0,
+                progress: 0,
+                serialValidity: 0,
+                validity: [], //答对题目
+                mistake: [], //打错题目
+                status: 'I'
+            }
+            questionBattleData[bid]['users'] = users;
+        });
     });
 });
 
@@ -147,5 +239,27 @@ router.post('/question/valianswer', function (req, res) {
         }
     })
 });
+
+
+//中途退出战场(包括练习场)或者逃跑
+//需要判断当前战场是否还有其他人
+router.get('/question/gooutbattle', function(req, res){
+    var bid = req.query.bid;
+    var bidData= questionBattleData[bid];
+    var usersData = bidData['users'];
+    if(usersData.length == 1){ //战场只剩自己
+        Battle.findByIdAndUpdate(bid, {
+            status: 'E',
+            end: new Date()
+        },{}, function (err) {
+            if(err) throw err;
+            delete questionBattleData[bid]; //删除该战场所有信息
+        })
+    } else { //战场还有其他人
+        usersData[req.session.user.sid]['statu'] = 'E';//跑路
+    }
+    res.render('manual');
+});
+
 
 module.exports = router;
