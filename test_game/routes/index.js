@@ -134,11 +134,9 @@ router.post('/question/valianswer', function (req, res) {
     var _id = req.query._id;
     var answer = req.query.answer;
 
-    Question.findOne({
-        _id: Question.ObjectId(_id)
-    }, function(err, data){
+    Question.findById(_id, function(err, data){
         console.log(data);
-        if(data){
+        if(data && data.get('answer') == answer){
             res.send({
                 success: true
             });
