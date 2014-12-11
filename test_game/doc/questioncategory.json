@@ -1,27 +1,27 @@
 [
   {
-    qcid: "10",
-    pid: "0",
-    title: "财务审计部",
-    isParent: true
+    "qcid": "10",
+    "pid": "0",
+    "title": "财务审计部",
+    "isParent": true
   },
   {
-    qcid: "11",
-    pid: "0",
-    title: "市场客服部",
-    isParent: true
+    "qcid": "11",
+    "pid": "0",
+    "title": "市场客服部",
+    "isParent": true
   },
   {
-    qcid: "12",
-    pid: "0",
-    title: "车队运营部",
-    isParent: true
+    "qcid": "12",
+    "pid": "0",
+    "title": "车队运营部",
+    "isParent": true
   },
   {
-    qcid: "13",
-    pid: "0",
-    title: "安全监管部",
-    isParent: true
+    "qcid": "13",
+    "pid": "0",
+    "title": "安全监管部",
+    "isParent": true
   },
   {
     "qcid": "13",
