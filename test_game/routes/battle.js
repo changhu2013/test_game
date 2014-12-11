@@ -66,11 +66,15 @@ router.post('/new', function(req, res){
 router.post('/qstore', function(req, res){
     var query = url.parse(req.url, true).query;
     var qsid = query.qsid;
-    console.log('qsid:' + qsid);
+    var skip = query.skip || 0;
+    var limit = query.limit || 5;
+    console.log(query);
     Battle.find({
         qsid : qsid,
         status : 'I'
-    }, function(err, battles){
+    }).skip(skip).limit(limit).exec(function(err, battles){
+        console.log(battles);
+
         res.send(util.toJSON(battles));
     });
 });

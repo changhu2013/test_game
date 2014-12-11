@@ -13,15 +13,18 @@
             <td>
                 <div class="row">
                     <div class="col-xs-6">
-                        <a href="#battle/{{battle.bid}}">
-                            <p><strong>战场{{battle.bid}}</strong></p>
+                        <a href="#battle/{{battle._id}}">
+                            <p><strong>战场{{battle._id}}</strong></p>
                         </a>
                     </div>
                     <div class="col-xs-6">
-                        <p><strong>{{battle.rivals}}</strong></p>
+                        <p><strong>{{battle.qstitle}}</strong></p>
                     </div>
                 </div>
             </td>
         </tr>
     </table>
+    <div class="row">
+        <p class="text-center" ng-click="doMore()">更多</p>
+    </div>
 </div>
