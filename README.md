@@ -35,10 +35,14 @@ db.users.find({sid:"102"})
 ------ battle.js
 /battle/:b_id  挑战 挑战界面， 进行挑战
 
-
-
 /ranklist 战区内积分排行榜
 
 /drillwar/:qs_id  练兵场
+
+
+----- /route/question.js 问题相关
+/question/valianswer 校验答案(答题过程中的提交)
+/question/gooutbattle 中途退出/逃跑
+
 
 
