@@ -9,7 +9,7 @@ var Battle = new Schema({
     sid : String,
     sname : String,//应战这名称
 
-    //挑战状态：N - 未开始 F - 已经完成 I - 正在进行中
+    //挑战状态：N - 未开始 F - 已经完成 I - 正在进行中 E-跑路(所有人跑路)
     status : String,
 
     //题集ID
