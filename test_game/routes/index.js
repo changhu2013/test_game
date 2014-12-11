@@ -11,6 +11,8 @@ require('../models/battle.js');
 require('../models/question.js');
 require('../models/questionstore.js');
 
+var Setting = require('../models/setting.js');
+
 io = global.io;
 var User = mongoose.model('User');
 var Battle = mongoose.model('Battle');
@@ -122,8 +124,8 @@ router.get('/battle/:qs_id', function(req, res){
     console.log('战场');
     //1.拿到题集编号
     var qs_id = req.params.qs_id;
-    //2.通过题集编号去获取试卷号:然后随机一套试卷(当前默认的题集编号为:0-19)
-    var paperId = parseInt(Math.random() * 20); //试卷ID
+    //2.通过题集编号去获取试卷号:然后随机一套试卷
+    var paperId = parseInt(Math.random() * parseInt(Setting.get('paperNum'))); //试卷ID
     var path = 'f:\\qs\\' + qs_id + '\\' + paperId + '.json';
     var data=fs.readFileSync(path, "utf-8");
     console.log(data);
@@ -143,11 +145,11 @@ router.get('/ranklist', function(req, res){
 router.get('/drillwar/:qs_id', function(req, res){
     //1.拿到题集编号
     var qs_id = req.params.qs_id;
-    //2.通过题集编号去获取试卷号:然后随机一套试卷(当前默认的题集编号为:0-19)
-    var paperId = parseInt(Math.random() * 20); //试卷ID
+    //2.通过题集编号去获取试卷号:然后随机一套试卷
+    var paperId = parseInt(Math.random() * parseInt(Setting.get('paperNum'))); //试卷ID
     var path = 'f:\\qs\\' + qs_id + '\\' + paperId + '.json';
     var questionData = fs.readFileSync(path, "utf-8");
-    /*console.log(data);*/
+    console.log(questionData);
 
     QuestionStore.findById(qs_id, function (err, questionStoreData) {
         if(err) return;
@@ -206,8 +208,7 @@ router.get('/drillwar/:qs_id', function(req, res){
                 progress: 0,
                 serialValidity: 0,
                 validity: [], //答对题目
-                mistake: [], //打错题目
-                status: 'I'
+                mistake: [] //打错题目
             }
             questionBattleData[bid]['users'] = users;
         });
@@ -220,21 +221,39 @@ router.get('/manual', function(req, res){
     res.render('manual');
 });
 
-//校验答案
+//校验答案,返回答案的正确,还有自己和其他队友的信息(进度),
+// 自己的拖后腿的道具数量,自己连续答对题目的数量
 router.post('/question/valianswer', function (req, res) {
     console.log('校验答案');
+
     var _id = req.query._id;
     var answer = req.query.answer;
+    var bid = req.query.bid; //战场ID
 
     Question.findById(_id, function(err, data){
         console.log(data);
-        if(data && data.get('answer') == answer){
+        var bidInfo = questionBattleData[bid]; //战场信息
+        var sid = req.session.user.sid;
+        var userInfo = bidInfo['users'][sid];
+
+        if(data && data.get('answer') == answer){ //答对
+            userInfo.validity.push(_id); //更新答对题目ID
+            userInfo.progress = userInfo.validity.length / 20; //进度
+            userInfo.serialValidity++; //连续答对
+
+            if(userInfo.serialValidity == 5){//当连续答对5道题时候,增加一个道具
+                userInfo.property++; //增加一个道具
+                userInfo.serialValidity = 0; //并将连续答对的题目清0
+            }
             res.send({
-                success: true
+                success: true,
+                battleData: bidInfo
             });
         } else {
+            userInfo.mistake.push(_id); //更新答对题目ID
             res.send({
-                success: false
+                success: false,
+                battleData: bidInfo
             })
         }
     })
@@ -243,7 +262,7 @@ router.post('/question/valianswer', function (req, res) {
 
 //中途退出战场(包括练习场)或者逃跑
 //需要判断当前战场是否还有其他人
-router.get('/question/gooutbattle', function(req, res){
+router.post('/question/gooutbattle', function(req, res){
     var bid = req.query.bid;
     var bidData= questionBattleData[bid];
     var usersData = bidData['users'];
@@ -258,7 +277,7 @@ router.get('/question/gooutbattle', function(req, res){
     } else { //战场还有其他人
         usersData[req.session.user.sid]['statu'] = 'E';//跑路
     }
-    res.render('manual');
+    res.send(true);
 });
 
 
