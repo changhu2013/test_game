@@ -4,7 +4,6 @@ var mongoose = require('mongoose')
     , ObjectId = Schema.ObjectId;
 
 var QuestionStore = new Schema({
-    qsid : String,
     qcid : String,
     title : String,
     onLineUserNum: Number, //在线用户数
