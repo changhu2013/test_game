@@ -1,9 +1,29 @@
 
 drillwar_controller = function($scope, $http){
+	$scope.questionIndex = 1; //题目序号
+	$scope.timer = 1; //定时器
+	//计时器,提交答案的时候计时器要暂停
+	var task = setInterval(function () {
+		$scope.$apply(function () {
+			$scope.timer++;
+		});
+	}, 1000);
+
+	var oTips = $('.tips');
+
+	//点击提交
 	$scope.doReply = function(){
 		var validateAnswer = function (res) {
+			task = setInterval(function () {
+				$scope.$apply(function () {
+					$scope.timer++;
+				});
+			}, 1000);
 			if(res.success){
-				alert('答案正确');
+				oTips.css('height', '2em').text('答案正确');
+				setTimeout(function () {
+					oTips.css('height', '0').text('');
+				}, 1000);
 				var aUserItems = $('.user-item');
 				var battleData = res.battleData;
 				var usersData = battleData['users'];
@@ -14,16 +34,18 @@ drillwar_controller = function($scope, $http){
 					})
 				}
 			} else {
-				alert('答案错误');
+				oTips.css('height', '2em').text('答案错误');
+				setTimeout(function () {
+					oTips.css('height', '0').text('');
+				}, 1000);
 			}
-			var questionIndex = $('#js-questionIndex').text();
-			questionIndex = parseInt(questionIndex);
-			$('#js-questionIndex').text(++questionIndex);
+			$scope.questionIndex++;
 			oQuestionOpt.filter('.selected').closest('.questions-item').remove();
 			oQuestionOpt.removeClass('selected');
 		}
 		
 		if(oQuestionOpt.hasClass('selected')){
+			clearInterval(task);
 			$http({
 				url: '/question/valianswer',
 				method: 'POST',
