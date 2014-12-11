@@ -2,6 +2,7 @@ var settings = require('./settings');
 var mongoose = require('mongoose');
 var moment = require('moment');
 var util = require('./models/util.js');
+var Setting = require('./models/setting.js');
 
 //mongoose
 mongoose.connect('mongodb://' + settings.host + '/' + settings.db);
@@ -77,22 +78,6 @@ var Battle = mongoose.model('Battle');
 
  */
 
-//生成测试记录
-
- for(var i = 0 ; i < 12; i++){
- var sb = new StoreBattle({
- qsid : '' + i,
- sid : '1',
- bid : '' + i,
- maxBattleScore : i * i,
- maxDrillScore : i + 122,
- lastTime : new Date(2014, i, 1)
- });
- sb.save(function (err) {
- if(err) throw err;
- });
- }
-
 /*
  StoreBattle.find({
  sid : '1'
@@ -131,12 +116,21 @@ var Battle = mongoose.model('Battle');
  });
  */
 
-StoreBattle.find({
-    qsid : '1'
-}, function(err, battles){
-    var json = util.toJSON(battles);
-    console.log(json);
-});
-
 //var a = util.dateFormat(new Date());
 //console.log(a);
+
+/*
+Setting.set('timeScorePct', 0.2);
+Setting.set('userScorePct', 0.3);
+Setting.set('succScorePct', 0.4);
+
+Setting.set('maxUserNum', 5);
+Setting.set('minUserNum', 2);
+Setting.set('userSuccPct', 0.6);
+
+Setting.set('paperNum', 200);
+Setting.set('battleQuestionNum', 20);
+*/
+
+//console.log(Setting.data);
+console.log(Setting.get('paperNum'));
