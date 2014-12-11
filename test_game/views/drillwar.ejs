@@ -1,14 +1,14 @@
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h3 class="panel-title text-center">AAAA题集战场-练兵场1</h3>
+        <h3 class="panel-title text-center"><%=qstitle%>-练兵场</h3>
     </div>
     <div class="panel-body">
         <section class="user-warp">
             <dl class="user-items">
                 <% users.forEach(function(u){ %>
-                    <dd class="user-item">
+                    <dd class="user-item" data-user-id="<%=u.sid%>">
                         <div class="item-layout">
-                            <% if(user.id == u.id){ %>
+                            <% if(user.sid == u.sid){ %>
                                 <div class="mask current"></div>
                             <%} else {%>
                                 <div class="mask"></div>
@@ -22,7 +22,7 @@
 
     <div class="tool-wrap">
         <button class="btn btn-default btn-sm btn-xs" type="button">
-            20/50
+            <em id="js-questionIndex">1</em>/20
         </button>
 
         <button class="btn btn-default btn-sm btn-xs" type="button">
@@ -43,7 +43,7 @@
                 </dt>
                 <dd class="list-group-item">
                     <% for(var p in question.opts) {%>
-                        <p class="questions-opt" data-_id=<%=question._id%> data-answer="<%=p%>"><%=p%>、<%=question.opts[p]%></p>
+                        <p class="questions-opt" data-bid="<%=bid%>" data-_id=<%=question._id%> data-answer="<%=p%>"><%=p%>、<%=question.opts[p]%></p>
                     <%}%>
                 </dd>
             </dl>
