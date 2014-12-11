@@ -8,7 +8,9 @@ var url = require('url');
 var querystring = require('querystring');
 var path = require('path');
 var fs = require('fs');
+
 var fileutil = require('../models/fileutil');
+var Setting = require('../models/setting.js');
 
 //上传相关的中间键
 var multipart = require('connect-multiparty');
@@ -31,13 +33,68 @@ router.get('/', function(req, res){
 });
 
 router.get('/settings', function(req, res) {
-    console.log('admin settings')
-    res.render('settings');
+    res.render('settings', {
+        Setting : Setting.getData()
+    });
 });
 
 router.post('/settings', function(req, res){
-    console.log('save settings');
+    console.log(req.body);
     //保存设置信息
+    //时间占比
+    var timeScorePct = req.body.timeScorePct;
+    if(timeScorePct != undefined){
+        Setting.set('timeScorePct', Number(timeScorePct));
+    }
+
+    //人数占比
+    var userScorePct = req.body.userScorePct;
+    if(userScorePct != undefined){
+        Setting.set('userScorePct', Number(userScorePct));
+    }
+
+    //成功与否占比
+    var succScorePct = req.body.succScorePct;
+    if(succScorePct != undefined){
+        Setting.set('succScorePct', Number(succScorePct));
+    }
+
+    //参站报名积分
+    var battleEntryFee = req.body.battleEntryFee;
+    if(battleEntryFee != undefined){
+        Setting.set('battleEntryFee', Number(battleEntryFee));
+    }
+
+    //挑战最多人数
+    var battleMaxUserNum = req.body.battleMaxUserNum;
+    if(battleMaxUserNum != undefined){
+        Setting.set('battleMaxUserNum', Number(battleMaxUserNum));
+    }
+
+    //挑战最少人数
+    var battleMinUserNum = req.body.battleMinUserNum;
+    if(battleMinUserNum != undefined){
+        Setting.set('battleMinUserNum', Number(battleMinUserNum));
+    }
+
+    //成功百分比
+    var userSuccPct = req.body.userSuccPct;
+    if(userSuccPct != undefined){
+        Setting.set('userSuccPct', Number(userSuccPct));
+    }
+
+    //每个题集下生成的试卷的数量
+    var paperNum = req.body.paperNum;
+    if(paperNum != undefined){
+        Setting.set('paperNum', Number(paperNum));
+    }
+
+    //每个挑战题目数量
+    var battleQuestionNum = req.body.battleQuestionNum;
+    if(battleQuestionNum != undefined){
+        Setting.set('battleQuestionNum', Number(battleQuestionNum));
+    }
+
     res.redirect('/admin#/settings');
 });
 

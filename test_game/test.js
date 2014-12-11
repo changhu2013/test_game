@@ -119,18 +119,15 @@ var Battle = mongoose.model('Battle');
 //var a = util.dateFormat(new Date());
 //console.log(a);
 
-/*
 Setting.set('timeScorePct', 0.2);
 Setting.set('userScorePct', 0.3);
 Setting.set('succScorePct', 0.4);
 
-Setting.set('maxUserNum', 5);
-Setting.set('minUserNum', 2);
+Setting.set('battleMaxUserNum', 5);
+Setting.set('battleMinUserNum', 2);
 Setting.set('userSuccPct', 0.6);
-
+Setting.set('battleEntryFee', 5);
 Setting.set('paperNum', 200);
 Setting.set('battleQuestionNum', 20);
-*/
 
-//console.log(Setting.data);
-console.log(Setting.get('paperNum'));
+console.log(Setting.data);

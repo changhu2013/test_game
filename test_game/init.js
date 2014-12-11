@@ -10,6 +10,19 @@ require('./models/question.js');
 require('./models/battle.js');
 require('./models/storebattle.js');
 
+var Setting = require('./models/setting.js');
+
+Setting.set('timeScorePct', 0.2);
+Setting.set('userScorePct', 0.3);
+Setting.set('succScorePct', 0.4);
+Setting.set('battleMaxUserNum', 5);
+Setting.set('battleMinUserNum', 2);
+Setting.set('userSuccPct', 0.6);
+Setting.set('battleEntryFee', 5);
+Setting.set('paperNum', 200);
+Setting.set('battleQuestionNum', 20);
+
+console.log(Setting.data);
 
 var User = mongoose.model('User');
 var QuestionCategory = mongoose.model('QuestionCategory');
@@ -17,7 +30,6 @@ var QuestionStore = mongoose.model('QuestionStore');
 var Question = mongoose.model('Question');
 var Battle = mongoose.model('Battle');
 var StoreBattle = mongoose.model('StoreBattle');
-
 
 for(var i = 1; i < 100; i++){
     //测试用户
