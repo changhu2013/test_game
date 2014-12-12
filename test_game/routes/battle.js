@@ -114,7 +114,7 @@ router.post('/qstore', function(req, res){
 
 //战场
 router.get('/battle/:qs_id', function(req, res){
-    console.log('战场');
+    /*console.log('战场');
     //1.拿到题集编号
     var qs_id = req.params.qs_id;
     //2.通过题集编号去获取试卷号:然后随机一套试卷
@@ -125,7 +125,8 @@ router.get('/battle/:qs_id', function(req, res){
     res.render('drillwar', {
         users: [req.session.user],
         qStore: JSON.parse(data) //题目
-    });
+    });*/
+    res.render('battle');
 });
 
 
