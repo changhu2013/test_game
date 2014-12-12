@@ -14,8 +14,6 @@ var QuestionCategory = mongoose.model('QuestionCategory');
 var QuestionStore = mongoose.model('QuestionStore');
 var Question = mongoose.model('Question');
 
-var questionBattleData = global.questionBattleData;
-
 //显示题目树结构
 router.post('/category', function(req, res) {
     var pid = req.body.qcid;
@@ -47,6 +45,7 @@ router.post('/store', function(req, res){
 //校验答案,返回答案的正确,还有自己和其他队友的信息(进度),
 // 自己的拖后腿的道具数量,自己连续答对题目的数量
 router.post('/valianswer', function (req, res) {
+    var questionBattleData = global.questionBattleData;
     console.log('校验答案');
     var _id = req.query._id;
     var answer = req.query.answer;
@@ -84,6 +83,7 @@ router.post('/valianswer', function (req, res) {
 //中途退出战场(包括练习场)或者逃跑
 //需要判断当前战场是否还有其他人
 router.post('/gooutbattle', function(req, res){
+    var questionBattleData = global.questionBattleData;
     var bid = req.query.bid;
     var bidData= questionBattleData[bid];
     var usersData = bidData['users'];
