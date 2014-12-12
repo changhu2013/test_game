@@ -1,14 +1,21 @@
+var os = require('os');
 var fs = require('fs');
+
 
 var Setting = function (data) {
     this.data = data ;
 };
 
-var file =  __dirname + '/config.json';
+var pf = os.platform().toString();
+var file =  __dirname + (pf == 'win32' ? '\\' : '/') + 'config.json';
+console.log(file);
 fs.openSync(file, 'a');
 
 var doInit = function(){
     var str = fs.readFileSync(file, 'UTF-8');
+    if(str == '' || str == undefined){
+        str = '{}';
+    }
     console.log(str);
     var data = JSON.parse(str);
 
