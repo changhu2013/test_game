@@ -71,9 +71,15 @@ function BattleIo(){
 	*/
 }
 
-//进入挑战
+//进入挑战  或 获取某题集挑战数据
 BattleIo.prototype.joinBattle = function(qsid, bid, sid){
-	//
+	//如果bid 和 sid为空 则返回挑战数据
+	//如果bid 和 sid不为空 则表示进入挑战
+}
+
+//进入练习赛 或获取某题集练习数据
+BattleIo.prototype.joinDrill = function(qsid, bid, sid){
+
 }
 
 //更新对战数据
@@ -81,14 +87,30 @@ BattleIo.prototype.setValue = function(qsid, bid, sid, key, value){
 
 }
 
-//设置状态
+//更新或获取 状态
 BattleIo.prototype.setStatus = function(qsid, bid, sid, status){
+	//如果status为undefined，则该方法为get方法，即返回当前状态
+	//如果status不为undefined，则该方法为set方法，设置属性
 
 }
 
+//更新或获取 答对题目ID
+BattleIo.prototype.validaty = function(qsid, bid, sid, qid){
 
-//进入练习
-BattleIo.prototype.joinDrill = function(qsid, bid, sid){
+}
+
+//更新或获取 打错题目ID
+BattleIo.prototype.mistake = function (qsid, bid, sid, qid) {
+
+}
+
+//更新或获取道具
+BattleIo.prototype.property = function(qsid, bid, sid, property) {
+
+}
+
+//更新或获取进度
+BattleIo.prototype.progress = function(qsid, bid, sid, proress){
 
 }
 
