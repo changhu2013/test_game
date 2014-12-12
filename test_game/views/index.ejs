@@ -105,8 +105,10 @@
                 return '/battle/battle/' + params['qs_id']
             }, //某一题集下的战场
             controller  : 'battle_controller'
-        }).when('/ranklist', {
-            templateUrl : '/ranklist', //某考题集积分排行榜
+        }).when('/ranklist/:qs_id', {
+            templateUrl : function (params) {
+                return '/ranklist/' + params['qs_id']
+            },//某考题集积分排行榜
             controller  : 'ranklist_controller'
         }).when('/drillwar/:qs_id', {
             templateUrl : function (params) {

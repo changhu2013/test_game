@@ -95,15 +95,26 @@ router.get('/warzone/:qs_id', function(req, res){
 });
 
 //排行榜
-router.get('/ranklist', function(req, res){
-    var qs_id = '4';
+router.get('/ranklist/:qs_id', function(req, res){
+    var qs_id = req.params.qs_id;
     StoreBattle.where({'qsid': qs_id}).sort({
         maxBattleScore: 'desc'
     }).exec(function (err, data) {
         if(err) throw err;
-        res.render('ranklist', {
-            rankList: util.toJSON(data)
-        });
+        if(data.length > 0){
+            res.render('ranklist', {
+                qtitle : data[0].get('qtitle'),
+                rankList: util.toJSON(data)
+            });
+        } else {
+            QuestionStore.findById(qs_id, function (err, data) {
+                if(err) throw err;
+                res.render('ranklist', {
+                    qtitle : data.get('title'),
+                    rankList: []
+                });
+            });
+        }
     });
 });
 

@@ -162,6 +162,7 @@ router.get('/drillwar/:qs_id', function(req, res){
                         sid: sid,
                         name: req.session.user.name,
                         qsid: qs_id,
+                        qtitle: questionStoreData.get('title'),
                         bid: bid,
                         lastTime: battleData.get('start')
                     }, function (err, data) {
