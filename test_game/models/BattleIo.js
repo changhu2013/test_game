@@ -88,7 +88,7 @@ BattleIo.prototype.setValue = function(qsid, bid, sid, key, value){
 }
 
 //更新或获取 状态
-BattleIo.prototype.setStatus = function(qsid, bid, sid, status){
+BattleIo.prototype.status = function(qsid, bid, sid, status){
 	//如果status为undefined，则该方法为get方法，即返回当前状态
 	//如果status不为undefined，则该方法为set方法，设置属性
 
