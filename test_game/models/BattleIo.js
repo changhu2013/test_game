@@ -72,18 +72,13 @@ function BattleIo(){
 }
 
 //进入挑战  或 获取某题集挑战数据
-BattleIo.prototype.joinBattle = function(qsid, bid, sid){
+BattleIo.prototype.battle = function(qsid, bid, sid){
 	//如果bid 和 sid为空 则返回挑战数据
 	//如果bid 和 sid不为空 则表示进入挑战
 }
 
 //进入练习赛 或获取某题集练习数据
-BattleIo.prototype.joinDrill = function(qsid, bid, sid){
-
-}
-
-//更新对战数据
-BattleIo.prototype.setValue = function(qsid, bid, sid, key, value){
+BattleIo.prototype.drill = function(qsid, bid, sid){
 
 }
 
