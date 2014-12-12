@@ -134,9 +134,6 @@ Setting.set('battleQuestionNum', 20);
 console.log(Setting.data);
 */
 
+var Command = require('./public/command.js');
 
-StoreBattle.find({}).limit(1).exec(function(err, battles){
- battles = util.toJSON(battles);
- console.log(battles);
-});
-
+console.log(Command);
