@@ -1,5 +1,10 @@
 @charset "utf-8";
 
+body,p,div,ul,li {
+  padding: 0;
+  margin: 0;
+}
+
 body {
   font-size: 100%;
   background: #f7f7f7;
@@ -8,6 +13,27 @@ body {
 
 ul, li {
   list-style: none;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.layout-wp {
+  .layout-hd {
+    margin: 0 5px;
+  }
+  .layout-bd {
+    margin: 0 5px;
+  }
 }
 
 /* 通用的提示信息 */
@@ -186,6 +212,27 @@ header {
         background: #269abc;
         color: #fff;
       }
+    }
+  }
+}
+
+
+
+.rank-items {
+  .rank-item {
+    display: -webkit-box;
+    display: -ms-box;
+    display: -moz-box;
+    display: box;
+    padding: 0.75em 0.4em;
+    border-top: 1px solid #ececec;
+    border-bottom: 1px solid #ececec;
+    div {
+      -webkit-box-flex: 1;
+      -moz-box-flex: 1;
+      -ms-box-flex: 1;
+      box-flex: 1;
+      font-size: 1em;
     }
   }
 }

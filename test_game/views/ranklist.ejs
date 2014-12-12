@@ -1,1 +1,16 @@
-排行榜
+<section class="layout-wp">
+    <section class="layout-hd">
+        <h3 class="text-center">xxx题集排行榜</h3>
+    </section>
+    <section class="layout bd">
+        <ul class="rank-items">
+            <% rankList.forEach(function(rank){ %>
+                <li class="rank-item">
+                    <div class="name">姓名：<%=rank.name%></div>
+                    <div class="scope">挑战积分：<%=rank.maxBattleScore%></div>
+                    <div class="time">挑战时间：<%=rank.lastTime%></div>
+                </li>
+            <%});%>
+        </ul>
+    </section>
+</section>
