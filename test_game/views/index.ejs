@@ -27,6 +27,7 @@
     </head>
 <body ng-controller="main_controller">
         <header>
+            <input type="hidden" ng-init="user.sid = '<%=user.sid%>'"/>
             <div class="user" ng-cloak>
                 <% if(user){ %><%=user.name%><% }%>
             </div>
@@ -67,14 +68,15 @@
     //设置时间本地化
     moment.locale('zh-cn');
 
-    var socket = io();
     var oTips = $('.tips');
+    /*var socket = io();
     socket.on('new connect', function(m){
         oTips.css('height', '2em').text(m);
         setTimeout(function () {
             oTips.css('height', '0').text('');
         }, 2000);
-    });
+    });*/
+
 
     var app = angular.module('test_game', ['ngRoute', 'ui.bootstrap']);
     app.config(['$routeProvider', function($routeProvider) {

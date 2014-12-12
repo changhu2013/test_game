@@ -11,21 +11,48 @@
 //  1.2.2: 小张在某场战斗里面取得了胜利,并破了该题集的最高历史记录
 //  1.2.3  小张在某场战斗里面失败
 
-function BattleIo(){}
-
-BattleIo['onLineData'] = {}; //在线人员数据
-BattleIo['warZoneData'] = {}; //在题集里人员数据(未进入战场和练兵场)
-BattleIo['battleData'] = {}; //在某个题集下的战斗中的人员
-BattleIo['drillData'] = {}; //在某个题集下的练习的人员
+function BattleIo(){
+	this.io = global.io;
+	this['onLineData'] = []; //在线人员数据
+	this['warZoneData'] = []; //在题集里人员数据(未进入战场和练兵场)
+	this['battleData'] = []; //在某个题集下的战斗中的人员
+	this['drillData'] = []; //在某个题集下的练习的人员
+}
 
 //服务器IO接收命令
 	//1.接收有人连接上来
 	//2.接收有人进入了题集
     //3.接收有人进入了题集下面的战场或者练兵场
-	//4.接收战斗或者练兵场结束
-	//5.接收战斗或者练兵场逃跑
-	//
+	//4.接收有人创建了题集下面的战场或者练兵场
+	//5.接收战斗或者练兵场结束
+	//6.接收战斗或者练兵场逃跑
+	//7.接收有人破了该题集的历史记录
+
+BattleIo.prototype.receive = function (type, socket) {
+	var top = this;
+	socket.on(type, function(data){
+		switch (type){
+			case 'myConn': top.doNewConn(data);break;
+		}
+	});
+}
+
+//处理新的链接
+BattleIo.prototype.doNewConn = function (data) {
+	var userId = data.sid;
+	if(this.onLineData.indexOf(userId) == -1){
+		this.onLineData.push(data.sid);
+	}
+	console.log("当前在线人数:" + this.onLineData);
+}
 
 //服务器IO发出命令
 
+	//1.当有人链接上来,需要记录数据,是否需要广播待定
+    //2.
 
+BattleIo.prototype.send = function (type, data) {
+	this.io.emit(type, data);
+}
+
+module.exports = new BattleIo();
