@@ -52,10 +52,10 @@ router.post('/valianswer', function (req, res) {
     var bid = req.query.bid; //战场ID
     Question.findById(_id, function(err, data){
         console.log(data);
+        var result = {}; //结果
         var bidInfo = questionBattleData[bid]; //战场信息
         var sid = req.session.user.sid;
         var userInfo = bidInfo['users'][sid];
-
         if(data && data.get('answer') == answer){ //答对
             userInfo.validity.push(_id); //更新答对题目ID
             userInfo.progress = userInfo.validity.length / parseInt(Setting.get('battleQuestionNum')); //进度
@@ -65,17 +65,16 @@ router.post('/valianswer', function (req, res) {
                 userInfo.property++; //增加一个道具
                 userInfo.serialValidity = 0; //并将连续答对的题目清0
             }
-            res.send({
-                success: true,
-                battleData: bidInfo
-            });
+            result['success'] = true;
         } else {
-            userInfo.mistake.push(_id); //更新答对题目ID
-            res.send({
-                success: false,
-                battleData: bidInfo
-            })
+            userInfo.mistake.push(_id); //更新答错题目ID
+            result['success'] = false;
         }
+        if((userInfo.mistake.length + userInfo.validity.length) == parseInt(Setting.get('battleQuestionNum'))){
+            userInfo['statu'] = 'C';
+        }
+        result['battleData'] = bidInfo;
+        res.send(result);
     })
 });
 

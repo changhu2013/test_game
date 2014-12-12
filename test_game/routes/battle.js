@@ -38,7 +38,7 @@ global.questionBattleData = questionBattleData;
  //打错题目
  mistake: [],
 
- //状态: I-正在进行 E-跑路
+ //状态: I-正在进行 E-跑路 C-完成
  status: 'I'
  }
  }
