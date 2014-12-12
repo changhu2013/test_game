@@ -14,8 +14,11 @@ var Battle = mongoose.model('Battle');
 var QuestionStore = mongoose.model('QuestionStore');
 var StoreBattle = mongoose.model('StoreBattle');
 
+//题集生成的保存目录
+var questionStoreDir = global.questionStoreDir;
+
 //保存题集下战场的记录(包括练习和联网对战)
-var questionBattleData = [];
+var questionBattleData = {};
 global.questionBattleData = questionBattleData;
 /*var questionBattleData = {
  //战场ID
@@ -116,7 +119,7 @@ router.get('/battle/:qs_id', function(req, res){
     var qs_id = req.params.qs_id;
     //2.通过题集编号去获取试卷号:然后随机一套试卷
     var paperId = parseInt(Math.random() * parseInt(Setting.get('paperNum'))); //试卷ID
-    var path = 'f:\\qs\\' + qs_id + '\\' + paperId + '.json';
+    var path = questionStoreDir + qs_id + '\\' + paperId + '.json';
     var data=fs.readFileSync(path, "utf-8");
     console.log(data);
     res.render('drillwar', {
@@ -132,7 +135,7 @@ router.get('/drillwar/:qs_id', function(req, res){
     var qs_id = req.params.qs_id;
     //2.通过题集编号去获取试卷号:然后随机一套试卷
     var paperId = parseInt(Math.random() * parseInt(Setting.get('paperNum'))); //试卷ID
-    var path = 'f:\\qs\\' + qs_id + '\\' + paperId + '.json';
+    var path = questionStoreDir + qs_id + '\\' + paperId + '.json';
     var questionData = fs.readFileSync(path, "utf-8");
     console.log(questionData);
 

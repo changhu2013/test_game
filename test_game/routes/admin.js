@@ -20,6 +20,9 @@ var multipartMiddleware = multipart();
 var createPaperNum = Setting.get('paperNum'); //每个题集下生成多少套题目
 var paperQuestionNum = Setting.get('battleQuestionNum'); //每套题有多少个题
 
+//题集生成的保存目录
+var questionStoreDir = global.questionStoreDir;
+
 require('../models/setting.js');
 require('../models/user.js');
 require('../models/questionstore.js');
@@ -180,9 +183,8 @@ router.post('/importquestions', multipartMiddleware, function(req, res){
                         content[i]['_id'] = params[i+1].get('_id').toString();
                          delete content[i]['answer'];
                     }
-                    var questStoreDir = 'f:\\qs'; //文件保存里面
                     //根据题集生成文件夹
-                    questStoreDir += '\\' + qsid;
+                    questStoreDir += qsid;
                     fileutil.mkdirs(questStoreDir, 0755, function(){
                         //生成试卷
                         for(var k=0;k<createPaperNum;k++){

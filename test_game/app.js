@@ -2,6 +2,9 @@ var MongoStore = require('connect-mongodb');
 var settings = require('./settings');
 var mongoose = require('mongoose');
 
+//题集生成的保存目录
+global.questionStoreDir = __dirname + '/qs/';
+
 var express = require('express');
 var path = require('path');
 var favicon = require('static-favicon');
