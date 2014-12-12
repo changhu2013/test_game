@@ -75,6 +75,13 @@ function BattleIo(){
 BattleIo.prototype.battle = function(qsid, bid, sid){
 	//如果bid 和 sid为空 则返回挑战数据
 	//如果bid 和 sid不为空 则表示进入挑战
+	if(bid && sid){
+
+	}else {
+
+		return
+	}
+
 }
 
 //进入练习赛 或获取某题集练习数据
@@ -108,7 +115,6 @@ BattleIo.prototype.property = function(qsid, bid, sid, property) {
 BattleIo.prototype.progress = function(qsid, bid, sid, proress){
 
 }
-
 
 //服务器IO接收命令
 	//1.接收有人连接上来
