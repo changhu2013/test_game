@@ -2,6 +2,8 @@ var express = require('express');
 var mongoose = require('mongoose');
 var url = require('url');
 var util = require('../models/util.js');
+var fs = require('fs');
+var Setting = require('../models/setting.js');
 
 require('../models/battle.js');
 require('../models/questionstore.js');
@@ -12,9 +14,9 @@ var Battle = mongoose.model('Battle');
 var QuestionStore = mongoose.model('QuestionStore');
 var StoreBattle = mongoose.model('StoreBattle');
 
-
 //保存题集下战场的记录(包括练习和联网对战)
 var questionBattleData = [];
+global.questionBattleData = questionBattleData;
 /*var questionBattleData = {
  //战场ID
  bid: {
@@ -123,6 +125,7 @@ router.get('/battle/:qs_id', function(req, res){
     });
 });
 
+
 //练兵场
 router.get('/drillwar/:qs_id', function(req, res){
     //1.拿到题集编号
@@ -134,7 +137,7 @@ router.get('/drillwar/:qs_id', function(req, res){
     console.log(questionData);
 
     QuestionStore.findById(qs_id, function (err, questionStoreData) {
-        if(err) return;
+        if(err) throw err;
         //存储对战信息
         var nowTime = new Date();
         var battle = new Battle();
@@ -196,5 +199,6 @@ router.get('/drillwar/:qs_id', function(req, res){
         });
     });
 });
+
 
 module.exports = router;

@@ -22,13 +22,13 @@ var StoreBattle = mongoose.model('StoreBattle');
 
 var router = express.Router();
 router.get('/', function(req, res) {
+    var query = url.parse(req.url, true).query;
+    var sid = query.sid;
+    console.log('sid:' + sid);
     //判断是否登录
-    if(req.session && req.session.user){
+    if(req.session && req.session.user && (sid == req.session.user.sid)){
         res.render('index', {user : req.session.user});
     }else {
-        var query = url.parse(req.url, true).query;
-        var sid = query.sid;
-        console.log('sid:' + sid);
         if(sid == undefined){
             req.flash('success', '错误的sid');
             res.render('index');
@@ -104,6 +104,5 @@ router.get('/manual', function(req, res){
     console.log('游戏规则');
     res.render('manual');
 });
-
 
 module.exports = router;
