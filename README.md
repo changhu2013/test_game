@@ -19,3 +19,30 @@ db.user.insert({sid:101, name:'张三'})
 db.user.find()
 db.users.find({sid:"102"})
 
+
+------  index.js
+/main   首页
+
+/honor 荣誉榜
+
+/mybattles  我的挑战
+
+/manual 游戏规则
+
+/warzone/:qs_id  战区  列出某某题集下的正在进行的挑战，以及每个挑战下的人名
+
+
+------ battle.js
+/battle/:b_id  挑战 挑战界面， 进行挑战
+
+/ranklist 战区内积分排行榜
+
+/drillwar/:qs_id  练兵场
+
+
+----- /route/question.js 问题相关
+/question/valianswer 校验答案(答题过程中的提交)
+/question/gooutbattle 中途退出/逃跑
+
+
+

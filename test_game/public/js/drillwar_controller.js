@@ -1,4 +1,4 @@
-drillwar_controller = function($scope, $http){
+drillwar_controller = function($scope, $http, $location){
 	$scope.questionIndex = 1; //题目序号
 	$scope.timer = 1; //定时器
 	//计时器,提交答案的时候计时器要暂停
@@ -66,17 +66,17 @@ drillwar_controller = function($scope, $http){
 	});
 
 	//退出or逃跑
-	$scope.goOutBattle = function () {
+	$scope.goOutBattle = function (bid) {
 		$http({
 			url: '/question/gooutbattle',
 			method: 'POST',
 			params: {
-				bid: $scope.battle_bid
+				bid: bid
 			},
 			cache: false,
 			timeout: 3000
 		}).success(function () {
-			
+			$location.path('/main');
 		});
 	}
 };

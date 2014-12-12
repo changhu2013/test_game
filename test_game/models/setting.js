@@ -4,7 +4,7 @@ var Setting = function (data) {
     this.data = data ;
 };
 
-var file =  __dirname + '\\config.json';
+var file =  __dirname + '/config.json';
 fs.openSync(file, 'a');
 
 var doInit = function(){

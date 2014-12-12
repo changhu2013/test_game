@@ -13,7 +13,7 @@ var Battle = new Schema({
     status : String,
 
     //题集ID
-    qsid : String,
+    qsid : ObjectId,
     qstitle : String, //挑战题集名称
 
     //开始时间

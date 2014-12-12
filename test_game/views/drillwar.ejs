@@ -1,9 +1,8 @@
-<input type="hidden" value="<%=bid%>" ng-model="battle_bid"/>
 <div class="panel panel-default">
     <div class="panel-heading">
         <div class="row">
             <div class="col-md-2 col-xs-2">
-                <button class="btn btn-default btn-sm btn-xs" type="button" ng-click="goOutBattle();">
+                <button class="btn btn-default btn-sm btn-xs" type="button" ng-click="goOutBattle('<%=bid%>');">
                     撤退
                 </button>
             </div>
@@ -53,7 +52,7 @@
                 </dt>
                 <dd class="list-group-item">
                     <% for(var p in question.opts) {%>
-                        <p class="questions-opt" data-bid="<%=bid%>" data-_id=<%=question._id%> data-answer="<%=p%>"><%=p%>、<%=question.opts[p]%></p>
+                        <p class="questions-opt" data-bid="<%=bid%>" data-_id="<%=question._id%>" data-answer="<%=p%>"><%=p%>、<%=question.opts[p]%></p>
                     <%}%>
                 </dd>
             </dl>
