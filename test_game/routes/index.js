@@ -1,6 +1,7 @@
 var express = require('express');
 var mongoose = require('mongoose');
 var url = require('url');
+var util = require('../models/util.js');
 var querystring = require('querystring');
 var fs = require('fs');
 
@@ -95,8 +96,15 @@ router.get('/warzone/:qs_id', function(req, res){
 
 //排行榜
 router.get('/ranklist', function(req, res){
-    console.log('排行榜');
-    res.render('ranklist');
+    var qs_id = '4';
+    StoreBattle.where({'qsid': qs_id}).sort({
+        maxBattleScore: 'desc'
+    }).exec(function (err, data) {
+        if(err) throw err;
+        res.render('ranklist', {
+            rankList: util.toJSON(data)
+        });
+    });
 });
 
 //游戏规则

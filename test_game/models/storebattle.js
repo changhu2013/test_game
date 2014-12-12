@@ -13,9 +13,10 @@ var QuestionStore =  mongoose.model('QuestionStore');
 var Mixed = mongoose.Schema.Types.Mixed;
 
 var StoreBattle = new Schema({
-    qsid : ObjectId, //题集ID
+    qsid : String, //题集ID
     sid : String,  //用户ID
-    bid : ObjectId,  //挑战ID
+    name: String, //用户名
+    bid : String,  //挑战ID
     maxBattleScore : Number, // 该题集下挑战的最高积分
     maxDrillScore : Number,  // 该题集下练习的最高积分
     lastTime : Date //最近一次挑战时间

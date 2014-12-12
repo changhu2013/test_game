@@ -160,6 +160,7 @@ router.get('/drillwar/:qs_id', function(req, res){
                 if(storeBattleData){
                     StoreBattle.update({
                         sid: sid,
+                        name: req.session.user.name,
                         qsid: qs_id,
                         bid: bid,
                         lastTime: battleData.get('start')
