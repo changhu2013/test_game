@@ -184,8 +184,8 @@ router.post('/importquestions', multipartMiddleware, function(req, res){
                          delete content[i]['answer'];
                     }
                     //根据题集生成文件夹
-                    questionStoreDir += qsid;
-                    fileutil.mkdirs(questionStoreDir, 0755, function(){
+                    var qDir = questionStoreDir + qsid;
+                    fileutil.mkdirs(qDir, 0755, function(){
                         //生成试卷
                         for(var k=0;k<createPaperNum;k++){
                             var qNo = [];
@@ -218,7 +218,7 @@ router.post('/importquestions', multipartMiddleware, function(req, res){
                                 }
                             }
                             var str = '[' + arr.join(',') + ']';
-                            var fn = questionStoreDir + '\\' + k + '.json';
+                            var fn = qDir + '\\' + k + '.json';
                             fs.writeFile(fn, str, function (e) {
                                 if(e) throw e;
                             });
