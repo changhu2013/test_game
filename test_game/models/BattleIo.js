@@ -13,11 +13,85 @@
 
 function BattleIo(){
 	this.io = global.io;
+
+
 	this['onLineData'] = []; //在线人员数据
-	this['warZoneData'] = []; //在题集里人员数据(未进入战场和练兵场)
-	this['battleData'] = []; //在某个题集下的战斗中的人员
-	this['drillData'] = []; //在某个题集下的练习的人员
+
+
+	this['battleData'] = {}; //挑战者数据
+	/*
+	 {
+	    qsid1 : {
+	    	bid1 : {
+				 sid1 : {
+					 //道具数量
+					 property: 2,
+					 //进度
+					 progress: 50,
+					 //连续答对的题目
+					 serialValidity: 0,
+					 //答对题目
+					 validity:[],
+					 //打错题目
+					 mistake: [],
+					 //状态: I-正在进行 E-跑路 C-完成
+					 status: 'I'
+				 },
+				 sid2 : {
+				 	//另一个挑战者数据
+				 }
+	    	},
+
+	    	bid2 : {
+	    		//另一个战场
+	    	}
+
+	    }
+	 }
+	*/
+
+	this['drillData'] = {}; //练习人员数据
+	/*
+	{
+	    qsid1 : {
+	    	bid1 : {
+	    		sid1 : {
+	 				//进度
+	 				progress: 50,
+	 				//答对题目
+	 				validity:[],
+	 				//打错题目
+	 				mistake: [],
+	 				//状态: I-正在进行 E-跑路 C-完成
+	 				status: 'I'
+	    		}
+	    	}
+	    }
+	}
+	*/
 }
+
+//进入挑战
+BattleIo.prototype.joinBattle = function(qsid, bid, sid){
+	//
+}
+
+//更新对战数据
+BattleIo.prototype.setValue = function(qsid, bid, sid, key, value){
+
+}
+
+//设置状态
+BattleIo.prototype.setStatus = function(qsid, bid, sid, status){
+
+}
+
+
+//进入练习
+BattleIo.prototype.joinDrill = function(qsid, bid, sid){
+
+}
+
 
 //服务器IO接收命令
 	//1.接收有人连接上来
