@@ -136,4 +136,8 @@ console.log(Setting.data);
 
 var Command = require('./public/command.js');
 
-console.log(Command);
+//console.log(Command);
+
+var now = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+console.log(now);
+
