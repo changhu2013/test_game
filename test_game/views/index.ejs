@@ -29,7 +29,7 @@
     </head>
 <body ng-controller="main_controller">
         <header>
-            <input type="hidden" ng-init="user.sid = '<%=user.sid%>'"/>
+            <input type="hidden" ng-init="user.sid = '<%if(user){%><%=user.sid%><%}%>'"/>
             <div class="user" ng-cloak>
                 <% if(user){ %><%=user.name%><% }%>
             </div>
