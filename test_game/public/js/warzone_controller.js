@@ -24,7 +24,7 @@ warzone_controller = function($scope, $http, $routeParams){
 
     var doLoad = function(){
         $http({
-            url : '/battle/qstore',
+            url : '/battle/getWarzoneData',
             method : 'POST',
             params : {
                 qsid : $routeParams.qs_id,

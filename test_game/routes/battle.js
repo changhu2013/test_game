@@ -4,6 +4,7 @@ var url = require('url');
 var util = require('../models/util.js');
 var fs = require('fs');
 var Setting = require('../models/setting.js');
+var BattleIo = mongoose.model('BattleIo.js');
 
 require('../models/battle.js');
 require('../models/questionstore.js');
@@ -112,6 +113,32 @@ router.post('/qstore', function(req, res){
     });
 });
 
+router.post('/getWarzoneData', function (res, req) {
+    var query = url.parse(req.url, true).query;
+    var qsid = query.qsid;
+    var skip = query.skip || 0;
+    var limit = query.limit || 5;
+    var battleData = BattleIo.battleData;
+    var qsData = battleData[qsid];
+    var timer = 0;
+    var data = [];
+    for(var p in qsData){
+        var bData = {};
+        bData[p] = [];
+        if(timer == skip && timer < limit){
+            for(var attr in qsData[p]){
+                bData[p].push(attr);
+            }
+        }
+        data.push(bData);
+        if(timer >= limit){
+            break;
+        }
+        timer++;
+    }
+    res.send(data);
+})
+
 //战场
 router.get('/battle/:qs_id', function(req, res){
     /*console.log('战场');
@@ -162,6 +189,7 @@ router.get('/drillwar/:qs_id', function(req, res){
                         sid: sid,
                         name: req.session.user.name,
                         qsid: qs_id,
+                        qtitle: questionStoreData.get('title'),
                         bid: bid,
                         lastTime: battleData.get('start')
                     }, function (err, data) {

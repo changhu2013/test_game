@@ -29,7 +29,7 @@
     </head>
 <body ng-controller="main_controller">
         <header>
-            <input type="hidden" ng-init="user.sid = '<%=user.sid%>'"/>
+            <input type="hidden" ng-init="user.sid = '<%if(user){%><%=user.sid%><%}%>'"/>
             <div class="user" ng-cloak>
                 <% if(user){ %><%=user.name%><% }%>
             </div>
@@ -104,8 +104,10 @@
                 return '/battle/battle/' + params['qs_id']
             }, //某一题集下的战场
             controller  : 'battle_controller'
-        }).when('/ranklist', {
-            templateUrl : '/ranklist', //某考题集积分排行榜
+        }).when('/ranklist/:qs_id', {
+            templateUrl : function (params) {
+                return '/ranklist/' + params['qs_id']
+            },//某考题集积分排行榜
             controller  : 'ranklist_controller'
         }).when('/drillwar/:qs_id', {
             templateUrl : function (params) {

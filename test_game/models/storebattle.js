@@ -14,6 +14,7 @@ var Mixed = mongoose.Schema.Types.Mixed;
 
 var StoreBattle = new Schema({
     qsid : String, //题集ID
+    qtitle: String, //题集名
     sid : String,  //用户ID
     name: String, //用户名
     bid : String,  //挑战ID
