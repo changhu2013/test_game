@@ -2,6 +2,9 @@
 //引入命令常量
 var Command = require('../public/command.js');
 var moment = require('moment');
+var mongoose = require('mongoose');
+
+var User = mongoose.model('User');
 
 
 
@@ -84,7 +87,7 @@ BattleIo.prototype.setSocketIo = function(io){
 
 			console.log(data);
 
-			console.log(me.login);
+			//console.log(me.login);
 			var sid = data.sid;
 			me.login(sid, socket);
 		});
@@ -148,7 +151,15 @@ BattleIo.prototype.getBattleMsg = function(qsid, bid, sid){
 			mistake:[],
 			status:'W'
 		}
+
+		User.findOne({
+			sid: sid
+		}, function (err, data) {
+			if(err) throw err;
+			u['name'] = data.get('name');
+		});
 	}
+	console.log("print:" + this.battleData);
 	return u;
 };
 

@@ -1,6 +1,5 @@
-
 battle_controller = function($scope, $http, $routeParams){
-
-    alert($routeParams.bid);
-
+    io.on(Command.JOIN_BATTLE, function () {
+        alert(1);
+    })
 };

@@ -121,21 +121,25 @@ router.post('/qstore', function(req, res){
     });
 });
 
-router.post('/getWarzoneData', function (res, req) {
-    var query = url.parse(req.url, true).query;
+router.post('/getWarzoneData', function (req, res) {
+    var query = req.query;
     var qsid = query.qsid;
     var skip = query.skip || 0;
     var limit = query.limit || 5;
-    var battleData = BattleIo.battleData;
-    var qsData = battleData[qsid];
+    var qsData = BattleIo.getBattleMsg(qsid)
     var timer = 0;
     var data = [];
     for(var p in qsData){
         var bData = {};
-        bData[p] = [];
+        //bData[p] = [];
+        bData['bid'] = p;
+        bData['users'] = [];
         if(timer == skip && timer < limit){
             for(var attr in qsData[p]){
-                bData[p].push(attr);
+                bData['users'].push({
+                    sid: attr,
+                    name: qsData[p][attr]['name']
+                });
             }
         }
         data.push(bData);
@@ -148,7 +152,7 @@ router.post('/getWarzoneData', function (res, req) {
 })
 
 //战场
-router.get('/battle/:qs_id', function(req, res){
+router.get('/battle/:qs_id/:bid', function(req, res){
     /*console.log('战场');
     //1.拿到题集编号
     var qs_id = req.params.qs_id;
@@ -161,7 +165,17 @@ router.get('/battle/:qs_id', function(req, res){
         users: [req.session.user],
         qStore: JSON.parse(data) //题目
     });*/
-    res.render('battle');
+    var qs_id = req.params.qs_id;
+    var bid = req.params.bid;
+    QuestionStore.findById(qs_id, function (err, questionStoreData) {
+        if (err) throw err;
+        res.render('battle', {
+            startBtn : true,
+            users: [req.session.user],
+            bid: bid,
+            qstitle: questionStoreData.get('title')
+        });
+    });
 });
 
 
@@ -241,5 +255,65 @@ router.get('/drillwar/:qs_id', function(req, res){
     });
 });
 
+router.get('/createBattle/:qs_id', function (req, res) {
+    var qs_id = req.params.qs_id;
+    QuestionStore.findById(qs_id, function (err, questionStoreData) {
+        if(err) throw err;
+        var nowTime = new Date();
+        var battle = new Battle();
+        battle['sid'] = req.session.user.sid;
+        battle['sname'] = req.session.user.name;
+        battle['status'] = 'I'; //正在进行状态
+        battle['qsid'] = qs_id; //题集ID
+        battle['qstitle'] = questionStoreData.get('title');
+        battle['start'] = nowTime;//挑战开始时间
+
+        battle.save(function (err, battleData) {
+            if(err) throw err;
+            //该战役的ID
+            var bid = battleData.get('_id').toString();
+            var sid = req.session.user.sid;
+            StoreBattle.findOne({'sid': sid}, function (err, storeBattleData) {
+                if (storeBattleData) {
+                    StoreBattle.update({
+                        sid: sid,
+                        name: req.session.user.name,
+                        qsid: qs_id,
+                        qtitle: questionStoreData.get('title'),
+                        bid: bid,
+                        lastTime: battleData.get('start')
+                    }, function (err, data) {
+                        BattleIo.joinBattle(qs_id, bid, sid);
+                        res.render('battle', {
+                            startBtn : true,
+                            users: [req.session.user],
+                            bid: bid,
+                            qstitle: questionStoreData.get('title')
+                        });
+                    });
+                } else {
+                    var storeBattle = new StoreBattle();
+                    storeBattle['sid'] = sid;
+                    storeBattle['qsid'] = qs_id;
+                    storeBattle['bid'] = bid;
+                    storeBattle['lastTime'] = battleData.get('start');
+
+                    BattleIo.joinBattle(qs_id, bid, sid);
+
+                    storeBattle.save(function (err, data) {
+                        res.render('battle', {
+                            startBtn : true,
+                            users: [req.session.user],
+                            bid: bid,
+                            qstitle: questionStoreData.get('title')
+                        });
+                    });
+                }
+            });
+
+        });
+    });
+
+});
 
 module.exports = router;

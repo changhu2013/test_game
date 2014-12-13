@@ -78,7 +78,7 @@
     socket.emit(Command.CLIENT_READY, {sid:1});
 
     socket.on(Command.SERVER_READY, function(m){
-        alert(m);
+        //alert(m);
     });
 
     var app = angular.module('test_game', ['ngRoute', 'ui.bootstrap']);
@@ -99,9 +99,9 @@
                 return '/warzone/' + params['qs_id']
             }, //某一题集下的对战房间
             controller  : 'warzone_controller'
-        }).when('/battle/:qs_id', {
+        }).when('/battle/:qs_id/:bid', {
             templateUrl : function (params) {
-                return '/battle/battle/' + params['qs_id']
+                return '/battle/battle/' + params['qs_id'] + '/' + params['bid']
             }, //某一题集下的战场
             controller  : 'battle_controller'
         }).when('/ranklist/:qs_id', {
@@ -114,6 +114,11 @@
                 return '/battle/drillwar/' + params['qs_id']
             }, //某一题集下的练兵场
             controller  : 'drillwar_controller'
+        }).when('/createBattle/:qs_id', {
+            templateUrl : function(params){
+                return '/battle/createBattle/' + params['qs_id'];
+            },
+            controller  : 'battle_controller'
         }).otherwise({
             redirectTo : '/main'
         });
