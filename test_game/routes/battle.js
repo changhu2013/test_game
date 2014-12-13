@@ -60,8 +60,8 @@ router.post('/laststore', function(req, res) {
         battles = util.toJSON(battles);
         var qsids = [];
         for(var k = 0; k < battles.length; k++){
-            var t = battles[k].qsid;
-            qsids.push(t);
+            var b = battles[k];
+            qsids.push(b.qsid);
         }
         QuestionStore.find({
             _id : {
@@ -74,6 +74,14 @@ router.post('/laststore', function(req, res) {
                 for(var j = 0 ;j < stores.length; j++){
                     var s = stores[j];
                     if(b.qsid == s._id){
+                        var msg = BattleIo.getBattleMsg(b.qsid);
+                        var count = 0;
+                        for(var bid in msg){
+                            for(var sid in msg[bid]){
+                                count++;
+                            }
+                        }
+                        s.onLineUserNum = count;
                         b.store = s;
                         break;
                     }
