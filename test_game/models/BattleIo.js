@@ -96,10 +96,19 @@ BattleIo.prototype.setSocketIo = function(io){
 
 //给某人发送消息
 BattleIo.prototype.send =function(sid, command, data){
-	console.log('向客户端发送消息' + command);
+	console.log('发送:' + command + ' ' + data);
 	var u = this.onLineData[sid];
 	if(u){
 		u.socket.emit(command, data);
+	}
+}
+
+//广播
+BattleIo.prototype.broadcast = function(sid, rid, command, data){
+	console.log('广播：' + command + ' ' + data);
+	var u = this.onLineData[sid];
+	if(u){
+		u.socket.to(rid).emit(command, data);
 	}
 }
 
@@ -206,6 +215,10 @@ BattleIo.prototype.battleStatus = function(qsid, bid, sid, status){
 	var u = getBattleMsg(qsid, bid, sid);
 	if(status){
 		u.status = status;
+
+		//在该房间内广播战报消息
+		var rid = 'battle-' + qsid + '-' + bid;
+		this.broadcast(sid, rid, Command.BATTLE_NEWS, u);
 	}else {
 		return u.status;
 	}
@@ -228,6 +241,10 @@ BattleIo.prototype.battleValidaty = function(qsid, bid, sid, qid){
 	var u = getBattleMsg(qsid, bid, sid);
 	if(qid){
 		u.validity.push(qid);
+
+		//在该房间内广播战报消息
+		var rid = 'battle-' + qsid + '-' + bid;
+		this.broadcast(sid, rid, Command.BATTLE_NEWS, u);
 	}else {
 		return u.validity;
 	}
@@ -248,6 +265,10 @@ BattleIo.prototype.battleMistake = function (qsid, bid, sid, qid) {
 	var u = getBattleMsg(qsid, bid, sid);
 	if(qid){
 		u.mistake.push(qid);
+
+		//在该房间内广播战报消息
+		var rid = 'battle-' + qsid + '-' + bid;
+		this.broadcast(sid, rid, Command.BATTLE_NEWS, u);
 	}else {
 		return u.mistake;
 	}
@@ -268,6 +289,10 @@ BattleIo.prototype.battleProperty = function(qsid, bid, sid, property) {
 	var u = getBattleMsg(qsid, bid, sid);
 	if(property){
 		u.property = property;
+
+		//在该房间内广播战报消息
+		var rid = 'battle-' + qsid + '-' + bid;
+		this.broadcast(sid, rid, Command.BATTLE_NEWS, u);
 	}else {
 		return u.property;
 	}
@@ -278,6 +303,10 @@ BattleIo.prototype.battleProgress = function(qsid, bid, sid, proress){
 	var u = getBattleMsg(qsid, bid, sid);
 	if(proress){
 		u.progress = proress;
+
+		//在该房间内广播战报消息
+		var rid = 'battle-' + qsid + '-' + bid;
+		this.broadcast(sid, rid, Command.BATTLE_NEWS, u);
 	}else {
 		return u.progress;
 	}
@@ -305,7 +334,7 @@ BattleIo.prototype.login = function (sid, socket) {
 	console.log('user:' + sid + ' login ' + msg.login);
 
 	//向客户端发送消息，服务器已经准备好了
-	this.send(sid, Command.SERVER_READY, msg);
+	this.send(sid, Command.SERVER_READY);
 }
 
 

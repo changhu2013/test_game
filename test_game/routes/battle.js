@@ -4,7 +4,7 @@ var url = require('url');
 var util = require('../models/util.js');
 var fs = require('fs');
 var Setting = require('../models/setting.js');
-var BattleIo = mongoose.model('BattleIo.js');
+var BattleIo = require('../models/BattleIo.js')
 
 require('../models/battle.js');
 require('../models/questionstore.js');
