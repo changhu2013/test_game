@@ -1,14 +1,5 @@
 main_controller = function ($scope, $http, $timeout) {
-
-
-    var socket = io();
-    socket.on('ready', function () {
-        socket.emit('myConn', {
-            sid: $scope.user.sid
-        });
-    });
-
-
+    
     //显示题目树标记
     $scope.showQuestionTreeFlag = false;
 
