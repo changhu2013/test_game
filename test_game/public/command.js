@@ -7,10 +7,12 @@
 }('Command', function(){
 
     return {
-        READY : 'ready', //准备好了
+        SERVER_READY : 'server_ready', //服务器准备好了
+        CLIENT_READY : 'client_ready', //客户端准备好了
         BROADCAST : 'broadcast',  //-- msg:'XXXXXXX'  -- 表示广播发送一条信息  在某题集内广播，或在全局广播
 
-        JOIN_BATTLE : 'jon_battle', // -- msg:'XXXXX' --  进入某挑战  当客户端接收到该消息的时候更新战场局势
+        JOIN_BATTLE : 'join_battle', // -- msg:'XXXXX' --  进入某挑战  当客户端接收到该消息的时候更新战场局势
+        JOIN_DRILL : 'join_drill', // -- 进入某题集下的练习
         FIEE_BATTLE : 'flee_battle', //-- msg:'XXXXX' --  逃离挑战  当客户端接收到该消息的时候更新战场局势
 
         ANSWER_RIGHT : 'answer_right',  //-- sid:1 progress:5 -- 表示某人答题正确 当客户端接收到该消息的时候更新对应客户的进度

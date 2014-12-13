@@ -5,8 +5,6 @@ var moment = require('moment');
 
 function BattleIo(){
 
-	this.io = global.io;
-
 	this.onLineData = {}; //在线人员数据
 	/*
 	 {
@@ -69,14 +67,65 @@ function BattleIo(){
 	*/
 }
 
-var getBattleMsg = function(qsid, bid, sid){
+
+//设置IO
+BattleIo.prototype.setSocketIo = function(io){
+
+	var me = this;
+	this.io = io;
+	this.io.on('connection', function(socket){
+
+		console.log('连接上了' );
+
+		//当接收到客户端发送来的READY命令侯表示登陆成功
+		socket.on(Command.CLIENT_READY, function(data){
+
+			console.log(data);
+
+			console.log(me.login);
+			var sid = data.sid;
+			me.login(sid, socket);
+		});
+	});
+	//TODO : 下线消息出力
+
+	return this;
+};
+
+//给某人发送消息
+BattleIo.prototype.send =function(sid, command, data){
+	console.log('向客户端发送消息' + command);
+	var u = this.onLineData[sid];
+	if(u){
+		u.socket.emit(command, data);
+	}
+}
+
+//获取改用户的在线信息
+BattleIo.prototype.getOnLineMsg = function(sid){
+	var u = this.onLineData[sid];
+	if(u && u.socket){
+		return u;
+	}
+}
+
+//获取挑战信息
+//如果 bid 和 sid 均为undefined 则返回挑战题集信息
+//如果 sid 为undefined 则返回战斗信息
+BattleIo.prototype.getBattleMsg = function(qsid, bid, sid){
 	var qs = this.battleData[qsid];
 	if(!qs){
 		qs = this.battleData[qsid] = {};
 	}
+	if(bid == undefined && sid == undefined){
+		return qs;
+	}
 	var b = qs[bid];
 	if(!b){
 		b = qs[bid] = {};
+	}
+	if(sid == undefined){
+		return b;
 	}
 	var u = b[sid];
 	if(!u){
@@ -92,14 +141,23 @@ var getBattleMsg = function(qsid, bid, sid){
 	return u;
 };
 
-var getDrillMsg = function(qsid, bid, sid){
+//获取练习赛信息
+//如果 bid 和 sid 均为undefined, 则返回该题集下的练习赛信息
+//如果 sid 为undefined 则返回该练习信息
+BattleIo.prototype.getDrillMsg = function(qsid, bid, sid){
 	var qs = this.drillData[qsid];
 	if(!qs){
 		qs = this.drillData[qsid] = {};
 	}
+	if(bid == undefined && sid == undefined){
+		return qs;
+	}
 	var b = qs[bid];
 	if(!b){
 		b = qs[bid] = {};
+	}
+	if(sid == undefined){
+		return b;
 	}
 	var u = b[sid];
 	if(!u){
@@ -113,31 +171,29 @@ var getDrillMsg = function(qsid, bid, sid){
 	return u;
 };
 
-//进入挑战  或 获取某题集挑战数据
-BattleIo.prototype.battle = function(qsid, bid, sid){
-	//如果bid 和 sid为空 则返回挑战数据
-	//如果bid 和 sid不为空 则表示进入挑战
-	if(bid && sid){
-		return getBattleMsg(qsid, bid, sid);
-	}else {
-		var qs = this.battleData[qsid];
-		if(!qs){
-			qs = this.battleData[qsid] = {};
-		}
-		return qs;
+//加入挑战
+BattleIo.prototype.joinBattle = function(qsid, bid, sid){
+	var u = this.getOnLineMsg(sid);
+	if(u){
+		//记录挑战消息
+		this.getBattleMsg(qsid, bid, sid);
+
+		//在该房间内广播有人加入挑战的消息
+		var rid = 'battle-' + qsid + '-' + bid;
+		u.socket.join(rid);
+		u.socket.to(rid).emit(Command.JOIN_BATTLE, '加入挑战房间：' + rid);
 	}
 }
 
-//进入练习赛 或获取某题集练习数据
-BattleIo.prototype.drill = function(qsid, bid, sid){
-	if(bid && sid){
-		return getDrillMsg(qsid, bid, sid);
-	}else {
-		var qs = this.drillData[qsid];
-		if(!qs){
-			qs = this.drillData[qsid] = {};
-		}
-		return qs;
+//进入练习赛
+BattleIo.prototype.joinDrill = function(qsid, bid, sid){
+	var u = this.getOnLineMsg(sid);
+	if(u){
+		this.getDrillMsg(qsid, bid, sid);
+
+		var rid = 'drill-' + qsid;
+		u.socket.join(rid);
+		u.socket.to(rid).emit(Command.JOIN_DRILL, '加入练习房间:' + rid);
 	}
 }
 
@@ -235,41 +291,20 @@ BattleIo.prototype.drillProgress = function(qsid, bid, sid, proress){
 	}
 }
 
-//服务器IO接收命令
-	//1.接收有人连接上来
-	//2.接收有人进入了题集
-    //3.接收有人进入了题集下面的战场或者练兵场
-	//4.接收有人创建了题集下面的战场或者练兵场
-	//5.接收战斗或者练兵场结束
-	//6.接收战斗或者练兵场逃跑
-	//7.接收有人破了该题集的历史记录
-
-BattleIo.prototype.receive = function (type, socket) {
-	var top = this;
-	socket.on(type, function(data){
-		switch (type){
-			case 'myConn': top.doNewConn(data);break;
-		}
-	});
-}
-
 //处理新的链接
-BattleIo.prototype.doNewConn = function (data) {
-	var sid = data.sid;
+BattleIo.prototype.login = function (sid, socket) {
 	var msg = this.onLineData[sid];
 	if(!msg){
 		msg = this.onLineData[sid] = {};
 	}
+	msg.socket = socket;
 	msg.login = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+
 	console.log('user:' + sid + ' login ' + msg.login);
+
+	//向客户端发送消息，服务器已经准备好了
+	this.send(sid, Command.SERVER_READY, msg);
 }
 
-//服务器IO发出命令
-//1.当有人链接上来,需要记录数据,是否需要广播待定
-//2.
-
-BattleIo.prototype.send = function (type, data) {
-	this.io.emit(type, data);
-}
 
 module.exports = new BattleIo();

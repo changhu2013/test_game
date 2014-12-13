@@ -21,8 +21,8 @@
 
         <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
         <script src="http://cdn.bootcss.com/angular.js/1.3.0-beta.13/angular-route.min.js"></script>
-        <script src="/javascripts/angular-touch.min.js"></script>
 
+        <script src="/javascripts/angular-touch.min.js"></script>
         <script src="/command.js"></script>
 
         <link rel="stylesheet" href="/css/style.css"/>
@@ -67,20 +67,19 @@
 <script type="text/javascript" src="/js/drillwar_controller.js"></script>
 <script type="text/javascript">
 
-    alert(Command);
-
     //设置时间本地化
     moment.locale('zh-cn');
 
     var oTips = $('.tips');
-    /*var socket = io();
-    socket.on('new connect', function(m){
-        oTips.css('height', '2em').text(m);
-        setTimeout(function () {
-            oTips.css('height', '0').text('');
-        }, 2000);
-    });*/
+    //var socket = io();
 
+    var socket = io.connect('http://localhost:3000');
+
+    socket.emit(Command.CLIENT_READY, {sid:1});
+
+    socket.on(Command.SERVER_READY, function(m){
+        alert(m);
+    });
 
     var app = angular.module('test_game', ['ngRoute', 'ui.bootstrap']);
     app.config(['$routeProvider', function($routeProvider) {
