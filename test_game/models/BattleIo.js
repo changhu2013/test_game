@@ -126,7 +126,7 @@ BattleIo.prototype.getOnLineMsg = function(sid){
 //获取挑战信息
 //如果 bid 和 sid 均为undefined 则返回挑战题集信息
 //如果 sid 为undefined 则返回战斗信息
-BattleIo.prototype.getBattleMsg = function(qsid, bid, sid){
+BattleIo.prototype.getBattleMsg = function(qsid, bid, sid, name){
 	var qs = this.battleData[qsid];
 	if(!qs){
 		qs = this.battleData[qsid] = {};
@@ -144,6 +144,7 @@ BattleIo.prototype.getBattleMsg = function(qsid, bid, sid){
 	var u = b[sid];
 	if(!u){
 		u = b[sid] = {
+			name: name,
 			property:0,
 			progress:0,
 			serialValidity:0,
@@ -151,13 +152,6 @@ BattleIo.prototype.getBattleMsg = function(qsid, bid, sid){
 			mistake:[],
 			status:'W'
 		}
-
-		User.findOne({
-			sid: sid
-		}, function (err, data) {
-			if(err) throw err;
-			u['name'] = data.get('name');
-		});
 	}
 	console.log("print:" + this.battleData);
 	return u;
@@ -190,20 +184,21 @@ BattleIo.prototype.getDrillMsg = function(qsid, bid, sid){
 			status:'I'
 		}
 	}
+	console.log("当前加入的人:" + b);
 	return u;
 };
 
 //加入挑战
-BattleIo.prototype.joinBattle = function(qsid, bid, sid){
+BattleIo.prototype.joinBattle = function(qsid, bid, sid, name){
 	var u = this.getOnLineMsg(sid);
 	if(u){
 		//记录挑战消息
-		this.getBattleMsg(qsid, bid, sid);
+		this.getBattleMsg(qsid, bid, sid, name);
 
 		//在该房间内广播有人加入挑战的消息
 		var rid = 'battle-' + qsid + '-' + bid;
 		u.socket.join(rid);
-		u.socket.to(rid).emit(Command.JOIN_BATTLE, '加入挑战房间：' + rid);
+		u.socket.in(rid).emit(Command.JOIN_BATTLE, this.getBattleMsg(qsid, bid));
 	}
 }
 

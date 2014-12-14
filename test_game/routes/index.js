@@ -43,6 +43,7 @@ router.get('/', function(req, res) {
                     res.render('index');
                 }else {
                     req.flash('success', '登陆成功');
+                    console.log('【' + sid + '】登陆成功');
                     req.session.user = user;
                     res.render('index');
                 }

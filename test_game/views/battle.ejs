@@ -15,7 +15,22 @@
     <div class="panel-body">
         <section class="user-warp">
             <dl class="user-items">
+                <dd class="user-item"  ng-repeat="user in users">
+                    <div class="item-progress">
+                        <div class="item-layout">
+                            <div ng-if="user.sid == <%=user.sid%>">
+                                <div class="mask current"></div>
+                            </div>
 
+                            <div ng-if="user.sid != <%=user.sid%>">
+                                <div class="mask"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        {{user.name}}
+                    </div>
+                </dd>
             </dl>
         </section>
     </div>
@@ -28,5 +43,5 @@
 
     </ul>
 
-    <a class="ui button blue startBtn" ng-disable="true" ng-class="disable" ng-show="<%=startBtn%>">等待</a>
+    <a class="ui button blue startBtn" ng-disable="!battleStatu" ng-class="{disable: !battleStatu}" ng-show="<%=startBtn%>">开始</a>
 </div>
