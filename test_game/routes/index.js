@@ -4,6 +4,7 @@ var url = require('url');
 var util = require('../models/util.js');
 var querystring = require('querystring');
 var fs = require('fs');
+var BattleIo = require('../models/BattleIo.js');
 
 require('../models/Log.js');
 require('../models/user.js');
@@ -88,6 +89,7 @@ router.get('/warzone/:qs_id', function(req, res){
     var qs_id = req.params.qs_id;
     QuestionStore.findById(qs_id, function (err, data) {
         if(err) throw err;
+        BattleIo.joinWarZone(qs_id, req.session.user.sid, req.session.user.name);
         res.render('warzone', {
             qs_id: qs_id, //qs_id: 表示模型questionstores下的_id
             title: data.get('title').toString()

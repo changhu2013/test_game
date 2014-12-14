@@ -4,9 +4,6 @@
  * @param $http
  */
 warzone_controller = function($scope, $http, $routeParams){
-
-
-
     $scope.battles = [];
 
     $scope.skip = 0;
@@ -42,4 +39,23 @@ warzone_controller = function($scope, $http, $routeParams){
         doLoad();
     };
 
+    socket.on(Command.JOIN_WARZONE, function (data) {
+        var warData = [];
+        for(var p in data){
+            var obj = {};
+            obj['bid'] = p;
+            obj['users'] = [];
+            var users = data[p];
+            for(var attr in users){
+                var u = users[attr];
+                u['sid'] = attr;
+                obj['users'].push(u);
+            }
+            warData.push(obj);
+        }
+
+        $scope.$apply(function(){
+            $scope.battles = warData;
+        });
+    });
 };

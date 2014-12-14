@@ -2,11 +2,6 @@
 //引入命令常量
 var Command = require('../public/command.js');
 var moment = require('moment');
-var mongoose = require('mongoose');
-
-var User = mongoose.model('User');
-
-
 
 function BattleIo(){
 
@@ -17,6 +12,19 @@ function BattleIo(){
 	 		login : '2014/12/13 2:12:00' //登陆时间
 	 	}
 	 }
+	 */
+
+	this.warZoneData = {}; //进入战场的人员数据
+	/**
+	 * this.warZoneData = {
+	 *  qsid: [{
+	 *  	sid: sid,
+	 *  	name: name
+	 *  }, {
+	 *  	sid: sid,
+	 *  	name: name
+	 *  }]
+	 * }
 	 */
 
 	this.battleData = {}; //挑战者数据
@@ -157,6 +165,19 @@ BattleIo.prototype.getBattleMsg = function(qsid, bid, sid, name){
 	return u;
 };
 
+
+BattleIo.prototype.getWarZoneData = function (qs_id) {
+	return this.warZoneData[qs_id];
+}
+
+BattleIo.prototype.setWarZoneData = function (qs_id, sid, name) {
+	if(!this.warZoneData[qs_id]){
+		this.warZoneData[qs_id] = [];
+	}
+	var obj = {sid: sid, name: name};
+	this.warZoneData[qs_id].push(obj);
+}
+
 //获取练习赛信息
 //如果 bid 和 sid 均为undefined, 则返回该题集下的练习赛信息
 //如果 sid 为undefined 则返回该练习信息
@@ -188,6 +209,16 @@ BattleIo.prototype.getDrillMsg = function(qsid, bid, sid){
 	return u;
 };
 
+//进入战场
+BattleIo.prototype.joinWarZone = function(qsid, sid, name){
+	var u = this.getOnLineMsg(sid);
+	if(u){
+		this.setWarZoneData(qsid, sid, name)
+		var rid = 'battle-' + qsid;
+		u.socket.join(rid);
+	}
+}
+
 //加入挑战
 BattleIo.prototype.joinBattle = function(qsid, bid, sid, name){
 	var u = this.getOnLineMsg(sid);
@@ -197,6 +228,10 @@ BattleIo.prototype.joinBattle = function(qsid, bid, sid, name){
 
 		//在该房间内广播有人加入挑战的消息
 		var rid = 'battle-' + qsid + '-' + bid;
+
+		//先向战场广播
+		u.socket.to('battle-' + qsid).emit(Command.JOIN_WARZONE, this.getBattleMsg(qsid));
+
 		u.socket.join(rid);
 		u.socket.in(rid).emit(Command.JOIN_BATTLE, this.getBattleMsg(qsid, bid));
 	}
