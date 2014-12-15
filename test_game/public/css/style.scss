@@ -179,29 +179,28 @@ header {
 .user-warp {
   height: 160px;
   .user-items {
-    display: -webkit-box;
-    display: -ms-box;
-    display: -moz-box;
-    display: box;
     .user-item {
-      -webkit-box-flex: 1;
-      -moz-box-flex: 1;
-      -ms-box-flex: 1;
-      box-flex: 1;
-      height: 160px;
-      max-width: 2em;
-      .item-layout {
-        position: relative;
-        height: 100%;
-        margin: 0 auto;
-        width: 80%;
-        .mask{
-          background: blue;
-          width: 100%;
-          position: absolute;
-          bottom: 0;
-          &.current {
-            background: red;
+      .item-progress {
+        margin: 5px 0;
+        border: 1px solid #eee;
+        .item-layout {
+          position: relative;
+          .mask{
+            background: rgb(48, 161, 214);
+            width: 0;
+            height: 2em;
+            line-height: 2em;
+            &.current {
+              background: red;
+            }
+          }
+          p {
+            position: absolute;
+            right: 5px;
+            top: 0;
+            height: 2em;
+            line-height: 2em;
+            color: #333;
           }
         }
       }

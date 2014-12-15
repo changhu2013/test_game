@@ -259,24 +259,30 @@ router.get('/drillwar/:qs_id', function(req, res){
     });
 });
 
+//创建战场-并保存战场状态
 router.get('/createBattle/:qs_id', function (req, res) {
     var qs_id = req.params.qs_id;
     QuestionStore.findById(qs_id, function (err, questionStoreData) {
         if(err) throw err;
-        var nowTime = new Date();
         var battle = new Battle();
         battle['sid'] = req.session.user.sid;
         battle['sname'] = req.session.user.name;
-        battle['status'] = 'I'; //正在进行状态
+        battle['status'] = 'W'; //正在进行状态(等待)
         battle['qsid'] = qs_id; //题集ID
         battle['qstitle'] = questionStoreData.get('title');
-        battle['start'] = nowTime;//挑战开始时间
 
         battle.save(function (err, battleData) {
             if(err) throw err;
             //该战役的ID
             var bid = battleData.get('_id').toString();
             var sid = req.session.user.sid;
+            res.render('battle', {
+                qsid: qs_id,
+                bid: bid,
+                startBtn : true,
+                qstitle: questionStoreData.get('title')
+            });
+
             StoreBattle.findOne({'sid': sid}, function (err, storeBattleData) {
                 if (storeBattleData) {
                     StoreBattle.update({
@@ -294,7 +300,6 @@ router.get('/createBattle/:qs_id', function (req, res) {
                             qsid: qs_id,
                             bid: bid,
                             startBtn : true,
-                            users: [req.session.user],
                             qstitle: questionStoreData.get('title')
                         });
                     });
@@ -315,7 +320,6 @@ router.get('/createBattle/:qs_id', function (req, res) {
                             qsid: qs_id,
                             bid: bid,
                             startBtn : true,
-                            users: [req.session.user],
                             qstitle: questionStoreData.get('title')
                         });
                     });
@@ -326,10 +330,115 @@ router.get('/createBattle/:qs_id', function (req, res) {
     });
 });
 
+//初始化战场信息
 router.post('/initBattleData', function (req, res) {
     var qsId = req.query.qsid;
     var bid = req.query.bid;
     res.send(BattleIo.getBattleMsg(qsId, bid));
 });
+
+//由创建人点击开始按钮后开始
+router.post('/startBattleForCreater', function (req, res) {
+    var qsId = req.query.qsid;
+    var bid = req.query.bid;
+    var sid = req.session.user.sid;
+    var name = req.session.user.name;
+
+    var battleData = BattleIo.getBattleMsg(qsId, bid);
+    var users = [];
+    for(var p in battleData){
+        if(p != sid){
+            users.push({
+                sid: p,
+                name: battleData[p]['name']
+            });
+        }
+    }
+
+    Battle.findByIdAndUpdate(bid, {
+        status: 'I', //正在进行状态(正在进行)
+        start: new Date(),
+        rivals: users
+    }, {}, function (err , battleData) {
+        if(err) throw err;
+        //通过题集编号去获取试卷号:然后随机一套试卷
+        var paperId = parseInt(Math.random() * parseInt(Setting.get('paperNum'))); //试卷ID
+        var path = questionStoreDir + qsId + '\\' + paperId + '.json';
+        var questionData = fs.readFileSync(path, "utf-8");
+        StoreBattle.findOne({'sid': sid}, function (err, storeBattleData) {
+            if(err) throw err;
+            if(storeBattleData){
+                StoreBattle.update({
+                    qsid: qsId,
+                    qtitle: battleData.get('qstitle'),
+                    bid: bid,
+                    lastTime: new Date()
+                }, function (err, data) {
+                    if(err) throw err;
+                    BattleIo.startBattle(qsId, bid, sid);
+                    res.send(JSON.parse(questionData)) //题目
+                });
+            } else {
+                var storeBattle = new StoreBattle();
+                storeBattle['sid'] = sid;
+                storeBattle['bid'] = bid;
+                storeBattle['name'] = name;
+                storeBattle['qsid'] = qsId;
+                storeBattle['qtitle']= battleData.get('qstitle');
+                storeBattle['lastTime'] = new Date();
+                storeBattle.save(function (err , data) {
+                    if(err) throw err;
+                    BattleIo.startBattle(qsId, bid, sid);
+                    res.send(JSON.parse(questionData)) //题目
+                });
+            }
+        });
+
+    });
+});
+
+//由创建人点击开始按钮后开始
+router.post('/startBattle', function (req, res) {
+    var qsId = req.query.qsid;
+    var bid = req.query.bid;
+    var sid = req.session.user.sid;
+    var name = req.session.user.name;
+
+    var paperId = parseInt(Math.random() * parseInt(Setting.get('paperNum'))); //试卷ID
+    var path = questionStoreDir + qsId + '\\' + paperId + '.json';
+    var questionData = fs.readFileSync(path, "utf-8");
+    StoreBattle.findOne({'sid': sid}, function (err, storeBattleData) {
+        if(err) throw err;
+        if(storeBattleData){
+            QuestionStore.findById(qsId, function (err, qsdata) {
+                StoreBattle.update({
+                    qsid: qsId,
+                    qtitle: qsdata.get('title'),
+                    bid: bid,
+                    lastTime: new Date()
+                }, function (err, data) {
+                    if(err) throw err;
+                    res.send(JSON.parse(questionData)) //题目
+                });
+            })
+        } else {
+            QuestionStore.findById(qsId, function (err, qsdata) {
+                var storeBattle = new StoreBattle();
+                storeBattle['sid'] = sid;
+                storeBattle['bid'] = bid;
+                storeBattle['name'] = name;
+                storeBattle['qsid'] = qsId;
+                storeBattle['qtitle']= qsdata.get('title');
+                storeBattle['lastTime'] = new Date();
+                storeBattle.save(function (err , data) {
+                    if(err) throw err;
+                    res.send(JSON.parse(questionData)) //题目
+                });
+            });
+        }
+    });
+});
+
+
 
 module.exports = router;

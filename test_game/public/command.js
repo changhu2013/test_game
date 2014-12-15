@@ -16,6 +16,8 @@
         JOIN_BATTLE : 'join_battle', // -- msg:'XXXXX' --  进入某挑战  当客户端接收到该消息的时候更新战场局势
         JOIN_DRILL : 'join_drill', // -- 进入某题集下的练习
 
+        START_BATTLE: 'start_battle', //开始战斗
+
         BATTLE_NEWS : 'battle_new', // -- {sid:{}} -- 用户挑战信息
 
         FIEE_BATTLE : 'flee_battle', //-- msg:'XXXXX' --  逃离挑战  当客户端接收到该消息的时候更新战场局势

@@ -4,6 +4,9 @@ var url = require('url');
 var mongoose = require('mongoose');
 
 var Setting = require('../models/setting.js');
+var BattleIo = require('../models/BattleIo.js')
+
+
 require('../models/questioncategory.js');
 require('../models/questionstore.js');
 require('../models/question.js');
@@ -45,35 +48,32 @@ router.post('/store', function(req, res){
 //校验答案,返回答案的正确,还有自己和其他队友的信息(进度),
 // 自己的拖后腿的道具数量,自己连续答对题目的数量
 router.post('/valianswer', function (req, res) {
-    var questionBattleData = global.questionBattleData;
     console.log('校验答案');
     var _id = req.query._id;
     var answer = req.query.answer;
     var bid = req.query.bid; //战场ID
+    var sid = req.session.user.sid;
+    var qsId = req.query.qs_id;
     Question.findById(_id, function(err, data){
-        console.log(data);
+        var userBattleData = BattleIo.getBattleMsg(qsId, bid, sid);
         var result = {}; //结果
-        var bidInfo = questionBattleData[bid]; //战场信息
-        var sid = req.session.user.sid;
-        var userInfo = bidInfo['users'][sid];
         if(data && data.get('answer') == answer){ //答对
-            userInfo.validity.push(_id); //更新答对题目ID
-            userInfo.progress = userInfo.validity.length / parseInt(Setting.get('battleQuestionNum')); //进度
-            userInfo.serialValidity++; //连续答对
-
-            if(userInfo.serialValidity == 5){//当连续答对5道题时候,增加一个道具
-                userInfo.property++; //增加一个道具
-                userInfo.serialValidity = 0; //并将连续答对的题目清0
-            }
+            //userBattleData.validity.push(_id); //更新答对题目ID
+            //userBattleData.progress = userInfo.validity.length / parseInt(Setting.get('battleQuestionNum')); //进度
+            BattleIo.battleValidaty(qsId, bid, sid, _id);
+            BattleIo.battleProgress(qsId, bid, sid, BattleIo.battleValidaty(qsId, bid, sid).length / parseInt(Setting.get('battleQuestionNum')));
+            BattleIo.battleSerialValidity(qsId, bid, sid, BattleIo.battleSerialValidity(qsId, bid, sid) + 1);
             result['success'] = true;
         } else {
-            userInfo.mistake.push(_id); //更新答错题目ID
+            BattleIo.battleSerialValidity(qsId, bid, sid, 0);
+            BattleIo.battleMistake(qsId, bid, sid, _id);
             result['success'] = false;
         }
-        if((userInfo.mistake.length + userInfo.validity.length) == parseInt(Setting.get('battleQuestionNum'))){
-            userInfo['statu'] = 'C';
+
+        if((BattleIo.battleMistake(qsId, bid, sid).length + BattleIo.battleValidaty(qsId, bid, sid).length) == parseInt(Setting.get('battleQuestionNum'))){
+            BattleIo.battleStatus(qsId, bid, sid, 'C');
         }
-        result['battleData'] = bidInfo;
+        result['battleData'] = BattleIo.getBattleMsg(qsId, bid, sid);
         res.send(result);
     })
 });

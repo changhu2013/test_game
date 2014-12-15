@@ -202,6 +202,7 @@ BattleIo.prototype.getDrillMsg = function(qsid, bid, sid){
 			progress:0,
 			validity:[],
 			mistake:[],
+			serialValidity: 0, //连续答对
 			status:'I'
 		}
 	}
@@ -230,10 +231,21 @@ BattleIo.prototype.joinBattle = function(qsid, bid, sid, name){
 		var rid = 'battle-' + qsid + '-' + bid;
 
 		//先向战场广播
-		u.socket.to('battle-' + qsid).emit(Command.JOIN_WARZONE, this.getBattleMsg(qsid));
+		u.socket.to('battle-' + qsid).emit(Command.JOIN_STORE, this.getBattleMsg(qsid));
 
 		u.socket.join(rid);
 		u.socket.in(rid).emit(Command.JOIN_BATTLE, this.getBattleMsg(qsid, bid));
+	}
+}
+
+//开始挑战
+BattleIo.prototype.startBattle = function(qsid, bid, sid){
+	var u = this.getOnLineMsg(sid);
+	if(u){
+		//在该房间内广播有人开始挑战的消息
+		var rid = 'battle-' + qsid + '-' + bid;
+
+		u.socket.in(rid).emit(Command.START_BATTLE);
 	}
 }
 
@@ -245,7 +257,7 @@ BattleIo.prototype.joinDrill = function(qsid, bid, sid){
 
 		var rid = 'drill-' + qsid;
 		u.socket.join(rid);
-		u.socket.to(rid).emit(Command.JOIN_DRILL, '加入练习房间:' + rid);
+		u.socket.to(rid).emit(Command.JOIN_DRILL, rid);
 	}
 }
 
@@ -253,13 +265,17 @@ BattleIo.prototype.joinDrill = function(qsid, bid, sid){
 BattleIo.prototype.battleStatus = function(qsid, bid, sid, status){
 	//如果status为undefined，则该方法为get方法，即返回当前状态
 	//如果status不为undefined，则该方法为set方法，设置属性
-	var u = getBattleMsg(qsid, bid, sid);
+	var u = this.getBattleMsg(qsid, bid, sid);
 	if(status){
 		u.status = status;
 
 		//在该房间内广播战报消息
 		var rid = 'battle-' + qsid + '-' + bid;
-		this.broadcast(sid, rid, Command.BATTLE_NEWS, u);
+		u['sid'] = sid;
+		this.broadcast(sid, rid, Command.BATTLE_NEWS, {
+			type: 'STATUS',
+			user: u
+		});
 	}else {
 		return u.status;
 	}
@@ -269,7 +285,7 @@ BattleIo.prototype.battleStatus = function(qsid, bid, sid, status){
 BattleIo.prototype.drillStatus = function(qsid, bid, sid, status){
 	//如果status为undefined，则该方法为get方法，即返回当前状态
 	//如果status不为undefined，则该方法为set方法，设置属性
-	var u = getDrillMsg(qsid, bid, sid);
+	var u = this.getDrillMsg(qsid, bid, sid);
 	if(status){
 		u.status = status;
 	}else {
@@ -279,13 +295,17 @@ BattleIo.prototype.drillStatus = function(qsid, bid, sid, status){
 
 //更新或获取 答对题目ID
 BattleIo.prototype.battleValidaty = function(qsid, bid, sid, qid){
-	var u = getBattleMsg(qsid, bid, sid);
+	var u = this.getBattleMsg(qsid, bid, sid);
 	if(qid){
 		u.validity.push(qid);
 
 		//在该房间内广播战报消息
 		var rid = 'battle-' + qsid + '-' + bid;
-		this.broadcast(sid, rid, Command.BATTLE_NEWS, u);
+		u['sid'] = sid;
+		this.broadcast(sid, rid, Command.BATTLE_NEWS, {
+			type: 'VALIDATY',
+			user: u
+		});
 	}else {
 		return u.validity;
 	}
@@ -293,7 +313,7 @@ BattleIo.prototype.battleValidaty = function(qsid, bid, sid, qid){
 
 //更新或获取 答对题目ID
 BattleIo.prototype.drillValidaty = function(qsid, bid, sid, qid){
-	var u = getDrillMsg(qsid, bid, sid);
+	var u = this.getDrillMsg(qsid, bid, sid);
 	if(qid){
 		u.validity.push(qid);
 	}else {
@@ -301,15 +321,19 @@ BattleIo.prototype.drillValidaty = function(qsid, bid, sid, qid){
 	}
 }
 
-//更新或获取 打错题目ID
+//更新或获取 答错题目ID
 BattleIo.prototype.battleMistake = function (qsid, bid, sid, qid) {
-	var u = getBattleMsg(qsid, bid, sid);
+	var u = this.getBattleMsg(qsid, bid, sid);
 	if(qid){
 		u.mistake.push(qid);
 
 		//在该房间内广播战报消息
 		var rid = 'battle-' + qsid + '-' + bid;
-		this.broadcast(sid, rid, Command.BATTLE_NEWS, u);
+		u['sid'] = sid;
+		this.broadcast(sid, rid, Command.BATTLE_NEWS, {
+			type: 'MISTAKE',
+			user: u
+		});
 	}else {
 		return u.mistake;
 	}
@@ -317,7 +341,7 @@ BattleIo.prototype.battleMistake = function (qsid, bid, sid, qid) {
 
 //更新或获取 打错题目ID
 BattleIo.prototype.drillMistake = function (qsid, bid, sid, qid) {
-	var u = getDrillMsg(qsid, bid, sid);
+	var u = this.getDrillMsg(qsid, bid, sid);
 	if(qid){
 		u.mistake.push(qid);
 	}else {
@@ -325,15 +349,40 @@ BattleIo.prototype.drillMistake = function (qsid, bid, sid, qid) {
 	}
 }
 
+//更新 连续答对题目数
+BattleIo.prototype.battleSerialValidity = function (qsid, bid, sid, serialValidity) {
+	var u = this.getDrillMsg(qsid, bid, sid);
+	if(serialValidity) {
+		u.serialValidity = serialValidity;
+		if(u.serialValidity == 5){//当连续答对5道题时候,增加一个道具
+			u.property++; //增加一个道具
+			u.serialValidity = 0; //并将连续答对的题目清0
+		}
+		//在该房间内广播战报消息
+		var rid = 'battle-' + qsid + '-' + bid;
+		u['sid'] = sid;
+		this.broadcast(sid, rid, Command.BATTLE_NEWS, {
+			type: 'SERIALVALIDATY',
+			user: u
+		});
+	} else {
+		return u.serialValidity;
+	}
+}
+
 //更新或获取道具
 BattleIo.prototype.battleProperty = function(qsid, bid, sid, property) {
-	var u = getBattleMsg(qsid, bid, sid);
+	var u = this.getBattleMsg(qsid, bid, sid);
 	if(property){
 		u.property = property;
 
 		//在该房间内广播战报消息
 		var rid = 'battle-' + qsid + '-' + bid;
-		this.broadcast(sid, rid, Command.BATTLE_NEWS, u);
+		u['sid'] = sid;
+		this.broadcast(sid, rid, Command.BATTLE_NEWS, {
+			type: 'PROPERTY',
+			user: u
+		});
 	}else {
 		return u.property;
 	}
@@ -341,13 +390,17 @@ BattleIo.prototype.battleProperty = function(qsid, bid, sid, property) {
 
 //更新或获取进度
 BattleIo.prototype.battleProgress = function(qsid, bid, sid, proress){
-	var u = getBattleMsg(qsid, bid, sid);
+	var u = this.getBattleMsg(qsid, bid, sid);
 	if(proress){
 		u.progress = proress;
 
 		//在该房间内广播战报消息
 		var rid = 'battle-' + qsid + '-' + bid;
-		this.broadcast(sid, rid, Command.BATTLE_NEWS, u);
+		u['sid'] = sid;
+		this.broadcast(sid, rid, Command.BATTLE_NEWS, {
+			type: 'PROGRESS',
+			user: u
+		});
 	}else {
 		return u.progress;
 	}
@@ -355,7 +408,7 @@ BattleIo.prototype.battleProgress = function(qsid, bid, sid, proress){
 
 //更新或获取进度
 BattleIo.prototype.drillProgress = function(qsid, bid, sid, proress){
-	var u = getDrillMsg(qsid, bid, sid);
+	var u = this.getDrillMsg(qsid, bid, sid);
 	if(proress){
 		u.progress = proress;
 	}else {

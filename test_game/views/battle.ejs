@@ -1,9 +1,10 @@
 <input type="hidden" ng-init="user.sid = <%=user.sid%>"/>
+<input type="hidden" ng-init="bid = '<%=bid%>'"/>
 <div class="panel panel-default">
     <div class="panel-heading">
         <div class="row">
             <div class="col-md-2 col-xs-2">
-                <button class="btn btn-default btn-sm btn-xs" type="button">
+                <button class="btn btn-default btn-sm btn-xs" type="button" ng-click="goOutBattle();">
                     撤退
                 </button>
             </div>
@@ -19,29 +20,49 @@
                     <div class="item-progress">
                         <div class="item-layout">
                             <div ng-if="user.sid == <%=user.sid%>">
-                                <div class="mask current"></div>
+                                <div class="mask current" data-sid="{{user.sid}}"></div>
+                                <p>{{user.name}}</p>
                             </div>
-
                             <div ng-if="user.sid != <%=user.sid%>">
-                                <div class="mask"></div>
+                                <div class="mask"  data-sid="{{user.sid}}"></div>
+                                <p>{{user.name}}</p>
                             </div>
                         </div>
-                    </div>
-                    <div>
-                        {{user.name}}
                     </div>
                 </dd>
             </dl>
         </section>
     </div>
 
-    <div class="tool-wrap">
+    <div class="tool-wrap" ng-show="showToolbar">
+        <button class="btn btn-default btn-sm btn-xs" type="button">
+            {{questionIndex}}/20
+        </button>
 
+        <button class="btn btn-default btn-sm btn-xs" type="button">
+            {{timer}}秒
+        </button>
+
+        <button class="btn btn-primary btn-sm btn-xs" type="button" ng-click="doReply();">
+            提交
+        </button>
     </div>
 
     <ul class="questions-items">
-
+        <li class="questions-item" ng-repeat="question in questionBattleData">
+            <dl class="list-group">
+                <dt class="list-group-item">
+                    {{question.title}}
+                </dt>
+                <dd class="list-group-item">
+                    <p class="questions-opt"
+                       ng-click="doSelectAnswer($event.target)"
+                       ng-repeat="opt in question['opts']"
+                       data-_id="{{question._id}}"
+                       data-answer="{{opt['answer']}}">{{opt['answer']}}、{{opt['text']}}</p>
+                </dd>
+            </dl>
+        </li>
     </ul>
-
-    <a class="ui button blue startBtn" ng-disable="!battleStatu" ng-class="{disable: !battleStatu}" ng-show="<%=startBtn%>">开始</a>
+    <a class="ui button blue startBtn" ng-disable="!battleStatu" ng-class="{disable: !battleStatu}" ng-show="<%=startBtn%> && showBtn" ng-click="startBattle()">开始</a>
 </div>

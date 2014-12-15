@@ -39,7 +39,7 @@ warzone_controller = function($scope, $http, $routeParams){
         doLoad();
     };
 
-    socket.on(Command.JOIN_WARZONE, function (data) {
+    socket.on(Command.JOIN_STORE, function (data) {
         var warData = [];
         for(var p in data){
             var obj = {};
