@@ -352,11 +352,12 @@ BattleIo.prototype.drillMistake = function (qsid, bid, sid, qid) {
 //更新 连续答对题目数
 BattleIo.prototype.battleSerialValidity = function (qsid, bid, sid, serialValidity) {
 	console.log('serialValidity  '+ serialValidity);
-	var u = this.getDrillMsg(qsid, bid, sid);
+	var u = this.getBattleMsg(qsid, bid, sid);
 	if(typeof serialValidity != 'undefined') {
 		u.serialValidity = serialValidity;
+		console.log(" u.serialValidity:  " + u.serialValidity);
 		if(u.serialValidity == 5){//当连续答对5道题时候,增加一个道具
-			this.battleProperty(qsid, bid, sid, u.property++); //增加一个道具
+			this.battleProperty(qsid, bid, sid, u.property + 1); //增加一个道具
 			u.serialValidity = 0; //并将连续答对的题目清0
 		}
 		//在该房间内广播战报消息
