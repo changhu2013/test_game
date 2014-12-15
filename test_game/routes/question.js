@@ -62,7 +62,8 @@ router.post('/valianswer', function (req, res) {
             //userBattleData.progress = userInfo.validity.length / parseInt(Setting.get('battleQuestionNum')); //进度
             BattleIo.battleValidaty(qsId, bid, sid, _id);
             BattleIo.battleProgress(qsId, bid, sid, BattleIo.battleValidaty(qsId, bid, sid).length / parseInt(Setting.get('battleQuestionNum')));
-            BattleIo.battleSerialValidity(qsId, bid, sid, BattleIo.battleSerialValidity(qsId, bid, sid) + 1);
+            var no = BattleIo.battleSerialValidity(qsId, bid, sid) + 1;
+            BattleIo.battleSerialValidity(qsId, bid, sid, no);
             result['success'] = true;
         } else {
             BattleIo.battleSerialValidity(qsId, bid, sid, 0);

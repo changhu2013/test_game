@@ -3,6 +3,7 @@ battle_controller = function($scope, $http, $routeParams){
     $scope.showBtn = true;
     $scope.showToolbar = false;
     $scope.users = [];
+    $scope.toolNum = 0;
 
     var task;
     //初始化战场
@@ -145,8 +146,8 @@ battle_controller = function($scope, $http, $routeParams){
                 }, 1000);
             }
 
-            if(battleData['statu'] == 'C'){
-                if(currentUserData.progress >= 0.6){
+            if(battleData['status'] == 'C'){
+                if(battleData.progress >= 0.6){
                     alert('挑战成功');
                 } else {
                     alert('挑战失败');
@@ -200,19 +201,30 @@ battle_controller = function($scope, $http, $routeParams){
 
     socket.on(Command.BATTLE_NEWS, function (data) {
         var type = data.type;
+        var user = data.user;
         if(type == 'STATUS'){ //状态
             if(user.status == 'C'){ //完成
-
+                var aUserItems = $('.user-item');
+                if(user.progress >= 0.6 ){
+                    aUserItems.find('[data-sid="' + user.sid + '"]').find('p i').text('(挑战成功)');
+                } else {
+                    aUserItems.find('[data-sid="' + user.sid + '"]').find('p i').text('(挑战失败)');
+                }
             } else if(user.status == 'E') { //逃跑
-
+                var aUserItems = $('.user-item');
+                aUserItems.find('[data-sid="' + user.sid + '"]').find('p i').text('(逃跑)');
             }
         } else if (type == 'PROGRESS'){ //进度
             var aUserItems = $('.user-item');
-            aUserItems.find('[data-sid="' + data.user.sid + '"]').css({
-                width: (parseFloat(data.user.progress) * 100) + '%'
+            aUserItems.find('[data-sid="' + user.sid + '"]').find('.mask').css({
+                width: (parseFloat(user.progress) * 100) + '%'
             });
         } else if (type == 'PROPERTY'){ //道具
-
+            if(user.sid == $scope.user.sid){
+                $scope.$apply(function () {
+                    $scope.toolNum = user.property;
+                });
+            }
         }
     });
 };
