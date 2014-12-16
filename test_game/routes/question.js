@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 
 var Setting = require('../models/setting.js');
 var BattleIo = require('../models/BattleIo.js')
+var Command = require('../public/command.js');
 
 
 require('../models/questioncategory.js');
@@ -16,7 +17,7 @@ var router = express.Router();
 var QuestionCategory = mongoose.model('QuestionCategory');
 var QuestionStore = mongoose.model('QuestionStore');
 var Question = mongoose.model('Question');
-
+var Battle = mongoose.model('Battle');
 //显示题目树结构
 router.post('/category', function(req, res) {
     var pid = req.body.qcid;
@@ -58,8 +59,6 @@ router.post('/valianswer', function (req, res) {
         var userBattleData = BattleIo.getBattleMsg(qsId, bid, sid);
         var result = {}; //结果
         if(data && data.get('answer') == answer){ //答对
-            //userBattleData.validity.push(_id); //更新答对题目ID
-            //userBattleData.progress = userInfo.validity.length / parseInt(Setting.get('battleQuestionNum')); //进度
             BattleIo.battleValidaty(qsId, bid, sid, _id);
             BattleIo.battleProgress(qsId, bid, sid, BattleIo.battleValidaty(qsId, bid, sid).length / parseInt(Setting.get('battleQuestionNum')));
             var no = BattleIo.battleSerialValidity(qsId, bid, sid) + 1;
@@ -71,11 +70,100 @@ router.post('/valianswer', function (req, res) {
             result['success'] = false;
         }
 
-        if((BattleIo.battleMistake(qsId, bid, sid).length + BattleIo.battleValidaty(qsId, bid, sid).length) == parseInt(Setting.get('battleQuestionNum'))){
-            BattleIo.battleStatus(qsId, bid, sid, 'C');
+        if((BattleIo.battleMistake(qsId, bid, sid).length + BattleIo.battleValidaty(qsId, bid, sid).length) == parseInt(Setting.get('battleQuestionNum'))){ //此时挑战结束
+            BattleIo.getBattleMsg(qsId, bid, sid)['end'] = new Date();
+            BattleIo.battleStatus(qsId, bid, sid, 'C'); //战斗结束
         }
-        result['battleData'] = BattleIo.getBattleMsg(qsId, bid, sid);
-        res.send(result);
+
+        var battleData = BattleIo.getBattleMsg(qsId, bid);
+        var isBattleEnd = true;
+        for(var p in battleData){
+            var user = battleData[p];
+            if(user.status != 'C'){
+                isBattleEnd = false;
+                break;
+            }
+        }
+
+        if(isBattleEnd){ //战斗结束(所有人都结束)
+            QuestionStore.findById(qsId, function (err, data) {
+                var maxTime = data.get('maxTime'); //最大挑战时间
+                Battle.findById(bid, function (err, data) {
+                    var userNum = 0; //参数人数
+                    for(var p in battleData){
+                        userNum++;
+                    }
+
+                    var userGradeData = [];
+
+                    for(var p in battleData){
+                        var user = battleData[p]; //每个人
+                        var grade = 0; //分数
+                        var obj = {};
+                        var when = user.end - user.start;
+
+                        if(user.progress >= 0.6){ //挑战成功
+                            grade += 100 *  parseFloat(Setting.get('succScorePct'));
+                            user['grade'] = grade;
+                            obj['sid'] = user.sid;
+                            obj['grade'] = grade;
+                            obj['when'] = when;
+                            userGradeData.push(obj);
+                            continue;
+                        }
+
+                        if(when < maxTime) {
+                            grade += 100 * parseFloat(Setting.get('timeScorePct'));
+                        }
+                        var userPct = userNum * parseFloat(Setting.get('timeScorePct')) / parseInt(Setting.get('battleMaxUserNum'));
+                        grade += 100 * userPct;
+                        user['grade'] = grade;
+                        obj['sid'] = user.sid;
+                        obj['grade'] = grade;
+                        obj['when'] = when;
+                        userGradeData.push(obj);
+                    }
+
+                    var succUser = Math.floor(userNum * Setting.get('userSuccPct'));
+                    function compare(propertyName1, propertyName2) {
+                        return function (object1, object2) {
+                            var value1 = object1[propertyName1];
+                            var value2 = object2[propertyName1];
+                            if (value2 < value1) {
+                                return -1;
+                            }
+                            else if (value2 > value1) {
+                                return 1;
+                            }
+                            else {
+                                if (object1[propertyName2] < object1[propertyName1]) {
+                                    return -1;
+                                }
+                                else if (object1[propertyName2] > object1[propertyName1]) {
+                                    return 1;
+                                }
+                                else {
+
+                                }
+                                return 0;
+                            }
+                        }
+                    }
+                    userGradeData = userGradeData.sort(compare("grade", 'when')); //按照分数排序
+                    for(var i= 0;i<succUser;i++){
+                        var userId = userGradeData[i]['sid'];
+                        battleData[userId]['battsucc'] = true;
+                    }
+                    BattleIo.broadcast(sid, 'battle-' + qsId + '-' + bid, Command.BATTLE_OK, BattleIo.getBattleMsg(qsId, bid))
+                    result['battleData'] = battleData[sid];
+                    res.send(result);
+                })
+            });
+        } else {
+            result['battleData'] = battleData[sid];
+            res.send(result);
+        }
+
     })
 });
 

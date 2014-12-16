@@ -1,4 +1,4 @@
-battle_controller = function($scope, $http, $routeParams){
+battle_controller = function($scope, $http, $timeout, $routeParams){
     $scope.battleStatu = false;
     $scope.showBtn = true;
     $scope.showToolbar = false;
@@ -6,14 +6,15 @@ battle_controller = function($scope, $http, $routeParams){
     $scope.toolNum = 0;
 
     var task;
+
     //初始化战场
-    !function initBattle(){
+    $timeout(function () {
         $http({
             url : '/battle/initBattleData',
             method : 'POST',
             params : {
                 qsid : $routeParams.qs_id,
-                bid: $routeParams.bid
+                bid: $routeParams.bid || $scope.bid
             },
             cache : false,
             timeout : 3000
@@ -25,7 +26,7 @@ battle_controller = function($scope, $http, $routeParams){
                 $scope.users.push(user);
             }
         });
-    }();
+    }, 200);
 
     //当监听到加入战场命令
     socket.on(Command.JOIN_BATTLE, function (data) {
@@ -121,45 +122,53 @@ battle_controller = function($scope, $http, $routeParams){
 
     var oTips = $('.tips');
 
-    //点击提交
-    $scope.doReply = function(){
-        var oQuestionOpt = $('.questions-opt');
-        var validateAnswer = function (res) {
-            task = setInterval(function () {
-                $scope.$apply(function () {
-                    $scope.timer++;
-                });
+    var oQuestionOpt;
+    var validateAnswer = function (res) {
+        task = setInterval(function () {
+            $scope.$apply(function () {
+                $scope.timer++;
+            });
+        }, 1000);
+        var battleData = res.battleData;
+        if(res.success){
+            oTips.css('height', '2em').text('答案正确');
+            setTimeout(function () {
+                oTips.css('height', '0').text('');
             }, 1000);
-            var battleData = res.battleData;
-            if(res.success){
-                oTips.css('height', '2em').text('答案正确');
-                setTimeout(function () {
-                    oTips.css('height', '0').text('');
-                }, 1000);
-                $('.user-item .current').css({
-                    width: (parseFloat(battleData.progress) * 100) + '%'
-                });
-            } else {
-                oTips.css('height', '2em').text('答案错误');
-                setTimeout(function () {
-                    oTips.css('height', '0').text('');
-                }, 1000);
-            }
-
-            if(battleData['status'] == 'C'){
-                if(battleData.progress >= 0.6){
-                    alert('挑战成功');
-                } else {
-                    alert('挑战失败');
-                }
-                clearInterval(task);
-                return ;
-            }
-            $scope.questionIndex++;
-            oQuestionOpt.filter('.selected').closest('.questions-item').remove();
-            oQuestionOpt.removeClass('selected');
+            $('.user-item .current').css({
+                width: (parseFloat(battleData.progress) * 100) + '%'
+            });
+        } else {
+            oTips.css('height', '2em').text('答案错误');
+            setTimeout(function () {
+                oTips.css('height', '0').text('');
+            }, 1000);
         }
 
+        oQuestionOpt.filter('.selected').closest('.questions-item').remove();
+        oQuestionOpt.removeClass('selected');
+
+        if(battleData['status'] == 'C'){
+            if(battleData.progress >= 0.6){
+                oTips.css('height', '2em').text('挑战成功');
+                setTimeout(function () {
+                    oTips.css('height', '0').text('');
+                }, 1000);
+            } else {
+                oTips.css('height', '2em').text('挑战失败');
+                setTimeout(function () {
+                    oTips.css('height', '0').text('');
+                }, 1000);
+            }
+            clearInterval(task);
+            return ;
+        }
+        $scope.questionIndex++;
+    }
+
+    //点击提交
+    $scope.doReply = function(){
+        oQuestionOpt = $('.questions-opt');
         if(oQuestionOpt.hasClass('selected')){
             clearInterval(task);
             $http({
@@ -226,5 +235,9 @@ battle_controller = function($scope, $http, $routeParams){
                 });
             }
         }
+    });
+
+    socket.on(Command.BATTLE_OK, function (data) {
+
     });
 };

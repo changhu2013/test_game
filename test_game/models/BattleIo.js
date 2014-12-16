@@ -242,9 +242,12 @@ BattleIo.prototype.joinBattle = function(qsid, bid, sid, name){
 BattleIo.prototype.startBattle = function(qsid, bid, sid){
 	var u = this.getOnLineMsg(sid);
 	if(u){
+		u['start'] = new Date();
 		//在该房间内广播有人开始挑战的消息
 		var rid = 'battle-' + qsid + '-' + bid;
-
+		u.socket.in('battle-' + qsid).emit(Command.START_BATTLE, {
+			bid: bid
+		});
 		u.socket.in(rid).emit(Command.START_BATTLE);
 	}
 }

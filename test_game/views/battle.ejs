@@ -1,6 +1,6 @@
 <input type="hidden" ng-init="user.sid = <%=user.sid%>"/>
 <input type="hidden" ng-init="bid = '<%=bid%>'"/>
-<div class="panel panel-default">
+<div class="panel panel-default battle-wrap">
     <div class="panel-heading">
         <div class="row">
             <div class="col-md-2 col-xs-2">
@@ -68,4 +68,8 @@
         </li>
     </ul>
     <a class="ui button blue startBtn" ng-disable="!battleStatu" ng-class="{disable: !battleStatu}" ng-show="<%=startBtn%> && showBtn" ng-click="startBattle()">开始</a>
+
+    <div class="completeTips">
+            11111111
+    </div>
 </div>
