@@ -93,8 +93,8 @@ main_controller = function ($scope, $http, $timeout) {
         //修改显示题目树标记
         $scope.showQuestionTreeFlag = !$scope.showQuestionTreeFlag;
 
-        var onMouseDown = function (event, eid, node) {
-            if (node) {
+        var loadStoreByNode = function(node){
+            if(node){
                 $scope.qcid = node.qcid;
                 $scope.skipStore = 0;
                 $scope.showStoreMore = false;
@@ -102,6 +102,18 @@ main_controller = function ($scope, $http, $timeout) {
                 loadStore();
             }
         };
+
+        var onMouseDown = function (event, eid, node) {
+            loadStoreByNode(node);
+        };
+
+        var onClick = function(event, eid, node){
+            if($scope.categoryTree && node){
+                $scope.categoryTree.expandNode(node);
+                loadStoreByNode(node);
+            }
+        };
+
         var setting = {
             async: {
                 enable: true,
@@ -115,11 +127,19 @@ main_controller = function ($scope, $http, $timeout) {
                     name: 'title'
                 }
             },
+            view: {
+                showIcon: true, //是否显示图标
+                showLine: true, //是否显示节点间连线
+                showTitle: false,
+                selectedMulti: false,
+                txtSelectedEnable: true
+            },
             callback: {
-                onMouseDown: onMouseDown
+                onMouseDown: onMouseDown,
+                onClick : onClick
             }
         };
-        $.fn.zTree.init($("#questioncategory"), setting);
+        $scope.categoryTree = $.fn.zTree.init($("#questioncategory"), setting);
     };
 
     //更多题目集
