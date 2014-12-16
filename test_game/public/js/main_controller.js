@@ -132,7 +132,7 @@ main_controller = function ($scope, $http, $timeout) {
                 showLine: true, //是否显示节点间连线
                 showTitle: false,
                 selectedMulti: false,
-                txtSelectedEnable: true
+                txtSelectedEnable: false
             },
             callback: {
                 onMouseDown: onMouseDown,
