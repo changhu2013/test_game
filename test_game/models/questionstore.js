@@ -15,4 +15,3 @@ var QuestionStore = new Schema({
 });
 
 mongoose.model('QuestionStore', QuestionStore, 'questionstores');
-

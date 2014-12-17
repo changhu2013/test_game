@@ -408,6 +408,7 @@ router.post('/startBattle', function (req, res) {
     var questionData = fs.readFileSync(path, "utf-8");
     StoreBattle.findOne({'sid': sid}, function (err, storeBattleData) {
         if(err) throw err;
+
         if(storeBattleData){
             QuestionStore.findById(qsId, function (err, qsdata) {
                 StoreBattle.update({
@@ -417,6 +418,7 @@ router.post('/startBattle', function (req, res) {
                     lastTime: new Date()
                 }, function (err, data) {
                     if(err) throw err;
+                    BattleIo.getBattleMsg(qsId, bid, sid)['start'] = new Date();
                     res.send(JSON.parse(questionData)) //题目
                 });
             })
@@ -431,6 +433,7 @@ router.post('/startBattle', function (req, res) {
                 storeBattle['lastTime'] = new Date();
                 storeBattle.save(function (err , data) {
                     if(err) throw err;
+                    BattleIo.getBattleMsg(qsId, bid, sid)['start'] = new Date();
                     res.send(JSON.parse(questionData)) //题目
                 });
             });

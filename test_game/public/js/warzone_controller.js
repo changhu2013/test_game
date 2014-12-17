@@ -83,4 +83,20 @@ warzone_controller = function($scope, $http, $routeParams){
             }
         });
     });
+
+    //有战场结束
+    socket.on(Command.BATTLE_OK, function (data) {
+        $scope.$apply(function () {
+            var bid = data.bid;
+            var battles = $scope.battles;
+            for(var p in battles){
+                var battle = battles[p];
+                if(battle['bid'] == bid){
+                    battle['battlestatus'] = true;
+                    battle['battleText'] = '正在进行';
+                    return;
+                }
+            }
+        });
+    });
 };

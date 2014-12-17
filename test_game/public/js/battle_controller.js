@@ -38,7 +38,7 @@ battle_controller = function($scope, $http, $timeout, $routeParams){
                 user['sid'] = p;
                 $scope.users.push(user);
             }
-            if($scope.users.length >= 2){
+            if($scope.users.length >= 1){
                 $scope.battleStatu = true;
             }
         });
@@ -238,6 +238,16 @@ battle_controller = function($scope, $http, $timeout, $routeParams){
     });
 
     socket.on(Command.BATTLE_OK, function (data) {
+        $scope.battleIsEnd = true;
+        var userData = data[$scope.user.sid];
+        $scope.$apply(function () {
+            if(userData.battsucc){ //成功
+                $scope.battleCom.text = '胜利';
+            } else { //不成功
+                $scope.battleCom.text = '失败';
+            }
+            $scope.battleCom.grade = userData.grade;
+        });
 
     });
 };

@@ -69,13 +69,13 @@
     </ul>
     <a class="ui button blue startBtn" ng-disable="!battleStatu" ng-class="{disable: !battleStatu}" ng-show="<%=startBtn%> && showBtn" ng-click="startBattle()">开始</a>
 
-    <div class="completeTips">
+    <div class="completeTips" ng-show="battleIsEnd">
         <div class="com-bd">
-            <h3>胜利</h3>
-            <p>您第2个到达终点！</p>
-            <p>我的成绩：78</p>
-            <p>本次最高成绩：95</p>
-            <p>历史最好成绩：134  创造者：张三</p>
+            <h3>{{battleCom.text}}</h3>
+            <p>您第{{battleCom.index}}个到达终点！</p>
+            <p>我的成绩：{{battleCom.grade}}</p>
+            <p>本次最高成绩：{{battle.maxGrade}}</p>
+            <p>历史最好成绩：{{battle.historyGrade}}  创造者：{{battleCom.historyCreater}}</p>
             <div class="search-wp">
                 <div class="search-bd">
                     <input type="text"/>
@@ -88,8 +88,8 @@
                 <textarea></textarea>
             </div>
             <div class="btn-wp">
-                <span class="ui button">挑战他们</span>
-                <span class="ui button">退出</span>
+                <a class="ui button blue">挑战他们</a>
+                <a class="ui button blue">退出</a>
             </div>
         </div>
     </div>
