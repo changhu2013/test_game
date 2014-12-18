@@ -110,24 +110,31 @@ router.get('/warzone/:qs_id', function(req, res){
 //排行榜
 router.get('/ranklist/:qs_id', function(req, res){
     var qs_id = req.params.qs_id;
-    StoreBattle.where({'qsid': qs_id}).sort({
-        maxBattleScore: 'desc'
-    }).exec(function (err, data) {
+    console.log(qs_id);
+    QuestionStore.findById(qs_id, function (err, data) {
         if(err) throw err;
-        if(data.length > 0){
-            res.render('ranklist', {
-                qtitle : data[0].get('qtitle'),
-                rankList: util.toJSON(data)
-            });
-        } else {
-            QuestionStore.findById(qs_id, function (err, data) {
-                if(err) throw err;
-                res.render('ranklist', {
-                    qtitle : data.get('title'),
-                    rankList: []
-                });
-            });
-        }
+        console.log(data);
+        res.render('ranklist', {
+            store : data
+        });
+    });
+});
+
+router.post('/ranklist', function(req, res){
+    var query = url.parse(req.url, true).query;
+    console.log(query);
+    var qsid = query.qsid;
+    var skip = query.skip || 0;
+    var limit = query.limit  || 10;
+
+    StoreBattle.find({
+        'qsid': qsid
+    }).sort({
+        maxBattleScore: 'desc'
+    }).skip(skip).limit(limit).exec(function (err, data) {
+        if(err) throw err;
+        data = util.toJSON(data);
+        res.send(data);
     });
 });
 
