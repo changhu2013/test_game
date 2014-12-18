@@ -28,6 +28,7 @@ var questionStoreDir = global.questionStoreDir;
 require('../models/Log.js');
 require('../models/user.js');
 require('../models/battle.js');
+require('../models/storebattle.js');
 require('../models/setting.js');
 require('../models/questionstore.js');
 require('../models/question.js');
@@ -36,6 +37,7 @@ var formater = 'YYYY-MM-DD HH:mm:ss';
 
 var Log = mongoose.model('Log');
 var Battle = mongoose.model('Battle');
+var StoreBattle = mongoose.model('StoreBattle');
 
 var router = express.Router();
 
@@ -294,6 +296,34 @@ router.get('/report/battles', function(req, res){
         }
         fs.writeFile(filepath, str, {encoding:'UTF-8'}, function(){
             fileutil.download(req, res, filepath, '挑战记录.csv', function(err){
+                if(err){
+                    throw err;
+                }
+                fs.unlink(filepath);
+            });
+        });
+    });
+});
+
+//题集导出
+router.get('/report/storebattles', function(req, res){
+
+    StoreBattle.find().exec(function(err, battles){
+        var pf = os.platform().toString();
+        var filepath =  __dirname + (pf == 'win32' ? '\\' : '/')
+            + (new Date()).getTime() + Math.random() + '.csv';
+
+        var str = '题目集,用户,练习最高积分,挑战最高积分,挑战时间\n';
+        for(var i = 0, len = battles.length; i < len; i++){
+            var b = battles[i];
+            str += b.qtitle + ',' + b.name
+                + ',' + (b.maxBattleScore || '')
+                + ',' + (b.maxDrillScore || '')
+                + ',' + moment(b.lastTime).format(formater)
+                + '\n';
+        }
+        fs.writeFile(filepath, str, {encoding:'UTF-8'}, function(){
+            fileutil.download(req, res, filepath, '挑战挑战记录.csv', function(err){
                 if(err){
                     throw err;
                 }
