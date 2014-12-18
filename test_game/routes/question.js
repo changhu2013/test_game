@@ -96,7 +96,7 @@ router.post('/gooutbattle', function(req, res){
             delete questionBattleData[bid]; //删除该战场所有信息
         })
     } else { //战场还有其他人
-        usersData[req.session.user.sid]['statu'] = 'E';//跑路
+        usersData[req.session.user.sid]['status'] = 'E';//跑路
     }
     res.send(true);
 });
