@@ -31,20 +31,6 @@ var Question = mongoose.model('Question');
 var Battle = mongoose.model('Battle');
 var StoreBattle = mongoose.model('StoreBattle');
 
-for (var i = 1; i < 100; i++) {
-    //测试用户
-    var user = new User({
-        sid: '' + i,
-        name: '张三_' + i,
-        job: '程序员',
-        score: 100 + i * 2,
-        battles: 78 + i
-    });
-    user.save(function (err) {
-        if (err) throw err;
-    });
-}
-
 //导入用户数据
 fs.readFile('./doc/user.csv', 'utf-8', function (err, content) {
     var users = content.split('\n');

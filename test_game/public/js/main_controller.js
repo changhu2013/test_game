@@ -13,6 +13,14 @@ main_controller = function ($scope, $http, $timeout) {
 
     var loadBattlesCallback = function (data) {
         if (data instanceof Array) {
+            //处理时间
+            for(var i = 0, len = data.length; i < len; i++){
+                var b = data[i];
+                if(b.lastTime){
+                    b.lastTime = moment(b.lastTime).from();
+                }
+            }
+
             if (data.length < $scope.skipBattle) {
                 $scope.showBattleMore = false;
             }else {
