@@ -440,5 +440,41 @@ router.post('/startBattle', function (req, res) {
 });
 
 
+//我的挑战
+router.post('/mybattles', function(req, res){
+    var query = url.parse(req.url, true).query;
+    console.log(query);
+    var skip = query.skip || 0;
+    var limit = query.limit  || 10;
+    var sid = req.session.user.sid;
+    Battle.find({
+        sid : sid
+    }).skip(skip).limit(limit).exec(function(err, battles){
+        battles = util.toJSON(battles);
+        var qsids = [];
+        for(var i = 0, len = battles.length; i < len; i++){
+            qsids.push(battles[i].qsid);
+        }
+        QuestionStore.find({
+            _id : {
+                $in : qsids
+            }
+        }, function(err, stores){
+            stores = util.toJSON(stores);
+            for(var i = 0; i < battles.length; i++){
+                var b = battles[i];
+                for(var j = 0 ;j < stores.length; j++){
+                    var s = stores[j];
+                    if(b.qsid == s._id){
+                        b.store = s;
+                        break;
+                    }
+                }
+            }
+            res.send(battles);
+        });
+    });
+});
+
 
 module.exports = router;

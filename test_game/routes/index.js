@@ -90,7 +90,6 @@ router.post('/honor/users', function(req, res){
 
 //我的挑战
 router.get('/mybattles', function(req, res){
-    console.log('我的挑战');
     res.render('mybattles');
 });
 

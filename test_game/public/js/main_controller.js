@@ -21,7 +21,7 @@ main_controller = function ($scope, $http, $timeout) {
                 }
             }
 
-            if (data.length < $scope.skipBattle) {
+            if (data.length < $scope.limitBattle) {
                 $scope.showBattleMore = false;
             }else {
                 $scope.showBattleMore = true;
