@@ -8,7 +8,6 @@ var Setting = function (data) {
 
 var pf = os.platform().toString();
 var file =  __dirname + (pf == 'win32' ? '\\' : '/') + 'config.json';
-console.log(file);
 fs.openSync(file, 'a');
 
 var doInit = function(){
@@ -16,7 +15,6 @@ var doInit = function(){
     if(str == '' || str == undefined){
         str = '{}';
     }
-    console.log(str);
     var data = JSON.parse(str);
 
     //时间占比
