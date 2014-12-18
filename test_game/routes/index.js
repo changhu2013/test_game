@@ -16,6 +16,8 @@ require('../models/questionstore.js');
 var Setting = require('../models/setting.js');
 
 io = global.io;
+
+var Log = mongoose.model('Log');
 var User = mongoose.model('User');
 var Battle = mongoose.model('Battle');
 var Question = mongoose.model('Question');
@@ -43,10 +45,19 @@ router.get('/', function(req, res) {
                     req.flash('success', '未找到sid:' + sid + '的用户');
                     res.render('index');
                 }else {
-                    req.flash('success', '登陆成功');
-                    console.log('【' + sid + '】登陆成功');
-                    req.session.user = user;
-                    res.render('index');
+                    //记录登陆日志
+                    var log = new Log({
+                        sid : user.sid,
+                        name : user.name,
+                        action : '登陆',
+                        time : new Date()
+                    });
+                    log.save(function(){
+                        req.flash('success', '登陆成功');
+                        console.log('【' + sid + '】登陆成功');
+                        req.session.user = user;
+                        res.render('index');
+                    });
                 }
             });
         }

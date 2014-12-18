@@ -1,13 +1,15 @@
+
 /*
  *  后台管理页面，进行系统设置和用户信息，题目信息的导入
  */
-
+var os = require('os');
 var express = require('express');
 var mongoose = require('mongoose');
 var url = require('url');
 var querystring = require('querystring');
 var path = require('path');
 var fs = require('fs');
+var moment = require('moment');
 
 var fileutil = require('../models/fileutil');
 var Setting = require('../models/setting.js');
@@ -23,11 +25,16 @@ var paperQuestionNum = Setting.get('battleQuestionNum'); //每套题有多少个
 //题集生成的保存目录
 var questionStoreDir = global.questionStoreDir;
 
-require('../models/setting.js');
+require('../models/Log.js');
 require('../models/user.js');
+require('../models/setting.js');
 require('../models/questionstore.js');
 require('../models/question.js');
 
+
+var formater = 'YYYY-MM-DD HH:mm:ss';
+
+var Log = mongoose.model('Log');
 var router = express.Router();
 
 router.get('/', function(req, res){
@@ -236,9 +243,29 @@ router.post('/importquestions', multipartMiddleware, function(req, res){
 //系统报表
 router.get('/report', function(req, res){
     console.log('report index');
-    //TODO : 生成报表
-
     res.render('report');
+});
+
+//用户登录日志表
+router.get('/report/logs', function(req, res){
+    Log.find().exec(function(err, logs){
+        var pf = os.platform().toString();
+        var filepath =  __dirname + (pf == 'win32' ? '\\' : '/') + Math.random() + '.csv';
+
+        var str = 'SID,用户,操作,时间\n';
+        for(var i = 0, len = logs.length; i < len; i++){
+            var l = logs[i];
+            str += l.sid + ',' + l.name + ',' + l.action + ',' + moment(l.time).format(formater) + '\n';
+        }
+        fs.writeFile(filepath, str, {encoding:'UTF-8'}, function(){
+            fileutil.download(req, res, filepath, '日志.csv', function(err){
+                if(err){
+                    throw err;
+                }
+                fs.unlink(filepath);
+            });
+        });
+    });
 });
 
 module.exports = router;

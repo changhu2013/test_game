@@ -133,11 +133,20 @@ Setting.set('battleQuestionNum', 20);
 
 console.log(Setting.data);
 */
-
+/*
 var Command = require('./public/command.js');
 
 //console.log(Command);
 
 var now = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
 console.log(now);
+
+*/
+
+var file = 'd:/dddddd/a.csv';
+
+var filename = file.split('/');
+
+console.log(filename);
+
 
