@@ -11,10 +11,10 @@
 </div>
 <div class="row">
     <div class="col-md-6, col-xs-6">
-        积分：<%=user.score || 0%>
+        积分：<% if(user) {%><%=user.score || 0%><%}%>
     </div>
     <div class="col-md-6, col-xs-6">
-        挑战：<%=user.battles || 0%>
+        挑战：<% if(user) {%><%=user.battles || 0%><%}%>
     </div>
 </div>
 <center style="margin-top: 20px;">
