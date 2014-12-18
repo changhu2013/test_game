@@ -56,7 +56,7 @@ var createWorker = function(){
     //句柄转发
     worker.send({
         msg : 'server',
-        cache : sessionCache
+        cache : sessionCache //session缓存
     }, server);
 
     workers[worker.pid] = worker;

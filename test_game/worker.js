@@ -11,9 +11,6 @@ process.on('message', function(data, tcp){
 		worker = tcp;
 		global.sessionCache = data.cache;
 		worker.on('connection', function(socket){
-
-			//console.log(global.sessionCache);
-
 			server.emit('connection', socket);
 		});
 	}

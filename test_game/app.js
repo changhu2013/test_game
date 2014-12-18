@@ -73,7 +73,6 @@ app.use(function(req, res, next){
         req.session = generate(id);
         res.setHeader('Set-Cookie', 'connect.sid=' + id);
     }else {
-        console.log(global.sessionCache);
         if(!global.sessionCache[id]){
             req.session = generate(id);
         }else {
