@@ -232,7 +232,7 @@ BattleIo.prototype.joinBattle = function(qsid, bid, sid, name){
 
 		//先向战场广播
 		u.socket.to('battle-' + qsid).emit(Command.JOIN_STORE, this.getBattleMsg(qsid));
-
+		u.socket.leave('battle-' + qsid);
 		u.socket.join(rid);
 		this.io.sockets.in(rid).emit(Command.JOIN_BATTLE, this.getBattleMsg(qsid, bid));
 	}

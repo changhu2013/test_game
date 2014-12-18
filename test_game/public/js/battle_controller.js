@@ -124,11 +124,6 @@ battle_controller = function($scope, $http, $timeout, $routeParams){
 
     var oQuestionOpt;
     var validateAnswer = function (res) {
-        task = setInterval(function () {
-            $scope.$apply(function () {
-                $scope.timer++;
-            });
-        }, 1000);
         var battleData = res.battleData;
         if(res.success){
             oTips.css('height', '2em').text('答案正确');
@@ -170,7 +165,6 @@ battle_controller = function($scope, $http, $timeout, $routeParams){
     $scope.doReply = function(){
         oQuestionOpt = $('.questions-opt');
         if(oQuestionOpt.hasClass('selected')){
-            clearInterval(task);
             $http({
                 url: '/question/valianswer',
                 method: 'POST',
@@ -214,11 +208,7 @@ battle_controller = function($scope, $http, $timeout, $routeParams){
         if(type == 'STATUS'){ //状态
             if(user.status == 'C'){ //完成
                 var aUserItems = $('.user-item');
-                if(user.progress >= 0.6 ){
-                    aUserItems.find('[data-sid="' + user.sid + '"]').find('p i').text('(挑战成功)');
-                } else {
-                    aUserItems.find('[data-sid="' + user.sid + '"]').find('p i').text('(挑战失败)');
-                }
+                aUserItems.find('[data-sid="' + user.sid + '"]').find('p i').text('(挑战完成)');
             } else if(user.status == 'E') { //逃跑
                 var aUserItems = $('.user-item');
                 aUserItems.find('[data-sid="' + user.sid + '"]').find('p i').text('(逃跑)');
@@ -238,16 +228,22 @@ battle_controller = function($scope, $http, $timeout, $routeParams){
     });
 
     socket.on(Command.BATTLE_OK, function (data) {
-        $scope.battleIsEnd = true;
-        var userData = data[$scope.user.sid];
         $scope.$apply(function () {
+            clearInterval(task);
+            $scope.battleIsEnd = true;
+            var userData = data['battleData'][$scope.user.sid];
+            $scope.battleCom = {};
             if(userData.battsucc){ //成功
                 $scope.battleCom.text = '胜利';
+                $scope.battleCom.battleSucc = true;
+                $scope.battleCom.index = userData.index;
             } else { //不成功
                 $scope.battleCom.text = '失败';
+                $scope.battleCom.battleSucc = false;
             }
             $scope.battleCom.grade = userData.grade;
+            $scope.battleCom.historyGrade = data.historyRecord.grade;
+            $scope.battleCom.historyCreater = data.historyRecord.creater;
         });
-
     });
 };

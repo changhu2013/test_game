@@ -159,30 +159,35 @@ router.post('/valianswer', function (req, res) {
                         battleData[userId]['battsucc'] = true;
                         battleData[userId]['index'] = (i + 1);
                     }
-                    //向战场发通知
-                    BattleIo.broadcast(sid, 'battle-' + qsId + '-' + bid, Command.BATTLE_OK, BattleIo.getBattleMsg(qsId, bid))
-                    //向题集发通知
-                    BattleIo.broadcast(sid, 'battle-' + qsId, Command.BATTLE_OK, BattleIo.getBattleMsg(qsId));
+
                     result['battleData'] = battleData;
                     result['currentMaxGrade'] = userGradeData[0]['grade'];
 
                     //查询历史记录
                     StoreBattle.where({'qsid': qsId}).sort({
                         maxBattleScore: 'desc'
-                    }).exec(function (err, data) {
+                    }).limit(1).exec(function (err, data) {
                         if(err) throw  err;
                         result['historyRecord'] = {
-                            grade : data.get('maxBattleScore'),
-                            historyCreater: data.get('name')
+                            grade : data[0].get('maxBattleScore') || 0,
+                            creater: data[0].get('name')
                         }
 
                         async.eachSeries(usersId, function (item, callback) {
+                            if(item === data[0].get('sid') && (battleData[item]['grade'] < data[0].get('maxBattleScore'))){
+                                return;
+                            }
                             StoreBattle.update({
                                 sid: item,
                                 qsid: qsId
                             }, {
                                 maxBattleScore: battleData[item]['grade'] || 0
                             }, function (err, data) {
+                                console.log("战斗结束,广播:BATTLE_OK");
+                                //向战场发通知
+                                BattleIo.broadcast(sid, 'battle-' + qsId + '-' + bid, Command.BATTLE_OK, result)
+                                //向题集发通知
+                                BattleIo.broadcast(sid, 'battle-' + qsId, Command.BATTLE_OK, BattleIo.getBattleMsg(qsId));
                                 res.send(result);
                             });
                         }, function (err) {

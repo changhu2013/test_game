@@ -72,10 +72,10 @@
     <div class="completeTips" ng-show="battleIsEnd">
         <div class="com-bd">
             <h3>{{battleCom.text}}</h3>
-            <p>您第{{battleCom.index}}个到达终点！</p>
+            <p ng-if="battleCom.battleSucc">您第{{battleCom.index}}个挑战成功的！</p>
             <p>我的成绩：{{battleCom.grade}}</p>
-            <p>本次最高成绩：{{battle.maxGrade}}</p>
-            <p>历史最好成绩：{{battle.historyGrade}}  创造者：{{battleCom.historyCreater}}</p>
+            <p>本次最高成绩：{{battleCom.maxGrade}}</p>
+            <p>历史最好成绩：{{battleCom.historyGrade}}  创造者：{{battleCom.historyCreater}}</p>
             <div class="search-wp">
                 <div class="search-bd">
                     <input type="text"/>
