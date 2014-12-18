@@ -27,14 +27,16 @@ var questionStoreDir = global.questionStoreDir;
 
 require('../models/Log.js');
 require('../models/user.js');
+require('../models/battle.js');
 require('../models/setting.js');
 require('../models/questionstore.js');
 require('../models/question.js');
 
-
 var formater = 'YYYY-MM-DD HH:mm:ss';
 
 var Log = mongoose.model('Log');
+var Battle = mongoose.model('Battle');
+
 var router = express.Router();
 
 router.get('/', function(req, res){
@@ -250,7 +252,8 @@ router.get('/report', function(req, res){
 router.get('/report/logs', function(req, res){
     Log.find().exec(function(err, logs){
         var pf = os.platform().toString();
-        var filepath =  __dirname + (pf == 'win32' ? '\\' : '/') + Math.random() + '.csv';
+        var filepath =  __dirname + (pf == 'win32' ? '\\' : '/')
+            + (new Date()).getTime() + Math.random() + '.csv';
 
         var str = 'SID,用户,操作,时间\n';
         for(var i = 0, len = logs.length; i < len; i++){
@@ -259,6 +262,38 @@ router.get('/report/logs', function(req, res){
         }
         fs.writeFile(filepath, str, {encoding:'UTF-8'}, function(){
             fileutil.download(req, res, filepath, '日志.csv', function(err){
+                if(err){
+                    throw err;
+                }
+                fs.unlink(filepath);
+            });
+        });
+    });
+});
+
+//挑战记录
+router.get('/report/battles', function(req, res){
+
+    Battle.find().exec(function(err, battles){
+        var pf = os.platform().toString();
+        var filepath =  __dirname + (pf == 'win32' ? '\\' : '/')
+            + (new Date()).getTime() + Math.random() + '.csv';
+
+        //挑战状态：N - 未开始 F - 已经完成 I - 正在进行中 E-跑路(所有人跑路)
+        var str = 'SID,用户,题目集,状态,开始时间,结束时间,练习积分,挑战积分\n';
+        for(var i = 0, len = battles.length; i < len; i++){
+            var b = battles[i];
+            var s = b.status;
+            str += b.sid + ',' + b.sname + ',' + b.qstitle
+                + ',' + (s == 'N' ? '未开始' : s == 'F' ? '已完成' : s == 'I' ? '正在进行' : s == E ? '所有人跑路' : '')
+                + ',' + moment(b.start).format(formater)
+                + ',' + moment(b.end).format(formater)
+                + ',' + (b.drillScore || '')
+                + ',' + (b.battleScore || '')
+                + '\n';
+        }
+        fs.writeFile(filepath, str, {encoding:'UTF-8'}, function(){
+            fileutil.download(req, res, filepath, '挑战记录.csv', function(err){
                 if(err){
                     throw err;
                 }
