@@ -19,6 +19,13 @@ db.user.insert({sid:101, name:'张三'})
 db.user.find()
 db.users.find({sid:"102"})
 
+----------------------------
+服务启动
+node server.js
+
+node master.js
+
+
 
 ------  index.js
 /main   首页
