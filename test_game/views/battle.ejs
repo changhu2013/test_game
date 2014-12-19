@@ -1,6 +1,6 @@
 <input type="hidden" ng-init="user.sid = <%=user.sid%>"/>
 <input type="hidden" ng-init="bid = '<%=bid%>'"/>
-<div class="panel panel-default">
+<div class="panel panel-default battle-wrap">
     <div class="panel-heading">
         <div class="row">
             <div class="col-md-2 col-xs-2">
@@ -68,4 +68,29 @@
         </li>
     </ul>
     <a class="ui button blue startBtn" ng-disable="!battleStatu" ng-class="{disable: !battleStatu}" ng-show="<%=startBtn%> && showBtn" ng-click="startBattle()">开始</a>
+
+    <div class="completeTips" ng-show="battleIsEnd">
+        <div class="com-bd">
+            <h3>{{battleCom.text}}</h3>
+            <p ng-if="battleCom.battleSucc">您第{{battleCom.index}}个挑战成功的！</p>
+            <p>我的成绩：{{battleCom.grade}}</p>
+            <p>本次最高成绩：{{battleCom.maxGrade}}</p>
+            <p>历史最好成绩：{{battleCom.historyGrade}}  创造者：{{battleCom.historyCreater}}</p>
+            <div class="search-wp">
+                <div class="search-bd">
+                    <input type="text"/>
+                </div>
+                <div class="search-btn">
+                    <a class="ui button">搜索</a>
+                </div>
+            </div>
+            <div class="text">
+                <textarea></textarea>
+            </div>
+            <div class="btn-wp">
+                <a class="ui button blue">挑战他们</a>
+                <a class="ui button blue">退出</a>
+            </div>
+        </div>
+    </div>
 </div>

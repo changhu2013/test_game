@@ -276,6 +276,11 @@ router.get('/createBattle/:qs_id', function (req, res) {
             //该战役的ID
             var bid = battleData.get('_id').toString();
             var sid = req.session.user.sid;
+
+            BattleIo.joinBattle(qs_id, bid, sid, req.session.user.name);
+
+            console.log("当前战役ID:" + bid);
+
             res.render('battle', {
                 qsid: qs_id,
                 bid: bid,
@@ -283,7 +288,8 @@ router.get('/createBattle/:qs_id', function (req, res) {
                 qstitle: questionStoreData.get('title')
             });
 
-            StoreBattle.findOne({'sid': sid}, function (err, storeBattleData) {
+
+            /*StoreBattle.findOne({'sid': sid}, function (err, storeBattleData) {
                 if (storeBattleData) {
                     StoreBattle.update({
                         qsid: qs_id,
@@ -293,9 +299,7 @@ router.get('/createBattle/:qs_id', function (req, res) {
                         qtitle: questionStoreData.get('title'),
                         lastTime: battleData.get('start')
                     }, function (err, data) {
-                        console.log(sid + "创建战场;");
                         BattleIo.joinBattle(qs_id, bid, sid, req.session.user.name);
-                        console.log("当前战场人数:" + BattleIo.getBattleMsg(qs_id, bid));
                         res.render('battle', {
                             qsid: qs_id,
                             bid: bid,
@@ -309,12 +313,7 @@ router.get('/createBattle/:qs_id', function (req, res) {
                     storeBattle['qsid'] = qs_id;
                     storeBattle['bid'] = bid;
                     storeBattle['lastTime'] = battleData.get('start');
-
-                    console.log(sid + "创建战场;");
                     BattleIo.joinBattle(qs_id, bid, sid, req.session.user.name);
-                    console.log("当前战场人数:" + BattleIo.getBattleMsg(qs_id, bid));
-
-
                     storeBattle.save(function (err, data) {
                         res.render('battle', {
                             qsid: qs_id,
@@ -324,7 +323,7 @@ router.get('/createBattle/:qs_id', function (req, res) {
                         });
                     });
                 }
-            });
+            });*/
 
         });
     });
@@ -409,6 +408,7 @@ router.post('/startBattle', function (req, res) {
     var questionData = fs.readFileSync(path, "utf-8");
     StoreBattle.findOne({'sid': sid}, function (err, storeBattleData) {
         if(err) throw err;
+
         if(storeBattleData){
             QuestionStore.findById(qsId, function (err, qsdata) {
                 StoreBattle.update({
@@ -418,6 +418,7 @@ router.post('/startBattle', function (req, res) {
                     lastTime: new Date()
                 }, function (err, data) {
                     if(err) throw err;
+                    BattleIo.getBattleMsg(qsId, bid, sid)['start'] = new Date();
                     res.send(JSON.parse(questionData)) //题目
                 });
             })
@@ -432,6 +433,7 @@ router.post('/startBattle', function (req, res) {
                 storeBattle['lastTime'] = new Date();
                 storeBattle.save(function (err , data) {
                     if(err) throw err;
+                    BattleIo.getBattleMsg(qsId, bid, sid)['start'] = new Date();
                     res.send(JSON.parse(questionData)) //题目
                 });
             });

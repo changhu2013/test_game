@@ -39,6 +39,7 @@ warzone_controller = function($scope, $http, $routeParams){
         doLoad();
     };
 
+    //监听有人加入战场
     socket.on(Command.JOIN_STORE, function (data) {
         var warData = [];
         for(var p in data){
@@ -51,11 +52,51 @@ warzone_controller = function($scope, $http, $routeParams){
                 u['sid'] = attr;
                 obj['users'].push(u);
             }
+            if(obj['users'].length >= 5) {
+                obj['battlestatus'] = true;
+                obj['battleText'] = '人数已满';
+            } else {
+                obj['battlestatus'] = false;
+                obj['battleText'] = '';
+            }
             warData.push(obj);
         }
 
         $scope.$apply(function(){
             $scope.battles = warData;
+        });
+    });
+
+
+    //监听有战场开始战斗
+    socket.on(Command.START_BATTLE, function (data) {
+        $scope.$apply(function () {
+            var bid = data.bid;
+            var battles = $scope.battles;
+            for(var p in battles){
+                var battle = battles[p];
+                if(battle['bid'] == bid){
+                    battle['battlestatus'] = true;
+                    battle['battleText'] = '正在进行';
+                    return;
+                }
+            }
+        });
+    });
+
+    //有战场结束
+    socket.on(Command.BATTLE_OK, function (data) {
+        $scope.$apply(function () {
+            var bid = data.bid;
+            var battles = $scope.battles;
+            for(var p in battles){
+                var battle = battles[p];
+                if(battle['bid'] == bid){
+                    battle['battlestatus'] = true;
+                    battle['battleText'] = '正在进行';
+                    return;
+                }
+            }
         });
     });
 };

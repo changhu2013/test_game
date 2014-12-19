@@ -232,7 +232,7 @@ BattleIo.prototype.joinBattle = function(qsid, bid, sid, name){
 
 		//先向战场广播
 		u.socket.to('battle-' + qsid).emit(Command.JOIN_STORE, this.getBattleMsg(qsid));
-
+		u.socket.leave('battle-' + qsid);
 		u.socket.join(rid);
 		this.io.sockets.in(rid).emit(Command.JOIN_BATTLE, this.getBattleMsg(qsid, bid));
 	}
@@ -242,9 +242,12 @@ BattleIo.prototype.joinBattle = function(qsid, bid, sid, name){
 BattleIo.prototype.startBattle = function(qsid, bid, sid){
 	var u = this.getOnLineMsg(sid);
 	if(u){
+		this.getBattleMsg(qsid, bid, sid)['start'] = new Date();
 		//在该房间内广播有人开始挑战的消息
 		var rid = 'battle-' + qsid + '-' + bid;
-
+		u.socket.in('battle-' + qsid).emit(Command.START_BATTLE, {
+			bid: bid
+		});
 		u.socket.in(rid).emit(Command.START_BATTLE);
 	}
 }
@@ -352,11 +355,12 @@ BattleIo.prototype.drillMistake = function (qsid, bid, sid, qid) {
 //更新 连续答对题目数
 BattleIo.prototype.battleSerialValidity = function (qsid, bid, sid, serialValidity) {
 	console.log('serialValidity  '+ serialValidity);
-	var u = this.getDrillMsg(qsid, bid, sid);
+	var u = this.getBattleMsg(qsid, bid, sid);
 	if(typeof serialValidity != 'undefined') {
 		u.serialValidity = serialValidity;
+		console.log(" u.serialValidity:  " + u.serialValidity);
 		if(u.serialValidity == 5){//当连续答对5道题时候,增加一个道具
-			this.battleProperty(qsid, bid, sid, u.property++); //增加一个道具
+			this.battleProperty(qsid, bid, sid, u.property + 1); //增加一个道具
 			u.serialValidity = 0; //并将连续答对的题目清0
 		}
 		//在该房间内广播战报消息

@@ -21,8 +21,6 @@
     "socket.io": "~1.2.1",
     "mongoose": "~3.8.20",
     "connect-multiparty": "~1.2.5",
-    "moment": "~2.8.4",
-    "mime":"~1.2.11",
-    "urlencode":"~0.2.0"
+    "moment": "~2.8.4"
   }
 }
