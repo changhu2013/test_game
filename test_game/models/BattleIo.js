@@ -112,11 +112,11 @@ BattleIo.prototype.setWorker = function(worker){
 
 //向socket.io子进程发送消息
 BattleIo.prototype.sendWorkerMsg = function(method){
+	var args = [];
+	for(var i = 1; i < arguments.length;i++){
+		args.push(arguments[i]);
+	}
 	if(this.worker){
-		var args = [];
-		for(var i = 1; i < arguments.length;i++){
-			args.push(arguments[i]);
-		}
 		this.worker.broadcast('socket.io', {
 			method : method,
 			args : args
@@ -126,8 +126,16 @@ BattleIo.prototype.sendWorkerMsg = function(method){
 			args : args
 		});
 	}
+	//向其他子进程发送消息
+	process.send({
+        type : 'broadcast',
+        from  : process.pid,
+        data : {
+            method : 'joinBattle',
+            args : args
+        }
+    });
 }
-
 
 //给某人发送消息
 BattleIo.prototype.send =function(sid, command, data){
@@ -212,32 +220,23 @@ BattleIo.prototype.doSetWarZoneData = function (qs_id, sid, name) {
 //获取练习赛信息
 //如果 bid 和 sid 均为undefined, 则返回该题集下的练习赛信息
 //如果 sid 为undefined 则返回该练习信息
-BattleIo.prototype.getDrillMsg = function(qsid, bid, sid){
+BattleIo.prototype.getDrillMsg = function(qsid, sid){
 	var qs = this.drillData[qsid];
 	if(!qs){
 		qs = this.drillData[qsid] = {};
 	}
-	if(bid == undefined && sid == undefined){
+	if(sid == undefined){
 		return qs;
 	}
-	var b = qs[bid];
-	if(!b){
-		b = qs[bid] = {};
-	}
-	if(sid == undefined){
-		return b;
-	}
-	var u = b[sid];
+	var u = qs[sid];
 	if(!u){
-		u = b[sid] = {
+		u = qs[sid] = {
 			progress:0,
 			validity:[],
 			mistake:[],
-			serialValidity: 0, //连续答对
 			status:'I'
 		}
 	}
-	console.log("当前加入的人:" + b);
 	return u;
 };
 
@@ -300,17 +299,16 @@ BattleIo.prototype.doStartBattle = function(qsid, bid, sid){
 }
 
 //进入练习赛
-BattleIo.prototype.joinDrill = function(qsid, bid, sid){
-	this.doJoinDrill(qsid, bid, sid);
-	this.sendWorkerMsg('doJoinDrill', qsid, bid, sid);
+BattleIo.prototype.joinDrill = function(qsid, sid){
+	this.doJoinDrill(qsid, sid);
+	this.sendWorkerMsg('doJoinDrill', qsid, sid);
 }
 
 //进入练习赛
-BattleIo.prototype.doJoinDrill = function(qsid, bid, sid){
+BattleIo.prototype.doJoinDrill = function(qsid, sid){
 	var u = this.getOnLineMsg(sid);
 	if(u){
-		this.getDrillMsg(qsid, bid, sid);
-
+		this.getDrillMsg(qsid, sid);
 		var rid = 'drill-' + qsid;
 		u.socket.join(rid);
 		u.socket.to(rid).emit(Command.JOIN_DRILL, rid);
@@ -345,20 +343,20 @@ BattleIo.prototype.updateBattleStatus = function(qsid, bid, sid, status){
 
 
 //更新或获取 状态
-BattleIo.prototype.drillStatus = function(qsid, bid, sid, status){
+BattleIo.prototype.drillStatus = function(qsid, sid, status){
 	//如果status为undefined，则该方法为get方法，即返回当前状态
 	//如果status不为undefined，则该方法为set方法，设置属性
-	var u = this.getDrillMsg(qsid, bid, sid);
+	var u = this.getDrillMsg(qsid, sid);
 	if(status){
-		this.updateDrillStatus(qsid, bid, sid, status);
-		this.sendWorkerMsg('updateDrillStatus', qsid, bid, sid, status);
+		this.updateDrillStatus(qsid, sid, status);
+		this.sendWorkerMsg('updateDrillStatus', qsid, sid, status);
 	}else {
 		return u.status;
 	}
 }
 
-BattleIo.prototype.updateDrillStatus = function(qsid, bid, sid, status){
-	var u = this.getDrillMsg(qsid, bid, sid);
+BattleIo.prototype.updateDrillStatus = function(qsid, sid, status){
+	var u = this.getDrillMsg(qsid, sid);
 	u.status = status;
 }
 
@@ -387,18 +385,18 @@ BattleIo.prototype.updateBattleValidaty = function(qsid, bid, sid, qid){
 }
 
 //更新或获取 答对题目ID
-BattleIo.prototype.drillValidaty = function(qsid, bid, sid, qid){
-	var u = this.getDrillMsg(qsid, bid, sid);
+BattleIo.prototype.drillValidaty = function(qsid, sid, qid){
+	var u = this.getDrillMsg(qsid, sid);
 	if(qid){
-		this.updateDrillValidaty(qsid, bid, sid, qid);
-		this.sendWorkerMsg('updateDrillValidaty', qsid, bid, sid, qid);
+		this.updateDrillValidaty(qsid, sid, qid);
+		this.sendWorkerMsg('updateDrillValidaty', qsid, sid, qid);
 	}else {
 		return u.validity;
 	}
 }
 
-BattleIo.prototype.updateDrillValidaty = function(qsid, bid, sid, qid){
-	var u = this.getDrillMsg(qsid, bid, sid);
+BattleIo.prototype.updateDrillValidaty = function(qsid, sid, qid){
+	var u = this.getDrillMsg(qsid, sid);
 	u.validity.push(qid);
 }
 
@@ -427,18 +425,18 @@ BattleIo.prototype.updateBattleMistake = function (qsid, bid, sid, qid) {
 }
 
 //更新或获取 打错题目ID
-BattleIo.prototype.drillMistake = function (qsid, bid, sid, qid) {
-	var u = this.getDrillMsg(qsid, bid, sid);
+BattleIo.prototype.drillMistake = function (qsid, sid, qid) {
+	var u = this.getDrillMsg(qsid, sid);
 	if(qid){
-		this.updateDrillMistake(qsid, bid, sid, qid);
-		this.sendWorkerMsg('updateDrillMistake', qsid, bid, sid, qid);
+		this.updateDrillMistake(qsid, sid, qid);
+		this.sendWorkerMsg('updateDrillMistake', qsid, sid, qid);
 	}else {
 		return u.mistake;
 	}
 }
 
-BattleIo.prototype.updateDrillMistake = function (qsid, bid, sid, qid) {
-	var u = this.getDrillMsg(qsid, bid, sid);
+BattleIo.prototype.updateDrillMistake = function (qsid, sid, qid) {
+	var u = this.getDrillMsg(qsid, sid);
 	u.mistake.push(qid);
 }
 
@@ -527,19 +525,19 @@ BattleIo.prototype.updateBattleProgress = function(qsid, bid, sid, proress){
 }
 
 //更新或获取进度
-BattleIo.prototype.drillProgress = function(qsid, bid, sid, proress){
-	var u = this.getDrillMsg(qsid, bid, sid);
+BattleIo.prototype.drillProgress = function(qsid, sid, proress){
+	var u = this.getDrillMsg(qsid, sid);
 	if(proress){
 		u.progress = proress
-		this.updateDrillProgress(qsid, bid, sid, proress);
-		this.sendWorkerMsg('updateDrillProgress', qsid, bis, sid, proress);
+		this.updateDrillProgress(qsid, sid, proress);
+		this.sendWorkerMsg('updateDrillProgress', qsid, sid, proress);
 	}else {
 		return u.progress;
 	}
 }
 
-BattleIo.prototype.updateDrillProgress = function(qsid, bid, sid, proress){
-	var u = this.getDrillMsg(qsid, bid, sid);
+BattleIo.prototype.updateDrillProgress = function(qsid, sid, proress){
+	var u = this.getDrillMsg(qsid, sid);
 	u.progress = proress;
 }
 

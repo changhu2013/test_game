@@ -20,9 +20,6 @@ var User = mongoose.model('User');
 //题集生成的保存目录
 var questionStoreDir = global.questionStoreDir;
 
-//保存题集下战场的记录(包括练习和联网对战)
-var questionBattleData = {};
-global.questionBattleData = questionBattleData;
 /*var questionBattleData = {
  //战场ID
  bid: {

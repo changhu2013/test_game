@@ -25,7 +25,13 @@ node server.js
 
 node master.js
 
+----------------------------
 
+> 忘记提交日志模块了，在app.js里，周一补充一下
+
+<p style="color:red;">
+    修改session存储到mongod数据库
+</p>
 
 ------  index.js
 /main   首页
