@@ -131,7 +131,7 @@ BattleIo.prototype.sendWorkerMsg = function(method){
         type : 'broadcast',
         from  : process.pid,
         data : {
-            method : 'joinBattle',
+            method : method,
             args : args
         }
     });
