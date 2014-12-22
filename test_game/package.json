@@ -10,6 +10,7 @@
     "body-parser": "~1.0.0",
     "connect-flash": "~0.1.1",
     "connect-mongodb": ">= 0.1.7",
+    "connect-mongo": "~0.4.2",
     "connect-multiparty": "~1.2.5",
     "cookie-parser": "~1.0.1",
     "debug": "~0.7.4",
@@ -27,6 +28,7 @@
     "socket.io": "~1.2.1",
     "static-favicon": "~1.0.0",
     "stylus": "0.42.3",
-    "log4js": "~0.6.21"
+    "log4js": "~0.6.21",
+    "pm" : "~2.2.5"
   }
 }

@@ -2,7 +2,7 @@
       <h2><%=title%></h2>
     <a href="#/ranklist/<%=qs_id%>">排行榜</a>
     <a href="#/drillwar/<%=qs_id%>">练兵场</a>
-    <a href="#/createBattle/<%=qs_id%>">建个战场</a>
+    <button ng-init="qsId = '<%=qs_id%>'" ng-click="createbattle()">建个战场</button>
 </div>
 <div class="warzone-bd">
     <ul class="warzone-items">

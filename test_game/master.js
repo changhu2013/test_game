@@ -1,75 +1,49 @@
-var fork = require('child_process').fork;
-var cpus = require('os').cpus();
 
-var server = require('net').createServer();
 
-//var io = require('socket.io')(server);
-//require('./models/BattleIo.js').setSocketIo(io);
-
-server.listen(3000);
-console.log('启动服务器,监听端口为3000');
-
-//重启次数
-var limit = 10;
-var during = 60000;
-var length  = 0;
-var restart = [];
-var isTooFrequently = function(){
-    //记录重启时间
-    var time = Date.now();
-    length = restart.push(time);
-    if(length > limit){
-        //取出最后10个记录
-        restart = restart.slice(limit * -1);
-    }
-    //最后一次重启到前10次重启之间的时间间隔
-    return restart.length >= limit && restart[restart.length - 1] - restart[0] < during;
-}
-
-var sessionCache = {}; //session会话
-var workers = {};
-var createWorker = function(){
-
-    //检查是否太过频繁
-    if(isTooFrequently()){
-        //触发giveup事件后,不再重启
-        process.emit('giveup' , length, during);
-        return;
-    }
-
-    var worker = fork(__dirname + '/worker.js');
-
-    //当接收到自杀信号的时候重启新的进程
-    worker.on('message', function(message){
-        if(message.act === 'suicide'){
-            createWorker();
-        }
-    });
-
-    //退出时重启新的进程
-    worker.on('exit', function(){
-        console.log('Worker ' + worker.pid + ' exited.');
-        delete workers[worker.pid];
-        createWorker();
-    });
-
-    //句柄转发
-    worker.send({
-        msg : 'server',
-        cache : sessionCache //session缓存
-    }, server);
-
-    workers[worker.pid] = worker;
-    console.log('Create worker. pid:' + worker.pid);
-};
-
-for(var i = 0; i < cpus.length; i++){
-    createWorker();
-}
-
-//主进程自己退出时,让所有工作进程退出
-process.on('exit', function(){
-    for(var pid in workers){
-        workers[pid].kill();
-    }
+var app = require('pm').createMaster({
+    pidfile : 'bench.pid',
+    statusfile : 'status.log',
+    heartbeat_interval : 2000
 });
+
+app.on('giveup', function(name, fatals, pause){
+    console.log('Master giveup to restart "%s" process after %d times. pm will try after %d ms.', name, fatals, pause);
+});
+
+app.on('disconnect', function (worker, pid) {
+    // var w = cluster.fork();
+    console.error('[%s] [master:%s] wroker:%s disconnect! new worker:%s fork',
+        new Date(), process.pid, worker.process.pid); //, w.process.pid);
+});
+
+app.on('fork', function () {
+    console.log('fork', arguments);
+});
+
+app.on('quit', function () {
+    console.log('quit', arguments);
+});
+
+
+//除socket.io以外的其他所有服务
+var cpus = require('os').cpus().length;
+
+if(cpus >= 2){
+    app.register('http', __dirname + '/worker.js', {
+        listen : 3000,           //主进程绑定的端口
+        children : cpus - 1   //主机有多少CPU则启动多少子进程
+    });
+    //用于socket.io
+    app.register('socket.io', __dirname + '/worker2.js', {
+        listen : 3001,           //主进程绑定的端口
+        children : 1   //主机有多少CPU则启动多少子进程
+    });
+} else {
+    //用于所有服务
+    app.register('http', __dirname + '/worker2.js', {
+        listen : 3001,           //主进程绑定的端口
+        children : 1             //主机有多少CPU则启动多少子进程
+    });
+}
+
+app.dispatch();

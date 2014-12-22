@@ -6,6 +6,7 @@ var fs = require('fs');
 var Setting = require('../models/setting.js');
 var BattleIo = require('../models/BattleIo.js')
 
+
 require('../models/battle.js');
 require('../models/questionstore.js');
 require('../models/storebattle.js');
@@ -14,6 +15,7 @@ var router = express.Router();
 var Battle = mongoose.model('Battle');
 var QuestionStore = mongoose.model('QuestionStore');
 var StoreBattle = mongoose.model('StoreBattle');
+var User = mongoose.model('User');
 
 //题集生成的保存目录
 var questionStoreDir = global.questionStoreDir;
@@ -191,7 +193,6 @@ router.get('/drillwar/:qs_id', function(req, res){
     var paperId = parseInt(Math.random() * parseInt(Setting.get('paperNum'))); //试卷ID
     var path = questionStoreDir + qs_id + '\\' + paperId + '.json';
     var questionData = fs.readFileSync(path, "utf-8");
-    console.log(questionData);
 
     QuestionStore.findById(qs_id, function (err, questionStoreData) {
         if(err) throw err;
@@ -219,11 +220,14 @@ router.get('/drillwar/:qs_id', function(req, res){
                         bid: bid,
                         lastTime: battleData.get('start')
                     }, function (err, data) {
+                        //加入练习场
+                        BattleIo.joinDrill(qs_id, bid, sid);
                         res.render('drillwar', {
                             users: [req.session.user],
                             bid: bid,
                             qstitle: questionStoreData.get('title'),
-                            qStore: JSON.parse(questionData) //题目
+                            qStore: JSON.parse(questionData), //题目
+                            paperNum: Setting.get('battleEntryFee')
                         });
                     });
                 } else {
@@ -237,96 +241,66 @@ router.get('/drillwar/:qs_id', function(req, res){
                             users: [req.session.user],
                             bid: bid,
                             qstitle: questionStoreData.get('title'),
-                            qStore: JSON.parse(questionData) //题目
+                            qStore: JSON.parse(questionData), //题目
+                            paperNum: Setting.get('battleEntryFee')
                         });
                     });
                 }
             });
-
-            questionBattleData[bid] = {};
-            var users = {};
-            users[sid] = {};
-            users[sid] = {
-                qsid: qs_id,
-                property: 0,
-                progress: 0,
-                serialValidity: 0,
-                validity: [], //答对题目
-                mistake: [] //打错题目
-            }
-            questionBattleData[bid]['users'] = users;
         });
+    });
+});
+
+
+//检查分数
+router.post('/validateScore', function (req, res) {
+    //先检查分数够不够
+    var sid = req.session.user.sid;
+    User.findOne({sid: sid}, function (err, userData) {
+        var score = userData.get('score') || 0;
+        if(parseInt(score) < parseInt(Setting.get('battleEntryFee'))){
+            res.send({
+                success: false,
+                msg: '您当前的分数不够建立战场，请先进行练习场赚取积分。'
+            });
+        } else {
+            res.send({
+                success: true,
+                msg: ''
+            });
+        }
     });
 });
 
 //创建战场-并保存战场状态
 router.get('/createBattle/:qs_id', function (req, res) {
+    var sid = req.session.user.sid;
     var qs_id = req.params.qs_id;
     QuestionStore.findById(qs_id, function (err, questionStoreData) {
-        if(err) throw err;
-        var battle = new Battle();
-        battle['sid'] = req.session.user.sid;
-        battle['sname'] = req.session.user.name;
-        battle['status'] = 'W'; //正在进行状态(等待)
-        battle['qsid'] = qs_id; //题集ID
-        battle['qstitle'] = questionStoreData.get('title');
+                if(err) throw err;
+                var battle = new Battle();
+                battle['sid'] = req.session.user.sid;
+                battle['sname'] = req.session.user.name;
+                battle['status'] = 'W'; //正在进行状态(等待)
+                battle['qsid'] = qs_id; //题集ID
+                battle['qstitle'] = questionStoreData.get('title');
 
-        battle.save(function (err, battleData) {
-            if(err) throw err;
-            //该战役的ID
-            var bid = battleData.get('_id').toString();
-            var sid = req.session.user.sid;
+                battle.save(function (err, battleData) {
+                    if(err) throw err;
+                    //该战役的ID
+                    var bid = battleData.get('_id').toString();
+                    BattleIo.joinBattle(qs_id, bid, sid, req.session.user.name);
 
-            BattleIo.joinBattle(qs_id, bid, sid, req.session.user.name);
+                    console.log("当前战役ID:" + bid);
 
-            console.log("当前战役ID:" + bid);
-
-            res.render('battle', {
-                qsid: qs_id,
-                bid: bid,
-                startBtn : true,
-                qstitle: questionStoreData.get('title')
-            });
-
-
-            /*StoreBattle.findOne({'sid': sid}, function (err, storeBattleData) {
-                if (storeBattleData) {
-                    StoreBattle.update({
+                    res.render('battle', {
                         qsid: qs_id,
                         bid: bid,
-                        sid: sid,
-                        name: req.session.user.name,
-                        qtitle: questionStoreData.get('title'),
-                        lastTime: battleData.get('start')
-                    }, function (err, data) {
-                        BattleIo.joinBattle(qs_id, bid, sid, req.session.user.name);
-                        res.render('battle', {
-                            qsid: qs_id,
-                            bid: bid,
-                            startBtn : true,
-                            qstitle: questionStoreData.get('title')
-                        });
+                        startBtn : true,
+                        qstitle: questionStoreData.get('title')
                     });
-                } else {
-                    var storeBattle = new StoreBattle();
-                    storeBattle['sid'] = sid;
-                    storeBattle['qsid'] = qs_id;
-                    storeBattle['bid'] = bid;
-                    storeBattle['lastTime'] = battleData.get('start');
-                    BattleIo.joinBattle(qs_id, bid, sid, req.session.user.name);
-                    storeBattle.save(function (err, data) {
-                        res.render('battle', {
-                            qsid: qs_id,
-                            bid: bid,
-                            startBtn : true,
-                            qstitle: questionStoreData.get('title')
-                        });
-                    });
-                }
-            });*/
-
-        });
-    });
+                });
+            });
 });
 
 //初始化战场信息
@@ -374,8 +348,17 @@ router.post('/startBattleForCreater', function (req, res) {
                     lastTime: new Date()
                 }, function (err, data) {
                     if(err) throw err;
-                    BattleIo.startBattle(qsId, bid, sid);
-                    res.send(JSON.parse(questionData)) //题目
+                    User.findOne({
+                        sid: sid
+                    } , function (err, userData) {
+                        var score = userData.get('score'); //当前分数
+                        User.update({
+                            score : parseInt(score) - parseInt(Setting.get('battleEntryFee'))
+                        }, function (err, userData2) {
+                            BattleIo.startBattle(qsId, bid, sid);
+                            res.send(JSON.parse(questionData)) //题目
+                        });
+                    });
                 });
             } else {
                 var storeBattle = new StoreBattle();
@@ -387,8 +370,17 @@ router.post('/startBattleForCreater', function (req, res) {
                 storeBattle['lastTime'] = new Date();
                 storeBattle.save(function (err , data) {
                     if(err) throw err;
-                    BattleIo.startBattle(qsId, bid, sid);
-                    res.send(JSON.parse(questionData)) //题目
+                    User.findOne({
+                        sid: sid
+                    } , function (err, userData) {
+                        var score = userData.get('score'); //当前分数
+                        User.update({
+                            score : parseInt(score) - parseInt(Setting.get('battleEntryFee'))
+                        }, function (err, userData2) {
+                            BattleIo.startBattle(qsId, bid, sid);
+                            res.send(JSON.parse(questionData)) //题目
+                        });
+                    });
                 });
             }
         });
@@ -408,7 +400,6 @@ router.post('/startBattle', function (req, res) {
     var questionData = fs.readFileSync(path, "utf-8");
     StoreBattle.findOne({'sid': sid}, function (err, storeBattleData) {
         if(err) throw err;
-
         if(storeBattleData){
             QuestionStore.findById(qsId, function (err, qsdata) {
                 StoreBattle.update({
@@ -418,8 +409,17 @@ router.post('/startBattle', function (req, res) {
                     lastTime: new Date()
                 }, function (err, data) {
                     if(err) throw err;
-                    BattleIo.getBattleMsg(qsId, bid, sid)['start'] = new Date();
-                    res.send(JSON.parse(questionData)) //题目
+                    User.findOne({
+                        sid: sid
+                    } , function (err, userData) {
+                        var score = userData.get('score'); //当前分数
+                        User.update({
+                            score : parseInt(score) - parseInt(Setting.get('battleEntryFee'))
+                        }, function (err, userData2) {
+                            BattleIo.getBattleMsg(qsId, bid, sid)['start'] = new Date();
+                            res.send(JSON.parse(questionData)) //题目
+                        });
+                    });
                 });
             })
         } else {
@@ -433,8 +433,18 @@ router.post('/startBattle', function (req, res) {
                 storeBattle['lastTime'] = new Date();
                 storeBattle.save(function (err , data) {
                     if(err) throw err;
-                    BattleIo.getBattleMsg(qsId, bid, sid)['start'] = new Date();
-                    res.send(JSON.parse(questionData)) //题目
+                    User.findOne({
+                        sid: sid
+                    } , function (err, userData) {
+                        var score = userData.get('score'); //当前分数
+                        User.update({
+                            score : parseInt(score) - parseInt(Setting.get('battleEntryFee'))
+                        }, function (err, userData2) {
+                            BattleIo.getBattleMsg(qsId, bid, sid)['start'] = new Date();
+                            res.send(JSON.parse(questionData)) //题目
+                        });
+                    });
+
                 });
             });
         }

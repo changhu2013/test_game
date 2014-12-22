@@ -3,7 +3,7 @@
  * @param $scope
  * @param $http
  */
-warzone_controller = function($scope, $http, $routeParams){
+warzone_controller = function($scope, $http, $location, $routeParams){
     $scope.battles = [];
 
     $scope.skip = 0;
@@ -99,4 +99,24 @@ warzone_controller = function($scope, $http, $routeParams){
             }
         });
     });
+
+
+    //创建战场，需要检查分数够不够
+    $scope.createbattle = function () {
+        $http({
+            url : '/battle/validateScore',
+            method : 'POST',
+            cache : false
+        }).success(function(res){
+            if(res.success){ //通过
+                $location.path('#/createBattle/' + $scope.qdId);
+            } else { //不通过
+                var oTips = $('.tips');
+                oTips.css('height', '2em').text(res.msg);
+                setTimeout(function () {
+                    oTips.css('height', '0').text('');
+                }, 1000);
+            }
+        });
+    }
 };

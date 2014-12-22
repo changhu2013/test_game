@@ -1,23 +1,10 @@
 drillwar_controller = function($scope, $http, $location){
 	$scope.questionIndex = 1; //题目序号
-	$scope.timer = 1; //定时器
-	//计时器,提交答案的时候计时器要暂停
-	var task = setInterval(function () {
-		$scope.$apply(function () {
-			$scope.timer++;
-		});
-	}, 1000);
-
 	var oTips = $('.tips');
 
 	//点击提交
 	$scope.doReply = function(){
 		var validateAnswer = function (res) {
-			task = setInterval(function () {
-				$scope.$apply(function () {
-					$scope.timer++;
-				});
-			}, 1000);
 			var battleData = res.battleData;
 			var usersData = battleData['users'];
 			if(res.success){
@@ -46,7 +33,6 @@ drillwar_controller = function($scope, $http, $location){
 				} else {
 					alert('挑战失败');
 				}
-				clearInterval(task);
 				return ;
 			}
 			$scope.questionIndex++;
@@ -55,14 +41,14 @@ drillwar_controller = function($scope, $http, $location){
 		}
 		
 		if(oQuestionOpt.hasClass('selected')){
-			clearInterval(task);
 			$http({
 				url: '/question/valianswer',
 				method: 'POST',
 				params: {
 					_id: oQuestionOpt.filter('.selected').data('_id'),
 					answer: oQuestionOpt.filter('.selected').data('answer'),
-					bid: oQuestionOpt.filter('.selected').data('bid')
+					bid: oQuestionOpt.filter('.selected').data('bid'),
+					qs_id: $routeParams.qs_id
 				},
 				cache: false,
 				timeout: 3000

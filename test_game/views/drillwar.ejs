@@ -32,12 +32,12 @@
 
     <div class="tool-wrap">
         <button class="btn btn-default btn-sm btn-xs" type="button">
-            {{questionIndex}}/20
+            {{questionIndex}}/<%=paperNum%>
         </button>
 
-        <button class="btn btn-default btn-sm btn-xs" type="button">
+        <!--<button class="btn btn-default btn-sm btn-xs" type="button">
             {{timer}}秒
-        </button>
+        </button>-->
 
         <button class="btn btn-primary btn-sm btn-xs" type="button" ng-click="doReply();">
             提交
