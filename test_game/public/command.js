@@ -12,6 +12,7 @@
         BROADCAST : 'broadcast',  //-- msg:'XXXXXXX'  -- 表示广播发送一条信息  在某题集内广播，或在全局广播
 
         JOIN_WARZONE: 'join_warzone', //进入战场
+        LEAVE_WARZONE: 'leave_warzone', //进入战场
 
         JOIN_BATTLE : 'join_battle', // -- msg:'XXXXX' --  进入某挑战  当客户端接收到该消息的时候更新战场局势
         JOIN_DRILL : 'join_drill', // -- 进入某题集下的练习

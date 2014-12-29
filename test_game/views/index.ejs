@@ -109,7 +109,7 @@
             controller  : 'warzone_controller'
         }).when('/battle/:qs_id/:bid', {
             templateUrl : function (params) {
-                return '/battle/battle/' + params['qs_id'] + '/' + params['bid']
+                return '/battle/battle/' + params['qs_id'] + '/' + params['bid'] + '/' + new Date().getTime();
             }, //某一题集下的战场
             controller  : 'battle_controller'
         }).when('/ranklist/:qs_id', {
@@ -124,7 +124,7 @@
             controller  : 'drillwar_controller'
         }).when('/createBattle/:qs_id', {
             templateUrl : function(params){
-                return '/battle/createBattle/' + params['qs_id'];
+                return '/battle/createBattle/' + params['qs_id'] + '/' + new Date().getTime();
             },
             controller  : 'battle_controller'
         }).otherwise({
@@ -135,8 +135,8 @@
             .controller('mybattles_controller', ['$scope', '$http', mybattles_controller])
             .controller('warzone_controller', ['$scope', '$http', '$location','$routeParams', warzone_controller])
             .controller('ranklist_controller', ['$scope', '$http', '$routeParams', ranklist_controller])
-            .controller('drillwar_controller', ['$scope', '$http', '$location', drillwar_controller])
-            .controller('battle_controller', ['$scope', '$http', '$timeout', '$routeParams', battle_controller]);
+            .controller('drillwar_controller', ['$scope', '$http', '$location', '$routeParams', drillwar_controller])
+            .controller('battle_controller', ['$scope', '$http', '$timeout', '$location', '$routeParams', battle_controller]);
 
 </script>
 </html>

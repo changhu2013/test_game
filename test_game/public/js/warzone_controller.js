@@ -9,7 +9,10 @@ warzone_controller = function($scope, $http, $location, $routeParams){
     $scope.skip = 0;
     $scope.limit = 10;
 
-    var doLoadCallback = function(data){
+    var doLoadCallback = function(data, isMoreAction){
+        if(!isMoreAction){
+            $scope.battles = [];
+        }
 
         if(data instanceof Array){
 
@@ -19,7 +22,7 @@ warzone_controller = function($scope, $http, $location, $routeParams){
         }
     };
 
-    var doLoad = function(){
+    var doLoad = function(isMoreAction){
         $http({
             url : '/battle/getWarzoneData',
             method : 'POST',
@@ -30,14 +33,73 @@ warzone_controller = function($scope, $http, $location, $routeParams){
             },
             cache : false,
             timeout : 3000
-        }).success(doLoadCallback);
+        }).success(function(data){
+            doLoadCallback(data, isMoreAction);
+        });
     };
 
     doLoad();
 
     $scope.doMore = function(){
-        doLoad();
+        doLoad(true);
     };
+
+    //监听有人离开战场
+    socket.on(Command.FIEE_BATTLE, function (data) {
+        var warData = [];
+        for(var p in data){
+            var obj = {};
+            obj['bid'] = p;
+            obj['users'] = [];
+            var users = data[p];
+            for(var attr in users){
+                var u = users[attr];
+                u['sid'] = attr;
+                obj['users'].push(u);
+            }
+            if(obj['users'].length >= 5) {
+                obj['battlestatus'] = true;
+                obj['battleText'] = '人数已满';
+            } else {
+                obj['battlestatus'] = false;
+                obj['battleText'] = '';
+            }
+            warData.push(obj);
+        }
+
+        $scope.$apply(function(){
+            $scope.battles = warData;
+        });
+    });
+
+
+    //监听有人离开战场
+    socket.on(Command.LEAVE_WARZONE, function (data) {
+        var warData = [];
+        for(var p in data){
+            var obj = {};
+            obj['bid'] = p;
+            obj['users'] = [];
+            var users = data[p];
+            for(var attr in users){
+                var u = users[attr];
+                u['sid'] = attr;
+                obj['users'].push(u);
+            }
+            if(obj['users'].length >= 5) {
+                obj['battlestatus'] = true;
+                obj['battleText'] = '人数已满';
+            } else {
+                obj['battlestatus'] = false;
+                obj['battleText'] = '';
+            }
+            warData.push(obj);
+        }
+
+        $scope.$apply(function(){
+            $scope.battles = warData;
+        });
+    });
 
     //监听有人加入战场
     socket.on(Command.JOIN_STORE, function (data) {
@@ -86,7 +148,7 @@ warzone_controller = function($scope, $http, $location, $routeParams){
 
     //有战场结束
     socket.on(Command.BATTLE_OK, function (data) {
-        $scope.$apply(function () {
+        /*$scope.$apply(function () {
             var bid = data.bid;
             var battles = $scope.battles;
             for(var p in battles){
@@ -97,7 +159,7 @@ warzone_controller = function($scope, $http, $location, $routeParams){
                     return;
                 }
             }
-        });
+        });*/
     });
 
 
@@ -109,7 +171,7 @@ warzone_controller = function($scope, $http, $location, $routeParams){
             cache : false
         }).success(function(res){
             if(res.success){ //通过
-                $location.path('#/createBattle/' + $scope.qdId);
+                $location.path('/createBattle/' + $scope.qsId);
             } else { //不通过
                 var oTips = $('.tips');
                 oTips.css('height', '2em').text(res.msg);

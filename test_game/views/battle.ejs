@@ -1,5 +1,6 @@
 <input type="hidden" ng-init="user.sid = <%=user.sid%>"/>
 <input type="hidden" ng-init="bid = '<%=bid%>'"/>
+<input type="hidden" ng-init="doInit();"/>
 <div class="panel panel-default battle-wrap">
     <div class="panel-heading">
         <div class="row">
@@ -9,23 +10,23 @@
                 </button>
             </div>
             <div class="col-md-10 col-xs-10">
-                <h3 class="panel-title text-center"><%=qstitle%>-战场</h3>
+                <h3 class="panel-title text-center" ng-init="qstitle='<%=qstitle%>'"><%=qstitle%>-战场</h3>
             </div>
         </div>
     </div>
     <div class="panel-body">
         <section class="user-warp">
             <dl class="user-items">
-                <dd class="user-item"  ng-repeat="user in users">
+                <dd class="user-item"  ng-repeat="user in users" ng-click="toBeUsed(user.sid);">
                     <div class="item-progress">
                         <div class="item-layout">
                             <div ng-if="user.sid == <%=user.sid%>" data-sid="{{user.sid}}">
                                 <div class="mask current"></div>
-                                <p>{{user.name}} <i></i></p>
+                                <p ng-cloak>{{user.name}}<i></i></p>
                             </div>
                             <div ng-if="user.sid != <%=user.sid%>" data-sid="{{user.sid}}">
                                 <div class="mask"></div>
-                                <p>{{user.name}}<i></i></p>
+                                <p ng-cloak>{{user.name}}<i></i></p>
                             </div>
                         </div>
                     </div>
@@ -36,10 +37,10 @@
 
     <div class="tool-wrap" ng-show="showToolbar">
 
-        <button class="btn btn-default btn-sm btn-xs" type="button">拖后腿 * <i ng-cloak>{{toolNum}}</i></button>
+        <button class="btn btn-default btn-sm btn-xs" ng-click="useTool();" type="button">拖后腿 * <i ng-cloak>{{toolNum}}</i></button>
 
         <button class="btn btn-default btn-sm btn-xs" type="button">
-            {{questionIndex}}/20
+            第{{questionIndex}}题/共<%=paperNum%>题
         </button>
 
         <button class="btn btn-default btn-sm btn-xs" type="button">
@@ -67,7 +68,7 @@
             </dl>
         </li>
     </ul>
-    <a class="ui button blue startBtn" ng-disable="!battleStatu" ng-class="{disable: !battleStatu}" ng-show="<%=startBtn%> && showBtn" ng-click="startBattle()">开始</a>
+    <a id="js-start-btn" class="ui button blue startBtn" ng-disable="!battleStatu" ng-class="{disable: !battleStatu}" ng-show="<%=startBtn%> || showBtn" ng-click="startBattle()">开始</a>
 
     <div class="completeTips" ng-show="battleIsEnd">
         <div class="com-bd">
@@ -76,20 +77,25 @@
             <p>我的成绩：{{battleCom.grade}}</p>
             <p>本次最高成绩：{{battleCom.maxGrade}}</p>
             <p>历史最好成绩：{{battleCom.historyGrade}}  创造者：{{battleCom.historyCreater}}</p>
-            <div class="search-wp">
-                <div class="search-bd">
-                    <input type="text"/>
+            <p>{{autoback}}秒后自动返回</p>
+            <div ng-if="battleCom.showSucc">
+                <div class="search-wp">
+                    <div class="search-bd">
+                        <input type="text" name="search_name" placeholder="输入姓名进行搜索"/>
+                    </div>
+                    <div class="search-btn">
+                        <a class="ui button" ng-click="doSearchUser();">搜索</a>
+                    </div>
                 </div>
-                <div class="search-btn">
-                    <a class="ui button">搜索</a>
+                <div class="text">
+                    <textarea>{{challText}}</textarea>
                 </div>
-            </div>
-            <div class="text">
-                <textarea></textarea>
+                <div class="btn-wp">
+                    <a class="ui button blue" ng-click="doChall();">挑战他们</a>
+                </div>
             </div>
             <div class="btn-wp">
-                <a class="ui button blue">挑战他们</a>
-                <a class="ui button blue">退出</a>
+                <a class="ui button blue" href="#/warzone/{{warId}}">退出战斗</a>
             </div>
         </div>
     </div>

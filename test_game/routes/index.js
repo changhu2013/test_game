@@ -28,9 +28,17 @@ var router = express.Router();
 router.get('/', function(req, res) {
     var query = url.parse(req.url, true).query;
     var sid = query.sid;
+
+    //回到首页,清理战场数据
+    BattleIo.removeWarDataByUser(sid);
+    //回到首页,清理战斗数据
+    BattleIo.removeBattleDataByUser(sid);
+
+
     console.log('sid:' + sid);
     //判断是否登录
-    if(req.session && req.session.user && (sid == req.session.user.sid)){
+    console.log("当前session信息:" + JSON.stringify(req.session.user));
+    if(false && req.session && req.session.user && (sid == req.session.user.sid)){
         res.render('index', {user : req.session.user});
     }else {
         if(sid == undefined){
@@ -40,23 +48,27 @@ router.get('/', function(req, res) {
             User.findOne({
                 sid: sid
             }, function (err, user) {
-                console.log(user);
-                if(err){
+                console.log("当前登陆信息:" + JSON.stringify(user));
+
+                console.log(err);
+                if(err || user == null){
+                    req.session.user = null;
                     req.flash('success', '未找到sid:' + sid + '的用户');
                     res.render('index');
                 }else {
                     //记录登陆日志
                     var log = new Log({
-                        sid : user.sid,
+                        sid : sid,
                         name : user.name,
                         action : '登陆',
                         time : new Date()
                     });
+
                     log.save(function(){
                         req.flash('success', '登陆成功');
                         console.log('【' + sid + '】登陆成功');
                         req.session.user = user;
-                        res.render('index');
+                        res.render('index', {user : req.session.user});
                     });
                 }
             });
@@ -67,11 +79,21 @@ router.get('/', function(req, res) {
 //主界面
 router.get('/main', function(req, res){
     console.log('主界面');
+    var sid = req.session.user.sid;
+    //回到首页,清理战场数据
+    BattleIo.removeWarDataByUser(sid);
+    //回到首页,清理战斗数据
+    BattleIo.removeBattleDataByUser(sid);
     res.render('main');
 });
 
 //荣誉榜
 router.get('/honor', function (req, res) {
+    var sid = req.session.user.sid;
+    //回到首页,清理战场数据
+    BattleIo.removeWarDataByUser(sid);
+    //回到首页,清理战斗数据
+    BattleIo.removeBattleDataByUser(sid);
     res.render('honor');
 });
 
@@ -90,11 +112,21 @@ router.post('/honor/users', function(req, res){
 
 //我的挑战
 router.get('/mybattles', function(req, res){
+    var sid = req.session.user.sid;
+    //回到首页,清理战场数据
+    BattleIo.removeWarDataByUser(sid);
+    //回到首页,清理战斗数据
+    BattleIo.removeBattleDataByUser(sid);
     res.render('mybattles');
 });
 
 //某题集下的对战房间
 router.get('/warzone/:qs_id', function(req, res){
+    var sid = req.session.user.sid;
+    //回到首页,清理战场数据
+    BattleIo.removeWarDataByUser(sid);
+    //回到首页,清理战斗数据
+    BattleIo.removeBattleDataByUser(sid);
     console.log('某题集下的对战房间');
     var qs_id = req.params.qs_id;
     QuestionStore.findById(qs_id, function (err, data) {
@@ -109,6 +141,11 @@ router.get('/warzone/:qs_id', function(req, res){
 
 //排行榜
 router.get('/ranklist/:qs_id', function(req, res){
+    var sid = req.session.user.sid;
+    //回到首页,清理战场数据
+    BattleIo.removeWarDataByUser(sid);
+    //回到首页,清理战斗数据
+    BattleIo.removeBattleDataByUser(sid);
     var qs_id = req.params.qs_id;
     console.log(qs_id);
     QuestionStore.findById(qs_id, function (err, data) {
@@ -140,6 +177,11 @@ router.post('/ranklist', function(req, res){
 
 //游戏规则
 router.get('/manual', function(req, res){
+    var sid = req.session.user.sid;
+    //回到首页,清理战场数据
+    BattleIo.removeWarDataByUser(sid);
+    //清理战斗数据
+    BattleIo.removeBattleDataByUser(sid);
     console.log('游戏规则');
     res.render('manual');
 });

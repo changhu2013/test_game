@@ -4,7 +4,6 @@ var mongoose = require('mongoose')
 
 var Mixed = mongoose.Schema.Types.Mixed;
 var Battle = new Schema({
-
     //接收挑战的人的ID
     sid : String,
     sname : String,//应战这名称
@@ -14,6 +13,7 @@ var Battle = new Schema({
 
     //题集ID
     qsid : ObjectId,
+
     qstitle : String, //挑战题集名称
 
     //开始时间

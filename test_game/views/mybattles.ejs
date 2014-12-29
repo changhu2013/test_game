@@ -1,44 +1,44 @@
-<div class="container">
-    <a class="href" href="#/main">返回</a>
-    <h5>我的挑战</h5>
-    <table class="table">
-        <tr ng-repeat="battle in battles">
-            <td>
-                <div class="row">
-                    <div class="col-xs-12">
-                        <h4><p><strong>题集:</strong>{{battle.store.title}}</p></h4>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-4">
-                        <p><strong>悬赏分:</strong>{{battle.store.bounty || 0}}</p>
-                    </div>
-                    <div class="col-xs-4">
-                        <p><strong>挑战积分</strong>{{battle.battleScore}}</p>
-                    </div>
-                    <div class="col-xs-4">
-                        <p><strong>练习积分</strong>{{battle.drillScore}}</p>
-                    </div>
-                </div>
+<a class="btn btn-link" href="#/main">返回</a>
 
-                <div class="row">
-                    <div class="col-xs-4">
-                        <p><strong>开始时间:</strong>{{battle.start}}</p>
-                    </div>
-                    <div class="col-xs-4">
-                        <p><strong>结束时间:</strong>{{battle.end}}</p>
-                    </div>
-                    <div class="col-xs-4">
-                        <!-- 新增状态下的挑战可以进行迎战 -->
-                        <a ng-show="battle.status == 'N'" href="#/warzone/{{battle.qsid}}">应战</a>
-                    </div>
-                </div>
-
-
-            </td>
-        </tr>
-    </table>
-    <div class="row" ng-show="showBattleMore">
-        <p class="text-center" ng-click="moreBattle()">更多</p>
-    </div>
+<div class="text-center">
+    <h3>我的挑战</h3>
 </div>
+<table class="table">
+    <tr ng-repeat="battle in battles">
+        <td>
+            <div class="row">
+                <div class="col-xs-12">
+                    <h4><p><strong>题集:</strong>{{battle.store.title}}</p></h4>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-4">
+                    <p><strong>悬赏分:</strong>{{battle.store.bounty || 0}}</p>
+                </div>
+                <div class="col-xs-4">
+                    <p><strong>挑战积分</strong>{{battle.battleScore}}</p>
+                </div>
+                <div class="col-xs-4">
+                    <p><strong>练习积分</strong>{{battle.drillScore}}</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-4">
+                    <p><strong>开始时间:</strong>{{battle.start}}</p>
+                </div>
+                <div class="col-xs-4">
+                    <p><strong>结束时间:</strong>{{battle.end}}</p>
+                </div>
+                <div class="col-xs-4">
+                    <!-- 新增状态下的挑战可以进行迎战 -->
+                    <a ng-show="battle.status == 'N'" href="#/warzone/{{battle.qsid}}">应战</a>
+                </div>
+            </div>
+
+
+        </td>
+    </tr>
+</table>
+
+<p class="btn btn-link center-block" ng-show="showBattleMore" ng-click="moreBattle()">更多</p>

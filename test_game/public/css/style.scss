@@ -60,8 +60,8 @@ a {
 }
 
 header {
-  height: 2em;
-  line-height: 2em;
+  height: 3em;
+  line-height: 3em;
   display: -webkit-box;
   display: -moz-box;
   display: -ms-box;
@@ -198,7 +198,7 @@ header {
 
 
 //战场内部
-.battle-wrap {
+.battle-wrap, .drill-wrap {
   position: relative;
   .completeTips {
     position: absolute;

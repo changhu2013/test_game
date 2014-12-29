@@ -31,25 +31,25 @@ function BattleIo(){
 	/*
 	 {
 	 qsid1 : {
-	 bid1 : {
-	 sid1 : {
-	 //道具数量
-	 property: 2,
-	 //进度
-	 progress: 50,
-	 //连续答对的题目
-	 serialValidity: 0,
-	 //答对题目
-	 validity:[],
-	 //打错题目
-	 mistake: [],
-	 //状态: W-等待状态 I-正在进行 E-跑路 C-完成
-	 status: 'I'
-	 },
-	 sid2 : {
-	 //另一个挑战者数据
-	 }
-	 },
+		 bid1 : {
+			 sid1 : {
+				 //道具数量
+				 property: 2,
+				 //进度
+				 progress: 50,
+				 //连续答对的题目
+				 serialValidity: 0,
+				 //答对题目
+				 validity:[],
+				 //打错题目
+				 mistake: [],
+				 //状态: W-等待状态 I-正在进行 E-跑路 C-完成
+				 status: 'I'
+			 },
+			 sid2 : {
+			    //另一个挑战者数据
+			 }
+	    },
 
 	 bid2 : {
 	 //另一个战场
@@ -127,14 +127,16 @@ BattleIo.prototype.sendWorkerMsg = function(method){
 		});
 	}
 	//向其他子进程发送消息
-	process.send({
-        type : 'broadcast',
-        from  : process.pid,
-        data : {
-            method : method,
-            args : args
-        }
-    });
+	if('function' === (typeof process.send)){
+		process.send({
+			type : 'broadcast',
+			from  : process.pid,
+			data : {
+				method : method,
+				args : args
+			}
+		});
+	}
 }
 
 //给某人发送消息
@@ -146,12 +148,18 @@ BattleIo.prototype.send =function(sid, command, data){
 	}
 }
 
+
+
 //广播
-BattleIo.prototype.broadcast = function(sid, rid, command, data){
+BattleIo.prototype.broadcast = function(sid, rid, command, data, hasOwner){
 	console.log('广播：' + command + ' ' + data);
 	var u = this.onLineData[sid];
 	if(u){
-		this.io.sockets.in(rid).emit(command, data);
+		if(hasOwner){ //包含自己
+			this.io.sockets.in(rid).emit(command, data);
+		} else { //不包含自己
+			this.io.sockets.to(rid).emit(command, data);
+		}
 	}
 }
 
@@ -193,7 +201,7 @@ BattleIo.prototype.getBattleMsg = function(qsid, bid, sid, name){
 			status:'W'
 		}
 	}
-	console.log("print:" + this.battleData);
+	console.log("print:" + JSON.stringify(this.battleData));
 	return u;
 };
 
@@ -252,6 +260,7 @@ BattleIo.prototype.doJoinWarZone = function(qsid, sid, name){
 		this.setWarZoneData(qsid, sid, name)
 		var rid = 'battle-' + qsid;
 		u.socket.join(rid);
+		console.log(sid + ' : 加入题集 ' + rid);
 	}
 }
 
@@ -276,6 +285,8 @@ BattleIo.prototype.doJoinBattle = function(qsid, bid, sid, name){
 		u.socket.leave('battle-' + qsid);
 		u.socket.join(rid);
 		this.io.sockets.in(rid).emit(Command.JOIN_BATTLE, this.getBattleMsg(qsid, bid));
+
+		console.log(sid + ' : 加入战场 ' + rid);
 	}
 }
 
@@ -294,7 +305,9 @@ BattleIo.prototype.doStartBattle = function(qsid, bid, sid){
 		u.socket.in('battle-' + qsid).emit(Command.START_BATTLE, {
 			bid: bid
 		});
-		u.socket.in(rid).emit(Command.START_BATTLE);
+		u.socket.in(rid).emit(Command.START_BATTLE, {
+			bid: bid
+		});
 	}
 }
 
@@ -308,6 +321,9 @@ BattleIo.prototype.joinDrill = function(qsid, sid){
 BattleIo.prototype.doJoinDrill = function(qsid, sid){
 	var u = this.getOnLineMsg(sid);
 	if(u){
+		if(this.drillData[qsid] && this.drillData[qsid][sid]){
+			delete this.drillData[qsid][sid];
+		}
 		this.getDrillMsg(qsid, sid);
 		var rid = 'drill-' + qsid;
 		u.socket.join(rid);
@@ -338,7 +354,7 @@ BattleIo.prototype.updateBattleStatus = function(qsid, bid, sid, status){
 	this.broadcast(sid, rid, Command.BATTLE_NEWS, {
 		type: 'STATUS',
 		user: u
-	});
+	}, true);
 }
 
 
@@ -381,7 +397,7 @@ BattleIo.prototype.updateBattleValidaty = function(qsid, bid, sid, qid){
 	this.broadcast(sid, rid, Command.BATTLE_NEWS, {
 		type: 'VALIDATY',
 		user: u
-	});
+	}, true);
 }
 
 //更新或获取 答对题目ID
@@ -421,7 +437,7 @@ BattleIo.prototype.updateBattleMistake = function (qsid, bid, sid, qid) {
 	this.broadcast(sid, rid, Command.BATTLE_NEWS, {
 		type: 'MISTAKE',
 		user: u
-	});
+	}, true);
 }
 
 //更新或获取 打错题目ID
@@ -469,7 +485,7 @@ BattleIo.prototype.updateBattleSerialValidity = function (qsid, bid, sid, serial
 		this.broadcast(sid, rid, Command.BATTLE_NEWS, {
 			type: 'SERIALVALIDATY',
 			user: u
-		});
+		}, true);
 	} else {
 		return u.serialValidity;
 	}
@@ -497,7 +513,7 @@ BattleIo.prototype.updateBattleProperty = function(qsid, bid, sid, property) {
 	this.broadcast(sid, rid, Command.BATTLE_NEWS, {
 		type: 'PROPERTY',
 		user: u
-	});
+	}, true);
 }
 
 //更新或获取进度
@@ -521,7 +537,7 @@ BattleIo.prototype.updateBattleProgress = function(qsid, bid, sid, proress){
 	this.broadcast(sid, rid, Command.BATTLE_NEWS, {
 		type: 'PROGRESS',
 		user: u
-	});
+	}, true);
 }
 
 //更新或获取进度
@@ -559,6 +575,63 @@ BattleIo.prototype.doLogin = function (sid, socket) {
 
 	//向客户端发送消息，服务器已经准备好了
 	this.send(sid, Command.SERVER_READY);
+}
+
+ //移除在战场的数据
+BattleIo.prototype.removeWarDataByUser = function(sid){
+	for(var qsid in this.warZoneData){ //每个战场的数据
+		var warData = this.warZoneData[qsid];
+		for(var i= 0,len=warData.length;i<len;i++){
+			var war = warData[i];
+			if(war.sid == sid){
+				warData.splice(i,1); //移除在warZoneData数据
+				var qid = 'battle-' + qsid;
+				return;
+			}
+		}
+	}
+}
+
+BattleIo.prototype.removeBattleData = function () {
+	for(var qsid in this.battleData) { //每个战斗的数据
+		var batatData = this.battleData[qsid];
+		for (var bid in batatData) {
+			delete batatData[bid];
+		}
+	}
+}
+
+
+//移除在战斗的数据
+BattleIo.prototype.removeBattleDataByUser = function(sid){
+	for(var qsid in this.battleData){ //每个战斗的数据
+		var batatData = this.battleData[qsid];
+		for(var bid in batatData){
+			for(var s in batatData[bid]){
+				if(s == sid){
+					var rid = 'battle-' + qsid + '-' + bid;
+					var u = this.getOnLineMsg(sid)
+					u && u.socket.leave(rid);
+					delete  batatData[bid][sid];
+					//离开战斗
+					console.log(sid + "离开战斗");
+					this.broadcast(sid, 'battle-' + qsid, Command.FIEE_BATTLE, this.getBattleMsg(qsid), false);
+					this.broadcast(sid, rid, Command.FIEE_BATTLE, this.getBattleMsg(qsid, bid), false);
+					break;
+				}
+			}
+			var battleHasUser = false;
+			for(var k in batatData[bid]){
+				battleHasUser = true;
+			}
+			if(!battleHasUser){
+				delete  batatData[bid];
+				var qid = 'battle-' + qsid;
+				this.broadcast(sid, qid, Command.LEAVE_WARZONE, this.getBattleMsg(qsid));
+				break;
+			}
+		}
+	}
 }
 
 module.exports = new BattleIo();

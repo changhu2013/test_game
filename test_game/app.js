@@ -39,21 +39,25 @@ log.use(app);
 //var logger = require('morgan');
 //app.use(logger('dev'));
 
-app.use(favicon());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
-app.use(cookieParser());
-app.use(flash());
-
 //设置将会话信息存数Mongo数据库
 app.use(session({
     secret : settings.cookieSecret,
     resave:true,
     saveUninitialized:true,
+    cookie: {
+        maxAge: settings.sessionMaxAge
+    },
+    unset : 'destroy', //完事儿删除,默认为keep，即保留
     store : new MongoStore({
         db : settings.db
     })
 }));
+
+app.use(favicon());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded());
+app.use(cookieParser());
+app.use(flash());
 
 app.use(require('stylus').middleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));

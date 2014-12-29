@@ -1,9 +1,12 @@
-<div class="page-header text-center">
-      <h2><%=title%></h2>
-    <a href="#/ranklist/<%=qs_id%>">排行榜</a>
-    <a href="#/drillwar/<%=qs_id%>">练兵场</a>
-    <button ng-init="qsId = '<%=qs_id%>'" ng-click="createbattle()">建个战场</button>
+
+<a class="btn btn-link" href="#/main">返回</a>
+<div class="text-center">
+    <h3><%=title%></h3>
+    <a class="btn btn-link" href="#/ranklist/<%=qs_id%>">排行榜</a>
+    <a class="btn btn-link" href="#/drillwar/<%=qs_id%>">练兵场</a>
+    <button class="btn btn-link" ng-init="qsId = '<%=qs_id%>'" ng-click="createbattle()">建个战场</button>
 </div>
+<hr />
 <div class="warzone-bd">
     <ul class="warzone-items">
         <li class="warzone-item" ng-repeat="battle in battles">

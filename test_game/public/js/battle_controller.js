@@ -1,14 +1,24 @@
-battle_controller = function($scope, $http, $timeout, $routeParams){
+battle_controller = function($scope, $http, $timeout, $location, $routeParams){
+    var oTips = $('.tips');
+
+    var alertText = function(text){
+        oTips.css('height', '2em').text(text);
+        setTimeout(function () {
+            oTips.css('height', '0').text('');
+        }, 1000);
+    }
+
     $scope.battleStatu = false;
-    $scope.showBtn = true;
+    $scope.showBtn = false;
     $scope.showToolbar = false;
     $scope.users = [];
-    $scope.toolNum = 0;
+    $scope.toolNum = 10;
+    $scope.warId = $routeParams.qs_id;
 
     var task;
 
-    //初始化战场
-    $timeout(function () {
+    $scope.doInit = function () {
+        //初始化战场
         $http({
             url : '/battle/initBattleData',
             method : 'POST',
@@ -16,17 +26,18 @@ battle_controller = function($scope, $http, $timeout, $routeParams){
                 qsid : $routeParams.qs_id,
                 bid: $routeParams.bid || $scope.bid
             },
-            cache : false,
-            timeout : 3000
+            cache : false
         }).success(function (data) {
+            $scope.users = [];
             for(var p in data){
                 var user = {};
                 user = data[p];
                 user['sid'] = p;
                 $scope.users.push(user);
             }
+            console.log('初始化战场数据:' + JSON.stringify(user));
         });
-    }, 200);
+    }
 
     //当监听到加入战场命令
     socket.on(Command.JOIN_BATTLE, function (data) {
@@ -38,7 +49,7 @@ battle_controller = function($scope, $http, $timeout, $routeParams){
                 user['sid'] = p;
                 $scope.users.push(user);
             }
-            if($scope.users.length >= 1){
+            if($scope.users.length >= 3){
                 $scope.battleStatu = true;
             }
         });
@@ -46,6 +57,7 @@ battle_controller = function($scope, $http, $timeout, $routeParams){
 
     //点击开始战斗的按钮
     $scope.startBattle = function () {
+        $('#js-start-btn').remove();
         $http({
             url: '/battle/startBattleForCreater',
             method: 'POST',
@@ -56,6 +68,12 @@ battle_controller = function($scope, $http, $timeout, $routeParams){
             cache : false,
             timeout : 3000
         }).success(function (data) {
+            if(data.success && data.success == false){
+                alertText(data.msg);
+                $location.path('/');
+                return;
+            }
+
             $scope.showBtn = false;
             $scope.showToolbar = true;
 
@@ -81,7 +99,9 @@ battle_controller = function($scope, $http, $timeout, $routeParams){
         });
     };
 
+    //其他人监听到战斗开始
     socket.on(Command.START_BATTLE, function () {
+        $('#js-start-btn').remove();
         $http({
             url: '/battle/startBattle',
             method: 'POST',
@@ -118,9 +138,6 @@ battle_controller = function($scope, $http, $timeout, $routeParams){
 
     $scope.questionIndex = 1; //题目序号
     $scope.timer = 1; //定时器
-
-
-    var oTips = $('.tips');
 
     var oQuestionOpt;
     var validateAnswer = function (res) {
@@ -202,6 +219,79 @@ battle_controller = function($scope, $http, $timeout, $routeParams){
         });
     }
 
+    $scope.challText = '一次挑战不超过5个人';
+
+    $scope.challData = {
+        users: [],
+        ids: []
+    };
+    $scope.doSearchUser = function () {
+        var oSearchName = $('.search-wp input[name="search_name"]');
+        if(!oSearchName.val()) return;
+        $http({
+            url: '/battle/searchUser',
+            method: 'POST',
+            params: {
+                user: oSearchName.val()
+            },
+            cache: false
+        }).success(function (res) {
+            var result = res;
+            for(var i= 0,len=res.length;i<len;i++){
+                var user = res[i];
+                $scope.challData.users.push(user.name);
+                $scope.challData.ids.push(user.sid);
+            }
+            $scope.challText = $scope.challData.users.join(',');
+            oSearchName.val('')
+        });
+    }
+
+    $scope.toolStatus = false; //使用道具状态
+    //点击使用道具
+    $scope.useTool = function () {
+        if($scope.toolNum > 0){
+            $scope.toolStatus = true;
+        }
+    }
+
+    //被使用的状态
+    $scope.toBeUsed = function (sid) {
+        if($scope.toolStatus){
+            $http({
+                url: '/battle/useTool',
+                method: 'POST',
+                params: {
+                    sid: sid,
+                    bid: $scope.bid,
+                    qsid: $routeParams.qs_id
+                },
+                cache: false
+            }).success(function (res) {
+
+            });
+        }
+    }
+    
+    //挑战他们
+    $scope.doChall = function () {
+        if(!$scope.challData.ids.length){
+            return;
+        }
+        $http({
+            url: '/battle/doChallenger',
+            method: 'POST',
+            params: {
+                ids: JSON.stringify($scope.challData.ids),
+                qsid: $routeParams.qs_id,
+                qstitle: $scope.qstitle
+            },
+            cache: false
+        }).success(function (res) {
+            $scope.showSucc = false;
+        });
+    }
+
     socket.on(Command.BATTLE_NEWS, function (data) {
         var type = data.type;
         var user = data.user;
@@ -236,14 +326,55 @@ battle_controller = function($scope, $http, $timeout, $routeParams){
             if(userData.battsucc){ //成功
                 $scope.battleCom.text = '胜利';
                 $scope.battleCom.battleSucc = true;
+                $scope.battleCom.showSucc = true;
                 $scope.battleCom.index = userData.index;
+                $scope.autoback = 60;
             } else { //不成功
                 $scope.battleCom.text = '失败';
+                $scope.battleCom.showSucc = false;
                 $scope.battleCom.battleSucc = false;
+                $scope.autoback = 10;
             }
-            $scope.battleCom.grade = userData.grade;
-            $scope.battleCom.historyGrade = data.historyRecord.grade;
+            $scope.battleCom.grade = userData.grade || 0;
+            $scope.battleCom.maxGrade = data.currentMaxGrade || 0;
+            $scope.battleCom.historyGrade = data.historyRecord.grade || 0;
             $scope.battleCom.historyCreater = data.historyRecord.creater;
+
+            $scope.showToolbar = false;
+
+            setInterval(function () {
+                $scope.$apply(function () {
+                    if($scope.autoback < 0){
+                        $scope.autoback = 0;
+                        return;
+                    }
+                    $scope.autoback--;
+                    if($scope.autoback === 0){
+                        $location.path('#/warzone/' + $routeParams.qs_id);
+                    }
+                });
+            }, 1000);
+        });
+    });
+
+    //离开战斗
+    socket.on(Command.FIEE_BATTLE, function (data) {
+        $scope.users = [];
+        $scope.$apply(function () {
+            for(var p in data){
+                var user = {};
+                user = data[p];
+                user['sid'] = p;
+                $scope.users.push(user);
+                if($scope.users.length === 1 && p == $scope.user.sid){ //说明是第一个人
+                    $scope.showBtn = true;
+                }
+            }
+            if($scope.users.length >= 3){
+                $scope.battleStatu = true;
+            } else {
+                $scope.battleStatu = false;
+            }
         });
     });
 };

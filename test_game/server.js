@@ -5,6 +5,6 @@ var io = require('socket.io')(http);
 
 require('./models/BattleIo.js').setSocketIo(io);
 
-http.listen(3000);
+http.listen(3001);
 
-console.log('启动服务器,监听端口为3000');
+console.log('启动服务器,监听端口为3001');

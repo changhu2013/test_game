@@ -4,7 +4,8 @@ var url = require('url');
 var util = require('../models/util.js');
 var fs = require('fs');
 var Setting = require('../models/setting.js');
-var BattleIo = require('../models/BattleIo.js')
+var BattleIo = require('../models/BattleIo.js');
+var async = require('async');
 
 
 require('../models/battle.js');
@@ -128,6 +129,13 @@ router.post('/getWarzoneData', function (req, res) {
     var qsData = BattleIo.getBattleMsg(qsid)
     var timer = 0;
     var data = [];
+
+    var sid = req.session.user.sid;
+
+    BattleIo.joinWarZone(qsid, sid, req.session.user.name);
+    //清理战斗数据
+    BattleIo.removeBattleDataByUser(sid);
+
     for(var p in qsData){
         var bData = {};
         //bData[p] = [];
@@ -152,7 +160,7 @@ router.post('/getWarzoneData', function (req, res) {
 })
 
 //战场
-router.get('/battle/:qs_id/:bid', function(req, res){
+router.get('/battle/:qs_id/:bid/:time', function(req, res){
     /*console.log('战场');
     //1.拿到题集编号
     var qs_id = req.params.qs_id;
@@ -176,7 +184,8 @@ router.get('/battle/:qs_id/:bid', function(req, res){
             qsid: qs_id,
             bid: bid,
             startBtn : false,
-            qstitle: questionStoreData.get('title')
+            qstitle: questionStoreData.get('title'),
+            paperNum: Setting.get('battleQuestionNum')
         });
     });
 });
@@ -218,13 +227,13 @@ router.get('/drillwar/:qs_id', function(req, res){
                         lastTime: battleData.get('start')
                     }, function (err, data) {
                         //加入练习场
-                        BattleIo.joinDrill(qs_id, bid, sid);
+                        BattleIo.joinDrill(qs_id, sid);
                         res.render('drillwar', {
-                            users: [req.session.user],
+                            user: req.session.user,
                             bid: bid,
                             qstitle: questionStoreData.get('title'),
                             qStore: JSON.parse(questionData), //题目
-                            paperNum: Setting.get('battleEntryFee')
+                            paperNum: Setting.get('battleQuestionNum')
                         });
                     });
                 } else {
@@ -234,12 +243,14 @@ router.get('/drillwar/:qs_id', function(req, res){
                     storeBattle['bid'] = bid;
                     storeBattle['lastTime'] = battleData.get('start');
                     storeBattle.save(function (err , data) {
+                        //加入练习场
+                        BattleIo.joinDrill(qs_id, sid);
                         res.render('drillwar', {
-                            users: [req.session.user],
+                            user: req.session.user,
                             bid: bid,
                             qstitle: questionStoreData.get('title'),
                             qStore: JSON.parse(questionData), //题目
-                            paperNum: Setting.get('battleEntryFee')
+                            paperNum: Setting.get('battleQuestionNum')
                         });
                     });
                 }
@@ -270,45 +281,56 @@ router.post('/validateScore', function (req, res) {
 });
 
 //创建战场-并保存战场状态
-router.get('/createBattle/:qs_id', function (req, res) {
+router.get('/createBattle/:qs_id/:time', function (req, res) {
     var sid = req.session.user.sid;
     var qs_id = req.params.qs_id;
     QuestionStore.findById(qs_id, function (err, questionStoreData) {
-                if(err) throw err;
-                var battle = new Battle();
-                battle['sid'] = req.session.user.sid;
-                battle['sname'] = req.session.user.name;
-                battle['status'] = 'W'; //正在进行状态(等待)
-                battle['qsid'] = qs_id; //题集ID
-                battle['qstitle'] = questionStoreData.get('title');
+        if(err) throw err;
+        var battle = new Battle();
+        battle['sid'] = req.session.user.sid;
+        battle['sname'] = req.session.user.name;
+        battle['status'] = 'W'; //正在进行状态(等待)
+        battle['qsid'] = qs_id; //题集ID
+        battle['qstitle'] = questionStoreData.get('title');
 
-                battle.save(function (err, battleData) {
-                    if(err) throw err;
-                    //该战役的ID
-                    var bid = battleData.get('_id').toString();
-                    BattleIo.joinBattle(qs_id, bid, sid, req.session.user.name);
+        battle.save(function (err, battleData) {
+            if(err) throw err;
+            //该战役的ID
+            var bid = battleData.get('_id').toString();
+            BattleIo.joinBattle(qs_id, bid, sid, req.session.user.name);
 
-                    console.log("当前战役ID:" + bid);
+            console.log("当前战役ID:" + bid);
 
-                    res.render('battle', {
-                        qsid: qs_id,
-                        bid: bid,
-                        startBtn : true,
-                        qstitle: questionStoreData.get('title')
-                    });
-                });
+            res.render('battle', {
+                qsid: qs_id,
+                bid: bid,
+                startBtn : true,
+                qstitle: questionStoreData.get('title'),
+                paperNum: Setting.get('battleQuestionNum')
             });
+        });
+    });
 });
 
 //初始化战场信息
 router.post('/initBattleData', function (req, res) {
     var qsId = req.query.qsid;
     var bid = req.query.bid;
+
+    console.log("initBattleData: " + JSON.stringify(BattleIo.battleData));
+
     res.send(BattleIo.getBattleMsg(qsId, bid));
 });
 
 //由创建人点击开始按钮后开始
 router.post('/startBattleForCreater', function (req, res) {
+    if(!req.session.user){
+        res.send({
+            success: false,
+            mas: 'session已经过期,返回重新登陆'
+        });
+    }
+
     var qsId = req.query.qsid;
     var bid = req.query.bid;
     var sid = req.session.user.sid;
@@ -335,10 +357,10 @@ router.post('/startBattleForCreater', function (req, res) {
         var paperId = parseInt(Math.random() * parseInt(Setting.get('paperNum'))); //试卷ID
         var path = questionStoreDir + qsId + '\\' + paperId + '.json';
         var questionData = fs.readFileSync(path, "utf-8");
-        StoreBattle.findOne({'sid': sid}, function (err, storeBattleData) {
+        StoreBattle.findOne({'sid': sid, qsid: qsId}, function (err, storeBattleData) {
             if(err) throw err;
             if(storeBattleData){
-                StoreBattle.update({
+                storeBattleData.update({
                     qsid: qsId,
                     qtitle: battleData.get('qstitle'),
                     bid: bid,
@@ -349,7 +371,10 @@ router.post('/startBattleForCreater', function (req, res) {
                         sid: sid
                     } , function (err, userData) {
                         var score = userData.get('score'); //当前分数
-                        User.update({
+                        if(isNaN(parseInt(score))){
+                            score = 0;
+                        }
+                        userData.update({
                             score : parseInt(score) - parseInt(Setting.get('battleEntryFee'))
                         }, function (err, userData2) {
                             BattleIo.startBattle(qsId, bid, sid);
@@ -371,7 +396,10 @@ router.post('/startBattleForCreater', function (req, res) {
                         sid: sid
                     } , function (err, userData) {
                         var score = userData.get('score'); //当前分数
-                        User.update({
+                        if(isNaN(parseInt(score))){
+                            score = 0;
+                        }
+                        userData.update({
                             score : parseInt(score) - parseInt(Setting.get('battleEntryFee'))
                         }, function (err, userData2) {
                             BattleIo.startBattle(qsId, bid, sid);
@@ -395,11 +423,11 @@ router.post('/startBattle', function (req, res) {
     var paperId = parseInt(Math.random() * parseInt(Setting.get('paperNum'))); //试卷ID
     var path = questionStoreDir + qsId + '\\' + paperId + '.json';
     var questionData = fs.readFileSync(path, "utf-8");
-    StoreBattle.findOne({'sid': sid}, function (err, storeBattleData) {
+    StoreBattle.findOne({'sid': sid, qsid: qsId}, function (err, storeBattleData) {
         if(err) throw err;
         if(storeBattleData){
             QuestionStore.findById(qsId, function (err, qsdata) {
-                StoreBattle.update({
+                storeBattleData.update({
                     qsid: qsId,
                     qtitle: qsdata.get('title'),
                     bid: bid,
@@ -410,7 +438,7 @@ router.post('/startBattle', function (req, res) {
                         sid: sid
                     } , function (err, userData) {
                         var score = userData.get('score'); //当前分数
-                        User.update({
+                        userData.update({
                             score : parseInt(score) - parseInt(Setting.get('battleEntryFee'))
                         }, function (err, userData2) {
                             BattleIo.getBattleMsg(qsId, bid, sid)['start'] = new Date();
@@ -434,7 +462,7 @@ router.post('/startBattle', function (req, res) {
                         sid: sid
                     } , function (err, userData) {
                         var score = userData.get('score'); //当前分数
-                        User.update({
+                        userData.update({
                             score : parseInt(score) - parseInt(Setting.get('battleEntryFee'))
                         }, function (err, userData2) {
                             BattleIo.getBattleMsg(qsId, bid, sid)['start'] = new Date();
@@ -485,5 +513,59 @@ router.post('/mybattles', function(req, res){
     });
 });
 
+/**
+ * 搜索用户
+ */
+router.post('/searchUser', function (req, res) {
+    var user = req.query.user;
+    User.find({name: user}, function (err, data) {
+        if(err) throw err;
+        res.send(util.toJSON(data));
+    })
+});
 
+/**
+ * 挑战
+ */
+router.post('/doChallenger', function (req, res) {
+    var ids = JSON.parse(req.query.ids);
+    var qstitle = req.query.qstitle;
+    var qsid = req.query.qsid;
+    var battle = [];
+    async.eachSeries(ids, function (item, callback) {
+        User.findOne({sid: item}, function (err, data) {
+            if(err) throw err;
+            var obj = {
+                sid: item,
+                sname: data.get('name'),
+                status: 'N',
+                qsid: qsid,
+                qstitle: qstitle,
+                challenger: {
+                    sid: req.session.user.sid,
+                    sname: req.session.user.name
+                }
+            }
+            battle.push(obj);
+            callback();
+        });
+    }, function (err) {
+        if (err) throw  err;
+        Battle.create(battle, function (err) {
+            if(err) throw err;
+            res.send({
+                success: true
+            });
+        })
+    });
+});
+
+//使用道具
+router.post('/useTool', function (req, res) {
+    var sid = req.query.sid;
+    var qsid = req.query.qsid;
+    var bid = req.query.bid;
+    var proNo = BattleIo.battleProperty(qsid, bid, sid);
+    BattleIo.battleProperty(qsid, bid, sid, proNo);
+});
 module.exports = router;

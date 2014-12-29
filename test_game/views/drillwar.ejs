@@ -1,5 +1,5 @@
 <input type="hidden" ng-init="user.sid = <%=user.sid%>"/>
-<div class="panel panel-default">
+<div class="panel panel-default drill-wrap">
     <div class="panel-heading">
         <div class="row">
             <div class="col-md-2 col-xs-2">
@@ -15,24 +15,21 @@
     <div class="panel-body">
         <section class="user-warp">
             <dl class="user-items">
-                <% users.forEach(function(u){ %>
-                    <dd class="user-item" data-user-id="<%=u.sid%>">
+                <dd class="user-item" data-user-id="<%=user.sid%>">
+                    <div class="item-progress">
                         <div class="item-layout">
-                            <% if(user.sid == u.sid){ %>
-                                <div class="mask current"></div>
-                            <%} else {%>
-                                <div class="mask"></div>
-                            <%}%>
+                            <div class="mask current"></div>
+                            <p><%=user.name%><i></i></p>
                         </div>
-                    </dd>
-                <%})%>
+                    </div>
+                </dd>
             </dl>
         </section>
     </div>
 
     <div class="tool-wrap">
         <button class="btn btn-default btn-sm btn-xs" type="button">
-            {{questionIndex}}/<%=paperNum%>
+            第{{questionIndex}}题/共<%=paperNum%>题
         </button>
 
         <!--<button class="btn btn-default btn-sm btn-xs" type="button">
@@ -53,11 +50,22 @@
                 </dt>
                 <dd class="list-group-item">
                     <% for(var p in question.opts) {%>
-                        <p class="questions-opt" data-bid="<%=bid%>" data-_id="<%=question._id%>" data-answer="<%=p%>"><%=p%>、<%=question.opts[p]%></p>
+                        <p class="questions-opt" data-_id="<%=question._id%>" data-answer="<%=p%>"><%=p%>、<%=question.opts[p]%></p>
                     <%}%>
                 </dd>
             </dl>
         </li>
         <%})%>
     </ul>
+
+    <div class="completeTips" ng-show="drillIsEnd">
+        <div class="com-bd">
+            <h3>{{drillResult}}</h3>
+            <p>当前积分:<em ng-cloak>{{currentScore}}</em></p>
+            <div class="btn-wp">
+                <a class="ui button blue" ng-click="keepPractice()">继续练习</a>
+                <a class="ui button blue" href="#">退出</a>
+            </div>
+        </div>
+    </div>
 </div>
