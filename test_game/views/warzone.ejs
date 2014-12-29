@@ -11,7 +11,7 @@
     <ul class="warzone-items">
         <li class="warzone-item" ng-repeat="battle in battles">
             <div class="row">
-                <a href="#battle/<%=qs_id%>/{{battle.bid}}">
+                <a ng-click="joinBattle('<%=qs_id%>', battle.bid)">
                     <div class="col-md-3 col-xs-3 war-label">
                         <p><strong>战场{{$index + 1}}</strong></p>
                     </div>

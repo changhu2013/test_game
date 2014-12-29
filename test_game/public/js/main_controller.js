@@ -143,8 +143,8 @@ main_controller = function ($scope, $http, $timeout) {
                 txtSelectedEnable: false
             },
             callback: {
-                onMouseDown: onMouseDown,
-                onClick : onClick
+                onMouseDown: onMouseDown
+                //onClick : onClick  //修改点击一个题目分类显示两边题目集的问题
             }
         };
         $scope.categoryTree = $.fn.zTree.init($("#questioncategory"), setting);

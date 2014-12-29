@@ -61,6 +61,12 @@ var doInit = function(){
     if(data['battleQuestionNum'] == undefined){
         data['battleQuestionNum'] = 20;
     }
+
+    //题集超时自动提交的时间, 默认180秒
+    if(data['timeOut'] == undefined){
+        data['timeOut'] = 180;
+    }
+
     //保存
     doSave(data);
 

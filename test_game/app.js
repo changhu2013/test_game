@@ -76,7 +76,14 @@ app.use('/battle', battle);
 app.use('/admin', admin);
 
 //mongoose
-mongoose.connect('mongodb://' + settings.host + '/' + settings.db);
+//mongoose.connect('mongodb://' + settings.host + '/' + settings.db);
+//var url = 'mongodb://Rw2J4l5m:1u5p9Eemx7p6@10.0.31.21:27017/8589033620p_mongo_zwf04i4d';
+var url = 'mongodb://' + settings.host + '/' + settings.db;
+mongoose.connect(url,{
+    user : settings.user,
+    pass : settings.pass
+});
+
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {

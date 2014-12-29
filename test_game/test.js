@@ -5,7 +5,13 @@ var util = require('./models/util.js');
 var Setting = require('./models/setting.js');
 
 //mongoose
-mongoose.connect('mongodb://' + settings.host + '/' + settings.db);
+//var url = '10.0.31.57:27017/changhu2014_mongo_5lf2hm89';
+
+var url = 'mongodb://10.0.31.21/8589033620p_mongo_zwf04i4d';
+mongoose.connect(url, {
+  user : '3a2nR7W3',
+  pass : '5SX58YzH7qB7'
+});
 
 require('./models/user.js');
 require('./models/questioncategory.js');
@@ -20,6 +26,14 @@ var QuestionCategory = mongoose.model('QuestionCategory');
 var QuestionStore = mongoose.model('QuestionStore');
 var Question = mongoose.model('Question');
 var Battle = mongoose.model('Battle');
+
+var user = new User({
+ sid : 100000,
+ name : 'dddddddddddddd'
+})
+user.save(function(err, doc){
+ console.log(err);
+})
 
 //过滤查询
 /*
@@ -143,10 +157,36 @@ console.log(now);
 
 */
 
-var file = 'd:/dddddd/a.csv';
+//更新用户积分为1000
+/*
+User.update({
+ sid : '1001'
+}, {
+ score : 1000
+}).exec(function(err, doc){
+ console.log(doc);
+});
+*/
+/*
+User.findOne({
+ sid : '1001'
+}).exec(function(err, user){
+console.log(user.name);
+});
+*/
 
-var filename = file.split('/');
+/*
+Battle.update({
+ _id : '54a0bab3c3c4a3a418557680'
+}, {
+ end : new Date()
+}).exec(function(){
 
-console.log(filename);
+ Battle.find({
+  _id : '54a0bab3c3c4a3a418557680'
+ }).exec(function(err, b){
+  console.log(b);
+ })
+});
 
-
+*/

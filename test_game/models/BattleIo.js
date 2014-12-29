@@ -2,6 +2,12 @@
 //引入命令常量
 var Command = require('../public/command.js');
 var moment = require('moment');
+var mongoose = require('mongoose');
+
+require('../models/Log.js');
+require('../models/user.js');
+var Log = mongoose.model('Log');
+var User = mongoose.model('User');
 
 function BattleIo(){
 
@@ -92,15 +98,49 @@ BattleIo.prototype.setSocketIo = function(io){
 
 		//当接收到客户端发送来的READY命令侯表示登陆成功
 		socket.on(Command.CLIENT_READY, function(data){
-
-			console.log(data);
-
-			//console.log(me.login);
 			var sid = data.sid;
+
 			me.login(sid, socket);
+
+			//记录日志
+			User.findOne({
+				sid : sid
+			}).exec(function(err, user){
+				console.log(user);
+				new Log({
+					sid : user.sid,
+					name : user.name,
+					action : '登陆',
+					time : new Date()
+				}).save(function(){});
+			});
+		});
+
+		socket.on('disconnect', function () {
+			console.log('有人断开连接了');
+			for(var sid in me.onLineData){
+				var msg = me.onLineData[sid];
+				if(msg.socket == socket){
+					console.log('断开连接的是 ' + sid);
+
+					//记录日志
+					User.findOne({
+						sid : sid
+					}).exec(function(err, user){
+						console.log(user);
+						new Log({
+							sid : user.sid,
+							name : user.name,
+							action : '登出',
+							time : new Date()
+						}).save(function(){});
+					});
+
+					break;
+				}
+			}
 		});
 	});
-	//TODO : 下线消息出力
 
 	return this;
 };
@@ -492,10 +532,10 @@ BattleIo.prototype.updateBattleSerialValidity = function (qsid, bid, sid, serial
 }
 
 //更新或获取道具
-BattleIo.prototype.battleProperty = function(qsid, bid, sid, property) {
+BattleIo.prototype.battleProperty = function(qsid, bid, sid, property, tobesid) {
 	var u = this.getBattleMsg(qsid, bid, sid);
 	if(typeof property != 'undefined'){
-		this.updateBattleProperty(qsid, bid, sid, property);
+		this.updateBattleProperty(qsid, bid, sid, property, tobesid);
 		this.sendWorkerMsg('updateBattleProperty', qsid, bid, sid, property);
 	}else {
 		return u.property;
@@ -503,7 +543,7 @@ BattleIo.prototype.battleProperty = function(qsid, bid, sid, property) {
 }
 
 //更新或获取道具
-BattleIo.prototype.updateBattleProperty = function(qsid, bid, sid, property) {
+BattleIo.prototype.updateBattleProperty = function(qsid, bid, sid, property, tobesid) {
 	var u = this.getBattleMsg(qsid, bid, sid);
 	u.property = property;
 
@@ -512,7 +552,8 @@ BattleIo.prototype.updateBattleProperty = function(qsid, bid, sid, property) {
 	u['sid'] = sid;
 	this.broadcast(sid, rid, Command.BATTLE_NEWS, {
 		type: 'PROPERTY',
-		user: u
+		user: u,
+		tobesid: tobesid || ''
 	}, true);
 }
 

@@ -81,9 +81,17 @@
         </div>
         <div class="row">
             <div class="col-sm-6"><div class="form-group">
-                    <label for="battleQuestionNum" class="col-sm-4 control-label">每套试卷有多少个试题</label>
+                    <label for="battleQuestionNum" class="col-sm-4 control-label">每套试卷试题个数</label>
                     <div class="col-sm-8">
                         <input type="number" class="form-control" id="battleQuestionNum" name="battleQuestionNum" value="<%=Setting.battleQuestionNum%>" placeholder="">
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6"><div class="form-group">
+                    <label for="battleQuestionNum" class="col-sm-4 control-label">题集超时自动提交时间(秒)</label>
+                    <div class="col-sm-8">
+                        <input type="number" class="form-control" id="timeOut" name="timeOut" value="<%=Setting.timeOut%>" placeholder="">
                     </div>
                 </div>
             </div>

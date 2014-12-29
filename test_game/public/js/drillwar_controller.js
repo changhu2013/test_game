@@ -44,7 +44,8 @@ drillwar_controller = function($scope, $http, $location, $routeParams){
 				params: {
 					_id: oQuestionOpt.filter('.selected').data('_id'),
 					answer: oQuestionOpt.filter('.selected').data('answer'),
-					qs_id: $routeParams.qs_id
+					qs_id: $routeParams.qs_id,
+					drid: $scope.drid
 				},
 				cache: false,
 				timeout: 3000
@@ -59,20 +60,22 @@ drillwar_controller = function($scope, $http, $location, $routeParams){
 	});
 
 	//退出or逃跑
-	$scope.goOutBattle = function (bid) {
+	$scope.goOutDrill = function () {
 		$http({
-			url: '/question/gooutbattle',
+			url: '/question/gooutdrill',
 			method: 'POST',
 			params: {
-				bid: bid
+				qsid: $routeParams.qs_id
 			},
-			cache: false,
-			timeout: 3000
+			cache: false
 		}).success(function () {
 			$location.path('/main');
 		});
 	}
-	
+
+	/**
+	 * 继续联系
+	 */
 	$scope.keepPractice = function () {
 		window.location.reload();
 	}

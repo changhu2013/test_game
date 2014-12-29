@@ -56,20 +56,11 @@ router.get('/', function(req, res) {
                     req.flash('success', '未找到sid:' + sid + '的用户');
                     res.render('index');
                 }else {
-                    //记录登陆日志
-                    var log = new Log({
-                        sid : sid,
-                        name : user.name,
-                        action : '登陆',
-                        time : new Date()
-                    });
 
-                    log.save(function(){
-                        req.flash('success', '登陆成功');
-                        console.log('【' + sid + '】登陆成功');
-                        req.session.user = user;
-                        res.render('index', {user : req.session.user});
-                    });
+                    req.flash('success', '登陆成功');
+                    console.log('【' + sid + '】登陆成功');
+                    req.session.user = user;
+                    res.render('index', {user : req.session.user});
                 }
             });
         }
@@ -103,7 +94,11 @@ router.post('/honor/users', function(req, res){
     console.log(query);
     var skip = query.skip || 0;
     var limit = query.limit  || 10;
-    User.find().skip(skip).limit(limit).sort({
+    User.find({
+        score : {
+            $gt : 0
+        }
+    }).skip(skip).limit(limit).sort({
         score : 'desc'
     }).exec(function(err, users){
         res.send(users);

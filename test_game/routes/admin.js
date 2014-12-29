@@ -18,10 +18,6 @@ var Setting = require('../models/setting.js');
 var multipart = require('connect-multiparty');
 var multipartMiddleware = multipart();
 
-
-var createPaperNum = Setting.get('paperNum'); //每个题集下生成多少套题目
-var paperQuestionNum = Setting.get('battleQuestionNum'); //每套题有多少个题
-
 //题集生成的保存目录
 var questionStoreDir = global.questionStoreDir;
 
@@ -148,6 +144,9 @@ router.get('/importquestions', function(req, res){
 });
 
 router.post('/importquestions', multipartMiddleware, function(req, res){
+
+    var createPaperNum = Setting.get('paperNum'); //每个题集下生成多少套题目
+    var paperQuestionNum = Setting.get('battleQuestionNum'); //每套题有多少个题
 
     var title = req.body.title;
     var qcid = req.body.qcid;
@@ -282,12 +281,19 @@ router.get('/report/battles', function(req, res){
             + (new Date()).getTime() + Math.random() + '.csv';
 
         //挑战状态：N - 未开始 F - 已经完成 I - 正在进行中 E-跑路(所有人跑路)
-        var str = 'SID,用户,题目集,状态,开始时间,结束时间,练习积分,挑战积分\n';
+        var str = 'SID,用户,题目集,参战人数,参站者,状态,开始时间,结束时间,练习积分,挑战积分\n';
         for(var i = 0, len = battles.length; i < len; i++){
             var b = battles[i];
             var s = b.status;
+            var rivals = b.rivals || [];
+            var names = '';
+            for(var j = 0 ; j < rivals.length; j++){
+                names += rivals[j].name;
+            }
             str += b.sid + ',' + b.sname + ',' + b.qstitle
-                + ',' + (s == 'N' ? '未开始' : s == 'F' ? '已完成' : s == 'I' ? '正在进行' : s == E ? '所有人跑路' : '')
+                + ',' + rivals.length
+                + ',' + names
+                + ',' + (s == 'N' ? '未开始' : s == 'F' ? '已完成' : s == 'I' ? '正在进行' : s == 'E' ? '所有人跑路' : '')
                 + ',' + moment(b.start).format(formater)
                 + ',' + moment(b.end).format(formater)
                 + ',' + (b.drillScore || '')

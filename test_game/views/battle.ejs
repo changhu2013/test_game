@@ -1,4 +1,5 @@
 <input type="hidden" ng-init="user.sid = <%=user.sid%>"/>
+<input type="hidden" ng-init="minBattleUser = '<%=minBattleUser%>'"/>
 <input type="hidden" ng-init="bid = '<%=bid%>'"/>
 <input type="hidden" ng-init="doInit();"/>
 <div class="panel panel-default battle-wrap">
@@ -37,7 +38,7 @@
 
     <div class="tool-wrap" ng-show="showToolbar">
 
-        <button class="btn btn-default btn-sm btn-xs" ng-click="useTool();" type="button">拖后腿 * <i ng-cloak>{{toolNum}}</i></button>
+        <button class="btn btn-default btn-sm btn-xs" ng-class="toolCls" ng-click="useTool();" type="button">拖后腿 * <i ng-cloak>{{toolNum}}</i></button>
 
         <button class="btn btn-default btn-sm btn-xs" type="button">
             第{{questionIndex}}题/共<%=paperNum%>题
@@ -95,8 +96,15 @@
                 </div>
             </div>
             <div class="btn-wp">
-                <a class="ui button blue" href="#/warzone/{{warId}}">退出战斗</a>
+                <a class="ui button orange" href="#/warzone/{{warId}}">退出战斗</a>
             </div>
         </div>
     </div>
 </div>
+<div class="tool-mask" ng-show="showToolMask">
+
+</div>
+
+
+
+

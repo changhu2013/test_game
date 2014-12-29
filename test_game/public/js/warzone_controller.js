@@ -177,7 +177,26 @@ warzone_controller = function($scope, $http, $location, $routeParams){
                 oTips.css('height', '2em').text(res.msg);
                 setTimeout(function () {
                     oTips.css('height', '0').text('');
-                }, 1000);
+                }, 2000);
+            }
+        });
+    }
+
+    //加入战场
+    $scope.joinBattle = function (qsid, bid) {
+        $http({
+            url : '/battle/validateScore',
+            method : 'POST',
+            cache : false
+        }).success(function(res){
+            if(res.success){ //通过
+                $location.path('/battle/' + qsid + '/' + bid);
+            } else { //不通过
+                var oTips = $('.tips');
+                oTips.css('height', '2em').text(res.msg);
+                setTimeout(function () {
+                    oTips.css('height', '0').text('');
+                }, 2000);
             }
         });
     }

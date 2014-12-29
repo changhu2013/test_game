@@ -57,6 +57,7 @@ router.post('/valianswer', function (req, res) {
     var _id = req.query._id;
     var answer = req.query.answer;
     var bid = req.query.bid; //战场ID
+    var drid = req.query.drid; //练习ID
     var sid = req.session.user.sid;
     var qsId = req.query.qs_id;
     Question.findById(_id, function(err, data){
@@ -96,15 +97,14 @@ router.post('/valianswer', function (req, res) {
                 QuestionStore.findById(qsId, function (err, data) {
                     var maxTime = data.get('maxTime'); //最大挑战时间
                     Battle.findById(bid, function (err, data) {
-                        var userNum = 0; //参数人数
+                        var rivals = data.get('rivals');
+                        var userNum = rivals.length; //参数人数
                         var usersId = [];
-                        for(var p in battleData){
-                            userNum++;
-                            usersId.push(p);
+                        for(var i= 0,len=rivals.length;i<len;i++){
+                            var user = rivals[i];
+                            usersId.push(user['sid']);
                         }
-
                         var userGradeData = []; //计算成绩的数据
-
                         for(var p in battleData){
                             var user = battleData[p]; //每个人
                             var grade = 0; //分数
@@ -112,7 +112,8 @@ router.post('/valianswer', function (req, res) {
                             var when = user.end - user.start;
 
                             if(user.progress >= 0.6){ //挑战成功
-                                grade += 100 *  parseFloat(Setting.get('succScorePct')) * BattleIo.battleValidaty(qsId, bid, user.sid).length /parseInt(Setting.get('battleQuestionNum'));
+                                grade += 100 *  parseFloat(Setting.get('succScorePct')) *
+                                    BattleIo.battleValidaty(qsId, bid, user.sid).length /parseInt(Setting.get('battleQuestionNum'));
                                 user['grade'] = grade;
                                 obj['sid'] = user.sid;
                                 obj['grade'] = grade;
@@ -129,17 +130,19 @@ router.post('/valianswer', function (req, res) {
                             if(when < (maxTime * 1000)) {
                                 grade += 100 * parseFloat(Setting.get('timeScorePct'));
                             }
-                            grade +=  100 * parseFloat(Setting.get('userScorePct')) * userNum / parseInt(Setting.get('battleMaxUserNum'));
+                            grade +=  100 * parseFloat(Setting.get('userScorePct')) * userNum /
+                                        parseInt(Setting.get('battleMaxUserNum'));
+
                             user['grade'] = grade;
                             obj['sid'] = user.sid;
                             obj['grade'] = grade;
                             obj['when'] = when;
                             userGradeData.push(obj);
                         }
-
                         console.log("战斗结束排序前:" + JSON.stringify(userGradeData));
 
-                        var succUser = Math.floor(userNum * Setting.get('userSuccPct')); //成功的人数
+                        var succUser = Math.floor(userNum * Setting.get('userSuccPct')); //根据比例计算出战场中可以成功的人数
+
                         function compare(propertyName1, propertyName2) {
                             return function (object1, object2) {
                                 var value1 = object1[propertyName1];
@@ -166,10 +169,13 @@ router.post('/valianswer', function (req, res) {
 
                         userGradeData = userGradeData.sort(compare("grade", 'when')); //按照分数排序
                         console.log("战斗结束排序后:" + JSON.stringify(userGradeData));
-                        for(var i= 0;i<succUser;i++){
-                            var userId = userGradeData[i]['sid'];
-                            battleData[userId]['battsucc'] = true;
-                            battleData[userId]['index'] = (i + 1);
+
+                        if(userGradeData[0]['grade'] == 0){
+                            for(var i= 0;i<succUser;i++){
+                                var userId = userGradeData[i]['sid'];
+                                battleData[userId]['battsucc'] = true;
+                                battleData[userId]['index'] = (i + 1);
+                            }
                         }
 
                         result['battleData'] = battleData;
@@ -189,44 +195,42 @@ router.post('/valianswer', function (req, res) {
                                 StoreBattle.findOne({
                                     sid: item,
                                     qsid: qsId
-                                }, function (err, data) {
+                                }, function (err, storeBattleData) {
                                     if(err) throw err;
-                                    var max = data.get('maxBattleScore');
+                                    var max = storeBattleData.get('maxBattleScore');
                                     var nowScore = battleData[item]['grade'];
                                     if(nowScore > max){
-                                        StoreBattle.update({
+                                        storeBattleData.update({
                                             maxBattleScore: nowScore
                                         }, function (err, data) {
                                             if(err) throw err;
+                                            //更新挑战结束时间
+                                            Battle.findOneAndUpdate({
+                                                belongbid : bid,
+                                                sid: item
+                                            }, {
+                                                end : new Date(),
+                                                battleScore: nowScore
+                                            }, function (err) {
+                                                if(err) throw err;
+                                                callback();
+                                            })
+                                        })
+                                    } else {
+                                        //更新挑战结束时间
+                                        Battle.findOneAndUpdate({
+                                            belongbid : bid,
+                                            sid: item
+                                        }, {
+                                            end : new Date(),
+                                            battleScore: nowScore,
+                                            status: 'F'
+                                        }, function (err) {
+                                            if(err) throw err;
+                                            callback();
                                         })
                                     }
-                                    callback();
                                 });
-                                //如果循环到历史最大记录保持者,则比较当前的分数和历史分数对比,如果小于,则不更新
-                                /*if(item === data[0].get('sid') && (battleData[item]['grade'] < data[0].get('maxBattleScore'))){
-
-                                    //BattleIo.removeBattleDataByUser(item);
-                                    //BattleIo.broadcast(sid, 'battle-' + qsId + '-' + bid, Command.BATTLE_OK, result, true);
-                                    //向题集发通知
-                                    //BattleIo.broadcast(sid, 'battle-' + qsId, Command.BATTLE_OK, BattleIo.getBattleMsg(qsId), true);
-                                    //res.send(result);
-                                } else {
-                                    StoreBattle.update({
-                                        sid: item,
-                                        qsid: qsId
-                                    }, {
-                                        maxBattleScore: battleData[item]['grade'] || 0
-                                    }, function (err, data) {
-                                        *//*console.log("战斗结束,广播:BATTLE_OK"                                    );
-                                        //BattleIo.removeBattleDataByUser(item);
-                                        //向战场发通知
-                                        BattleIo.broadcast(sid, 'battle-' + qsId + '-' + bid, Command.BATTLE_OK, result, true);
-                                        //向题集发通知
-                                        BattleIo.broadcast(sid, 'battle-' + qsId, Command.BATTLE_OK, BattleIo.getBattleMsg(qsId), true);
-                                        res.send(result);*//*
-                                    });
-                                }*/
-
                             }, function (err) {
                                 if(err) throw err;
                                 console.log("战斗结束,广播:BATTLE_OK");
@@ -240,7 +244,6 @@ router.post('/valianswer', function (req, res) {
                                 }
                                 res.send(result);
                             });
-
                         });
                     })
                 });
@@ -265,31 +268,38 @@ router.post('/valianswer', function (req, res) {
 
                 QuestionStore.findById(qsId, function (err, qsData) {
                     if(err) throw err;
-                    User.findOne({
-                        sid: sid
-                    } , function (err, userData) {
+                    Battle.findByIdAndUpdate(drid, {
+                        end: new Date(),
+                        status: 'F',
+                        drillScore: parseInt(qsData.get('drillScore'))
+                    }, function (err, databattle) {
                         if(err) throw err;
-                        var score = userData.get('score'); //当前分数
-                        if(isNaN(parseInt(score))){
-                            score = 0;
-                        }
-                        if(BattleIo.drillProgress(qsId, sid) >= Setting.get('userSuccPct')){
-                            var updateScore = parseInt(score) + parseInt(qsData.get('drillScore'));
-                            userData.update({
-                                score : updateScore
-                            }, function (err, numberAffected) {
-                                if(err) throw err;
+                        User.findOne({
+                            sid: sid
+                        } , function (err, userData) {
+                            if(err) throw err;
+                            var score = userData.get('score'); //当前分数
+                            if(isNaN(parseInt(score))){
+                                score = 0;
+                            }
+                            if(BattleIo.drillProgress(qsId, sid) >= Setting.get('userSuccPct')){
+                                var updateScore = parseInt(score) + parseInt(qsData.get('drillScore'));
+                                userData.update({
+                                    score : updateScore
+                                }, function (err, numberAffected) {
+                                    if(err) throw err;
+                                    result['drillData'] = BattleIo.getDrillMsg(qsId, sid);
+                                    result['currentScore'] = updateScore;
+                                    result['getScore'] = qsData.get('drillScore');
+                                    res.send(result);
+                                });
+                            } else {
                                 result['drillData'] = BattleIo.getDrillMsg(qsId, sid);
-                                result['currentScore'] = updateScore;
-                                result['getScore'] = qsData.get('drillScore');
+                                result['currentScore'] = score;
+                                result['getScore'] = 0;
                                 res.send(result);
-                            });
-                        } else {
-                            result['drillData'] = BattleIo.getDrillMsg(qsId, sid);
-                            result['currentScore'] = score;
-                            result['getScore'] = 0;
-                            res.send(result);
-                        }
+                            }
+                        });
                     });
                 });
             } else {
@@ -304,22 +314,47 @@ router.post('/valianswer', function (req, res) {
 //中途退出战场(包括练习场)或者逃跑
 //需要判断当前战场是否还有其他人
 router.post('/gooutbattle', function(req, res){
-    var questionBattleData = global.questionBattleData;
+    var qsid = req.query.qsid;
     var bid = req.query.bid;
-    var bidData= questionBattleData[bid];
-    var usersData = bidData['users'];
-    if(usersData.length == 1){ //战场只剩自己
-        Battle.findByIdAndUpdate(bid, {
+    var sid = req.session.user.sid;
+    var battleData = BattleIo.getBattleMsg(qsid, bid);
+    var userNum = 0;
+    for(var p in battleData){
+        userNum++;
+    }
+    if(userNum.length == 1){ //战场只剩自己
+        Battle.findOneAndUpdate({
+            bid: bid
+        }, {
             status: 'E',
             end: new Date()
-        },{}, function (err) {
+        }, function (err) {
             if(err) throw err;
-            delete questionBattleData[bid]; //删除该战场所有信息
+            BattleIo.removeBattleDataByUser(sid);
+            res.send({
+                success: true
+            });
         })
     } else { //战场还有其他人
-        usersData[req.session.user.sid]['status'] = 'E';//跑路
+        battleData[sid]['status'] = 'E';//跑路
+        BattleIo.removeBattleDataByUser(sid);
+        res.send({
+            success: true
+        });
     }
-    res.send(true);
+});
+
+/**
+ * 逃离练习场
+ */
+router.post('/gooutdrill', function(req, res){
+    var qsid = req.query.qsid;
+    var sid = req.session.user.sid;
+    var drillData = BattleIo.getDrillMsg(qsid);
+    delete drillData[sid];
+    res.send({
+        success: true
+    });
 });
 
 module.exports = router;

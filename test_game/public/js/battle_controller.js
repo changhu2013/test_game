@@ -12,7 +12,7 @@ battle_controller = function($scope, $http, $timeout, $location, $routeParams){
     $scope.showBtn = false;
     $scope.showToolbar = false;
     $scope.users = [];
-    $scope.toolNum = 10;
+    $scope.toolNum = 0;
     $scope.warId = $routeParams.qs_id;
 
     var task;
@@ -49,7 +49,7 @@ battle_controller = function($scope, $http, $timeout, $location, $routeParams){
                 user['sid'] = p;
                 $scope.users.push(user);
             }
-            if($scope.users.length >= 3){
+            if($scope.users.length >= $scope.minBattleUser){
                 $scope.battleStatu = true;
             }
         });
@@ -57,13 +57,21 @@ battle_controller = function($scope, $http, $timeout, $location, $routeParams){
 
     //点击开始战斗的按钮
     $scope.startBattle = function () {
+
+        if($scope.users.length < $scope.minBattleUser){
+            return;
+        }
+
         $('#js-start-btn').remove();
+
+
         $http({
             url: '/battle/startBattleForCreater',
             method: 'POST',
             params : {
                 qsid : $routeParams.qs_id,
-                bid: $scope.bid
+                bid: $scope.bid,
+                qstitle: $scope.qstitle
             },
             cache : false,
             timeout : 3000
@@ -210,17 +218,17 @@ battle_controller = function($scope, $http, $timeout, $location, $routeParams){
             url: '/question/gooutbattle',
             method: 'POST',
             params: {
+                qsid: $routeParams.qs_id,
                 bid: $scope.bid
             },
-            cache: false,
-            timeout: 3000
+            cache: false
         }).success(function () {
-            $location.path('/main');
+            $location.path('#/warzone/' + $routeParams.qs_id);
         });
-    }
+    };
 
+    //挑战信息
     $scope.challText = '一次挑战不超过5个人';
-
     $scope.challData = {
         users: [],
         ids: []
@@ -252,23 +260,30 @@ battle_controller = function($scope, $http, $timeout, $location, $routeParams){
     $scope.useTool = function () {
         if($scope.toolNum > 0){
             $scope.toolStatus = true;
+            $scope.toolCls = 'primary';
         }
     }
 
     //被使用的状态
     $scope.toBeUsed = function (sid) {
+        if(sid == $scope.user.sid){ //如果是对本人使用
+            return;
+        }
+
         if($scope.toolStatus){
             $http({
                 url: '/battle/useTool',
                 method: 'POST',
                 params: {
-                    sid: sid,
+                    tobesid: sid,
                     bid: $scope.bid,
                     qsid: $routeParams.qs_id
                 },
                 cache: false
             }).success(function (res) {
-
+                $scope.toolStatus = false;
+                $scope.toolCls = '';
+                alertText('你使用拖后腿道具');
             });
         }
     }
@@ -292,9 +307,12 @@ battle_controller = function($scope, $http, $timeout, $location, $routeParams){
         });
     }
 
+    //战报(状态发生变化)
     socket.on(Command.BATTLE_NEWS, function (data) {
         var type = data.type;
         var user = data.user;
+        var tobesid = data.tobesid;
+
         if(type == 'STATUS'){ //状态
             if(user.status == 'C'){ //完成
                 var aUserItems = $('.user-item');
@@ -314,9 +332,17 @@ battle_controller = function($scope, $http, $timeout, $location, $routeParams){
                     $scope.toolNum = user.property;
                 });
             }
+            if(tobesid == $scope.user.sid){ //被使者
+                alertText(user.name + '对我使用拖后腿道具');
+                $scope.showToolMask = true;
+                $timeout(function () {
+                    $scope.showToolMask = false;
+                }, 2000);
+            }
         }
     });
 
+    //战斗结束
     socket.on(Command.BATTLE_OK, function (data) {
         $scope.$apply(function () {
             clearInterval(task);

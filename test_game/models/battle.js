@@ -4,6 +4,9 @@ var mongoose = require('mongoose')
 
 var Mixed = mongoose.Schema.Types.Mixed;
 var Battle = new Schema({
+
+    belongbid: String, //所属战斗ID
+
     //接收挑战的人的ID
     sid : String,
     sname : String,//应战这名称
@@ -21,6 +24,8 @@ var Battle = new Schema({
 
     //结束时间
     end : Date,
+
+
 
     //练习得分
     drillScore : Number,
