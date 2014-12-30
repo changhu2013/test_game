@@ -13,10 +13,15 @@ test_game
 > * 数据库启动
 >> + 运行命令<pre>mongodb --dbpath c:\mongodb\data</pre> 启动数据库服务 c:\mongodb\data为特定的数据存储路径
 > * 数据库初始化
+
 >> + 运行命令 <pre>mongo</pre> 打开mongo shell
+
 >> + 输入命令 <pre>show dbs;</pre>查看已有的数据库列表
+
 >> + 输入命令 <pre>use test_game;</pre>进入test_game数据库
+
 >> + 输入命令 <pre>load('c:/test_game/data/data.js')</pre> 导入数据,data.js文件是基础数据导入脚本，可根据实际情况修改该脚本导入初始化数据
+
 >> + 输入命令 <pre>show collections;</pre>查看创建的集合
 >
 
