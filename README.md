@@ -14,9 +14,9 @@ test_game
 
 >> + 运行命令 <pre>cd c:/test_game/</pre> 进入目录,即package.json所在目录
 
->> + 运行命令 <pre>npm install</pre> 下载该项目依赖的第三方模块,<span style="color:red;">如果已经下载则此操作跳过</span>
+>> + 运行命令 <pre>npm install</pre> 下载该项目依赖的第三方模块,<div style="color:red;">如果已经下载则此操作跳过</div>
 
->> + 修改配置，系统数据库配置文件为test_game目录下的config.js文件
+> * 修改配置，系统数据库配置文件为test_game目录下的config.js文件
 >>
 >><pre style="background-color:green;"><code style="background-color:green;color:white;">
 >>module.exports = {
@@ -29,14 +29,14 @@ test_game
 >>    pwd : 'pass' //密码
 >>};</code></pre>
 
->> + 运行命令<pre>node server.js</pre>启动服务
+> + 运行命令<pre>node server.js</pre>启动服务
 
->> + 数据导入，访问<a href="http://127.0.0.1:3000/admin">http://127.0.0.1:3000/admin</a>页面进行系统运行参数配置、用户导入、题目分类管理、题目导入以及系统报表的导出
+> + 数据导入，访问<a href="http://127.0.0.1:3000/admin">http://127.0.0.1:3000/admin</a>页面进行系统运行参数配置、用户导入、题目分类管理、题目导入以及系统报表的导出
 
->>> + 用户导入，在项目test_game/data 目录下有<span style="color:red;">测试用户.csv</span>文件，可用于测试导入用户，用户可根据此文件格式编辑成实际数据以完成真实用户数据导入
->>> + 题目导入，在项目test_game/data 目录下有<span style="color:red;">测试题目.json</span>文件，可用于测试数据导入
+>> + 用户导入，在项目test_game/data 目录下有<span style="color:red;">测试用户.csv</span>文件，可用于测试导入用户，用户可根据此文件格式编辑成实际数据以完成真实用户数据导入
+>> + 题目导入，在项目test_game/data 目录下有<span style="color:red;">测试题目.json</span>文件，可用于测试数据导入
 
->> + 访问服务，访问<a href="http://127.0.0.1:3000/?sid=1001">http://127.0.0.1:3000/?sid=1001</a>，参数sid=1001为用户的ID，可根据实际情况修改
+> + 访问服务，访问<a href="http://127.0.0.1:3000/?sid=1001">http://127.0.0.1:3000/?sid=1001</a>，参数sid=1001为用户的ID，可根据实际情况修改
 
 >
 
