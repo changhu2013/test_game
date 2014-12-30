@@ -2,12 +2,13 @@ test_game
 =========
 答题游戏
 
-## 安装部署
+### 安装部署
+
 > * 数据库:该项目在mongodb 2.6版本测试通过
 > * Node :该项目在node 0.10.29版本测试通过
 
-
 ### 数据库
+
 >
 > * 数据库启动
 >> + 运行命令<pre>mongodb --dbpath c:\mongodb\data</pre> 启动数据库服务 c:\mongodb\data为特定的数据存储路径
@@ -18,7 +19,9 @@ test_game
 >> + 输入命令 <pre>load('c:/test_game/data/data.js')</pre> 导入数据,data.js文件是基础数据导入脚本，可根据实际情况修改该脚本导入初始化数据
 >> + 输入命令 <pre>show collections;</pre>查看创建的集合
 >
+
 ### Node
+
 >
 > * npm 依赖资源安装
 >> + 运行命令 <pre>cd c:/test_game/</pre> 进入目录,即package.json所在目录
