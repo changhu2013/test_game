@@ -4,26 +4,8 @@ test_game
 
 ### 安装部署
 
-> * 数据库:该项目在mongodb 2.6版本测试通过
 > * Node :该项目在node 0.10.29版本测试通过
-
-### 数据库
-
->
-> * 数据库启动
->> + 运行命令<pre>mongodb --dbpath c:\mongodb\data</pre> 启动数据库服务 c:\mongodb\data为特定的数据存储路径
-> * 数据库初始化
-
->> + 运行命令 <pre>mongo</pre> 打开mongo shell
-
->> + 输入命令 <pre>show dbs;</pre>查看已有的数据库列表
-
->> + 输入命令 <pre>use test_game;</pre>进入test_game数据库
-
->> + 输入命令 <pre>load('c:/test_game/data/data.js')</pre> 导入数据,data.js文件是基础数据导入脚本，可根据实际情况修改该脚本导入初始化数据
-
->> + 输入命令 <pre>show collections;</pre>查看创建的集合
->
+> * 数据库:该项目在mongodb 2.6版本测试通过
 
 ### Node
 
@@ -49,12 +31,38 @@ test_game
 
 >> + 运行命令<pre>node server.js</pre>启动服务
 
->> + 访问服务 eg. <a href="http://127.0.0.1:3000/?sid=1001">http://127.0.0.1:3000/?sid=1001</a>
+>> + 数据导入，访问<a href="http://127.0.0.1:3000/admin">http://127.0.0.1:3000/admin</a>页面进行系统运行参数配置、用户导入、题目分类管理、题目导入以及系统报表的导出
+
+>>> + 用户导入，在项目test_game/data 目录下有<span style="color:red;">测试用户.csv</span>文件，可用于测试导入用户，用户可根据此文件格式编辑成实际数据以完成真实用户数据导入
+>>> + 题目导入，在项目test_game/data 目录下有<span style="color:red;">测试题目.json</span>文件，可用于测试数据导入
+
+>> + 访问服务，访问<a href="http://127.0.0.1:3000/?sid=1001">http://127.0.0.1:3000/?sid=1001</a>，参数sid=1001为用户的ID，可根据实际情况修改
+
+>
+
+### 数据库
+
+>
+> * 数据库启动
+
+>> + 运行命令<pre>mongodb --dbpath c:\mongodb\data</pre> 启动数据库服务 <span style="color:red;">c:\mongodb\data 为特定的数据存储路径,根据实际情况修改</span>
+
+> * 数据库初始化
+
+>> + 运行命令 <pre>mongo</pre> 打开mongo shell
+
+>> + 输入命令 <pre>show dbs;</pre>查看已有的数据库列表
+
+>> + 输入命令 <pre>use test_game;</pre>进入test_game数据库
+
+>> + 输入命令 <pre>show collections;</pre>查看创建的集合
 
 >
 
 
-
+<!--
+>> + 输入命令 <pre>load('c:/test_game/data/data.js')</pre> 导入数据,data.js文件是基础数据导入脚本，可根据实际情况修改该脚本导入初始化数据
+-->
 
 <!--
 
