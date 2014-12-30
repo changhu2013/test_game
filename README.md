@@ -1,6 +1,48 @@
 test_game
 =========
-答题游戏 v1
+答题游戏
+
+## 安装部署
+> * 数据库:该项目在mongodb 2.6版本测试通过
+> * Node :该项目在node 0.10.29版本测试通过
+
+
+### 数据库
+>
+> * 数据库启动
+>> + 运行命令<pre>mongodb --dbpath c:\mongodb\data</pre> 启动数据库服务 c:\mongodb\data为特定的数据存储路径
+> * 数据库初始化
+>> + 运行命令 <pre>mongo</pre> 打开mongo shell
+>> + 输入命令 <pre>show dbs;</pre>查看已有的数据库列表
+>> + 输入命令 <pre>use test_game;</pre>进入test_game数据库
+>> + 输入命令 <pre>load('c:/test_game/data/data.js')</pre> 导入数据,data.js文件是基础数据导入脚本，可根据实际情况修改该脚本导入初始化数据
+>> + 输入命令 <pre>show collections;</pre>查看创建的集合
+>
+### Node
+>
+> * npm 依赖资源安装
+>> + 运行命令 <pre>cd c:/test_game/</pre> 进入目录,即package.json所在目录
+>> + 运行命令 <pre>npm install</pre> 下载该项目依赖的第三方模块,<span style="color:red;">如果已经下载则此操作跳过</span>
+>> + 修改配置，系统数据库配置文件为test_game目录下的config.js文件
+>>
+>><pre style="background-color:green;"><code style="background-color:green;color:white;">
+>>module.exports = {
+>>    port : 3000, //服务端口
+>>    cookieSecret : 'test_game_cookie',
+>>    sessionMaxAge : 600000,  //会话保存时间 10分钟
+>>    db : 'test_game', //数据库名称
+>>    host : '127.0.0.1', //数据库服务地址
+>>    user : 'admin', //用户名
+>>    pwd : 'pass' //密码
+>>};</code></pre>
+>> + 运行命令<pre>node server.js</pre>启动服务
+>> + 访问服务 eg. <a href="http://127.0.0.1:3000/?sid=1001">http://127.0.0.1:3000/?sid=1001</a>
+>
+
+
+
+
+<!--
 
 安装好mongodb后 需要新建data存储数据 logs/mongodb.log来存储日志
 CMD: mongod.exe --dbpath=D:\mongo\data --logpath=d:\mongo\logs\mongdb.log --install 自动启动
@@ -23,15 +65,8 @@ db.users.find({sid:"102"})
 服务启动
 node server.js
 
-node master.js
-
 ----------------------------
 
-> 忘记提交日志模块了，在app.js里，周一补充一下
-
-<p style="color:red;">
-    修改session存储到mongod数据库
-</p>
 
 ------  index.js
 /main   首页
@@ -92,4 +127,4 @@ CHALLENGE -- sid:1 tosid:2 -- 表示用户1向用户2发起挑战
 C -> S
 READY -- sid:1  -- 发送参数 表示客户端准备好了
 START_BATTLE -- bid:1 -- 表示战场1开始战斗，由战场创建人点击开始按钮
-
+-->
