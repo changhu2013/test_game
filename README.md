@@ -29,8 +29,11 @@ test_game
 
 >
 > * npm 依赖资源安装
+
 >> + 运行命令 <pre>cd c:/test_game/</pre> 进入目录,即package.json所在目录
+
 >> + 运行命令 <pre>npm install</pre> 下载该项目依赖的第三方模块,<span style="color:red;">如果已经下载则此操作跳过</span>
+
 >> + 修改配置，系统数据库配置文件为test_game目录下的config.js文件
 >>
 >><pre style="background-color:green;"><code style="background-color:green;color:white;">
@@ -43,8 +46,11 @@ test_game
 >>    user : 'admin', //用户名
 >>    pwd : 'pass' //密码
 >>};</code></pre>
+
 >> + 运行命令<pre>node server.js</pre>启动服务
+
 >> + 访问服务 eg. <a href="http://127.0.0.1:3000/?sid=1001">http://127.0.0.1:3000/?sid=1001</a>
+
 >
 
 
