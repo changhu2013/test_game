@@ -17,17 +17,17 @@ test_game
 >> + 运行命令 <pre>npm install</pre> 下载该项目依赖的第三方模块,<div style="color:red;">如果已经下载则此操作跳过</div>
 
 > * 修改配置，系统数据库配置文件为test_game目录下的config.js文件
->>
->><pre style="background-color:green;"><code style="background-color:green;color:white;">
->>module.exports = {
->>    port : 3000, //服务端口
->>    cookieSecret : 'test_game_cookie',
->>    sessionMaxAge : 600000,  //会话保存时间 10分钟
->>    db : 'test_game', //数据库名称
->>    host : '127.0.0.1', //数据库服务地址
->>    user : 'admin', //用户名
->>    pwd : 'pass' //密码
->>};</code></pre>
+>
+><pre style="background-color:green;"><code style="background-color:green;color:white;">
+>module.exports = {
+>    port : 3000, //服务端口
+>    cookieSecret : 'test_game_cookie',
+>    sessionMaxAge : 600000,  //会话保存时间 10分钟
+>    db : 'test_game', //数据库名称
+>    host : '127.0.0.1', //数据库服务地址
+>    user : 'admin', //用户名
+>    pwd : 'pass' //密码
+>};</code></pre>
 
 > + 运行命令<pre>node server.js</pre>启动服务
 
