@@ -14,7 +14,7 @@ test_game
 
 >> + 运行命令 <pre>cd c:/test_game/</pre> 进入目录,即package.json所在目录
 
->> + 运行命令 <pre>npm install</pre> 下载该项目依赖的第三方模块,<div style="color:red;">如果已经下载则此操作跳过</div>
+>> + 运行命令 <pre>npm install</pre> 下载该项目依赖的第三方模块,_**如果已经下载则此操作跳过**_
 
 > * 修改配置，系统数据库配置文件为test_game目录下的config.js文件
 >
@@ -33,8 +33,8 @@ test_game
 
 > + 数据导入，访问<a href="http://127.0.0.1:3000/admin">http://127.0.0.1:3000/admin</a>页面进行系统运行参数配置、用户导入、题目分类管理、题目导入以及系统报表的导出
 
->> + 用户导入，在项目test_game/data 目录下有**测试用户.csv**文件，可用于测试导入用户，用户可根据此文件格式编辑成实际数据以完成真实用户数据导入
->> + 题目导入，在项目test_game/data 目录下有**测试题目.json**文件，可用于测试数据导入
+>> + 用户导入，在项目test_game/data 目录下有_**测试用户.csv**_文件，可用于测试导入用户，用户可根据此文件格式编辑成实际数据以完成真实用户数据导入
+>> + 题目导入，在项目test_game/data 目录下有_**测试题目.json**_文件，可用于测试数据导入
 
 > + 访问服务，访问<a href="http://127.0.0.1:3000/?sid=1001">http://127.0.0.1:3000/?sid=1001</a>，参数sid=1001为用户的ID，可根据实际情况修改
 
@@ -45,7 +45,7 @@ test_game
 >
 > * 数据库启动
 
->> + 运行命令<pre>mongodb --dbpath c:\mongodb\data</pre> 启动数据库服务 <span style="color:red;">c:\mongodb\data 为特定的数据存储路径,根据实际情况修改</span>
+>> + 运行命令<pre>mongodb --dbpath c:\mongodb\data</pre> 启动数据库服务 _**c:\mongodb\data**_为特定的数据存储路径,根据实际情况修改
 
 > * 数据库初始化
 
