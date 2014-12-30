@@ -1,16 +1,16 @@
-var settings = require('./settings');
+var config = require('./config');
 var mongoose = require('mongoose');
 var moment = require('moment');
+
+
 var util = require('./models/util.js');
 var Setting = require('./models/setting.js');
 
 //mongoose
-//var url = '10.0.31.57:27017/changhu2014_mongo_5lf2hm89';
-
-var url = 'mongodb://10.0.31.21/8589033620p_mongo_zwf04i4d';
+var url = 'mongodb://' + config.host + '/' + config.db;
 mongoose.connect(url, {
-  user : '3a2nR7W3',
-  pass : '5SX58YzH7qB7'
+  user : config.user,
+  pass : config.pwd
 });
 
 require('./models/user.js');
@@ -27,13 +27,10 @@ var QuestionStore = mongoose.model('QuestionStore');
 var Question = mongoose.model('Question');
 var Battle = mongoose.model('Battle');
 
-var user = new User({
- sid : 100000,
- name : 'dddddddddddddd'
-})
-user.save(function(err, doc){
- console.log(err);
-})
+User.find().exec(function(err, users){
+ console.log(users);
+});
+
 
 //过滤查询
 /*

@@ -1,5 +1,7 @@
 
-var settings = require('./settings');
+//系统配置
+var config = require('./config');
+
 var mongoose = require('mongoose');
 
 //题集生成的保存目录
@@ -41,15 +43,18 @@ log.use(app);
 
 //设置将会话信息存数Mongo数据库
 app.use(session({
-    secret : settings.cookieSecret,
+    secret : config.cookieSecret,
     resave:true,
     saveUninitialized:true,
     cookie: {
-        maxAge: settings.sessionMaxAge
+        maxAge: config.sessionMaxAge
     },
     unset : 'destroy', //完事儿删除,默认为keep，即保留
     store : new MongoStore({
-        db : settings.db
+        host : config.host,
+        db : config.db,
+        username : config.user,
+        password : config.pwd
     })
 }));
 
@@ -76,14 +81,11 @@ app.use('/battle', battle);
 app.use('/admin', admin);
 
 //mongoose
-//mongoose.connect('mongodb://' + settings.host + '/' + settings.db);
-//var url = 'mongodb://Rw2J4l5m:1u5p9Eemx7p6@10.0.31.21:27017/8589033620p_mongo_zwf04i4d';
-var url = 'mongodb://' + settings.host + '/' + settings.db;
-mongoose.connect(url,{
-    user : settings.user,
-    pass : settings.pass
+var url = 'mongodb://' + config.host + '/' + config.db;
+mongoose.connect(url, {
+    user : config.user,
+    pass : config.pwd
 });
-
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {
