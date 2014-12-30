@@ -15,7 +15,8 @@ battle_controller = function($scope, $http, $timeout, $location, $routeParams){
     $scope.toolNum = 0;
     $scope.warId = $routeParams.qs_id;
 
-    var task;
+    var autoTask; //自动退出的任务
+    var task; //计时任务
 
     $scope.doInit = function () {
         //初始化战场
@@ -57,14 +58,10 @@ battle_controller = function($scope, $http, $timeout, $location, $routeParams){
 
     //点击开始战斗的按钮
     $scope.startBattle = function () {
-
         if($scope.users.length < $scope.minBattleUser){
             return;
         }
-
         $('#js-start-btn').remove();
-
-
         $http({
             url: '/battle/startBattleForCreater',
             method: 'POST',
@@ -81,14 +78,15 @@ battle_controller = function($scope, $http, $timeout, $location, $routeParams){
                 $location.path('/');
                 return;
             }
-
             $scope.showBtn = false;
             $scope.showToolbar = true;
-
-            //计时器,提交答案的时候计时器要暂停
             task = setInterval(function () {
                 $scope.$apply(function () {
                     $scope.timer++;
+                    if($scope.timer >= parseInt($scope.timeOut)){ //超时自动提交
+                        clearInterval(task);
+                        timeOutBattle();
+                    }
                 });
             }, 1000);
 
@@ -121,10 +119,13 @@ battle_controller = function($scope, $http, $timeout, $location, $routeParams){
             timeout : 3000
         }).success(function (data) {
             $scope.showToolbar = true;
-            //计时器,提交答案的时候计时器要暂停
             task = setInterval(function () {
                 $scope.$apply(function () {
                     $scope.timer++;
+                    if($scope.timer >= parseInt($scope.timeOut)){ //超时自动提交
+                        clearInterval(task);
+                        timeOutBattle();
+                    }
                 });
             }, 1000);
 
@@ -269,7 +270,6 @@ battle_controller = function($scope, $http, $timeout, $location, $routeParams){
         if(sid == $scope.user.sid){ //如果是对本人使用
             return;
         }
-
         if($scope.toolStatus){
             $http({
                 url: '/battle/useTool',
@@ -303,6 +303,7 @@ battle_controller = function($scope, $http, $timeout, $location, $routeParams){
             },
             cache: false
         }).success(function (res) {
+            clearInterval(autoTask);
             $scope.showSucc = false;
         });
     }
@@ -368,10 +369,11 @@ battle_controller = function($scope, $http, $timeout, $location, $routeParams){
 
             $scope.showToolbar = false;
 
-            setInterval(function () {
+            autoTask = setInterval(function () {
                 $scope.$apply(function () {
                     if($scope.autoback < 0){
                         $scope.autoback = 0;
+                        clearInterval(autoTask);
                         return;
                     }
                     $scope.autoback--;
@@ -403,4 +405,29 @@ battle_controller = function($scope, $http, $timeout, $location, $routeParams){
             }
         });
     });
+
+    /**
+     * 退出战斗
+     * @param war
+     */
+    $scope.goToWar = function (war) {
+        clearInterval(autoTask);
+        $location.path('/warzone/' + war);
+    }
+
+    /**
+     * 超时自动提交
+     */
+    function timeOutBattle(){
+        $http({
+            url: '/question/timeOutBattle',
+            method: 'POST',
+            params: {
+                bid: $scope.bid,
+                qs_id: $routeParams.qs_id
+            }
+        }).success(function (res) {
+            alertText('超时自动提交');
+        });
+    }
 };

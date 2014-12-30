@@ -174,7 +174,8 @@ router.get('/battle/:qs_id/:bid/:time', function(req, res){
             startBtn : false,
             qstitle: questionStoreData.get('title'),
             paperNum: Setting.get('battleQuestionNum'),
-            minBattleUser: Setting.get('battleMinUserNum')
+            minBattleUser: Setting.get('battleMinUserNum'),
+            timeOut: Setting.get('timeOut')
         });
     });
 });
@@ -296,7 +297,8 @@ router.get('/createBattle/:qs_id/:time', function (req, res) {
                 startBtn : true,
                 qstitle: questionStoreData.get('title'),
                 paperNum: Setting.get('battleQuestionNum'),
-                minBattleUser: Setting.get('battleMinUserNum')
+                minBattleUser: Setting.get('battleMinUserNum'),
+                timeOut: Setting.get('timeOut')
             });
         });
     });

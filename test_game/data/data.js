@@ -3,7 +3,7 @@
 //创建用户
 /*
 db.createUser({
-    user: 'admin',
+    user: 'db_admin',
     pwd: 'pass',
     roles: [{
         role: 'dbOwner',

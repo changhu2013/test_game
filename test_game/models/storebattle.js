@@ -20,6 +20,7 @@ var StoreBattle = new Schema({
     bid : String,  //挑战ID
     maxBattleScore : Number, // 该题集下挑战的最高积分
     maxDrillScore : Number,  // 该题集下练习的最高积分
+    costTime: Number, //花费时间
     lastTime : Date //最近一次挑战时间
 });
 
