@@ -12,7 +12,7 @@ test_game
 >
 > * npm 依赖资源安装
 
->> + 运行命令 <pre>cd c:/test_game/</pre> 进入目录,即package.json所在目录
+>> + 运行命令 <pre>cd c:/test_game/</pre> 进入项目主目录,即package.json所在目录,_**以具体文件存放目录为准**_
 
 >> + 运行命令 <pre>npm install</pre> 下载该项目依赖的第三方模块,_**如果已经下载则此操作跳过**_
 
