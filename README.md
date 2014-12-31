@@ -59,7 +59,7 @@ test_game
 
 >
 
-![alt text](/doc/imgs/1.jpg "Title")
+![alt text](/test_game/doc/imgs/1.jpg "Title")
 
 <!--
 >> + 输入命令 <pre>load('c:/test_game/data/data.js')</pre> 导入数据,data.js文件是基础数据导入脚本，可根据实际情况修改该脚本导入初始化数据
