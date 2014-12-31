@@ -8,7 +8,7 @@ module.exports = {
     //以下为数据库设置
     db : 'test_game',
     host : '127.0.0.1',
-    user : 'db_admin',
+    user : 'admin',
     pwd : 'pass'
 
 };
