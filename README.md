@@ -30,13 +30,20 @@ test_game
 >};</code></pre>
 
 > + 运行命令<pre>node server.js</pre>启动服务
+> ![alt text](/test_game/doc/imgs/5.png "系统启动")
 
 > + 数据导入，访问<a href="http://127.0.0.1:3000/admin">http://127.0.0.1:3000/admin</a>页面进行系统运行参数配置、用户导入、题目分类管理、题目导入以及系统报表的导出
 
+> ![alt text](/test_game/doc/imgs/1.png "系统设置")
+
 >> + 用户导入，在项目test_game/data 目录下有_**测试用户.csv**_文件，可用于测试导入用户，用户可根据此文件格式编辑成实际数据以完成真实用户数据导入
+>> ![alt text](/test_game/doc/imgs/2.png "用户导入")
+
 >> + 题目导入，在项目test_game/data 目录下有_**测试题目.json**_文件，可用于测试数据导入
+>> ![alt text](/test_game/doc/imgs/3.png "题目导入")
 
 > + 访问服务，访问<a href="http://127.0.0.1:3000/?sid=1001">http://127.0.0.1:3000/?sid=1001</a>，参数sid=1001为用户的ID，可根据实际情况修改
+>> ![alt text](/test_game/doc/imgs/4.png "系统主页")
 
 >
 
@@ -58,8 +65,6 @@ test_game
 >> + 输入命令 <pre>show collections;</pre>查看创建的集合
 
 >
-
-![alt text](/test_game/doc/imgs/1.png "系统设置")
 
 <!--
 >> + 输入命令 <pre>load('c:/test_game/data/data.js')</pre> 导入数据,data.js文件是基础数据导入脚本，可根据实际情况修改该脚本导入初始化数据
