@@ -103,7 +103,7 @@ main_controller = function ($scope, $http, $timeout) {
 
         var loadStoreByNode = function(node){
             if(node){
-                $scope.qcid = node.qcid;
+                $scope.qcid = node._id;
                 $scope.skipStore = 0;
                 $scope.showStoreMore = false;
                 $scope.questionstores = [];
@@ -128,7 +128,7 @@ main_controller = function ($scope, $http, $timeout) {
                 type: 'POST',
                 dataType: 'json',
                 url: '/question/category',
-                autoParam: ['pid', 'qcid']
+                autoParam: ['pid', '_id']
             },
             data: {
                 key: {

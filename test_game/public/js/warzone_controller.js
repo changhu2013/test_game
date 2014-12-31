@@ -165,6 +165,18 @@ warzone_controller = function($scope, $http, $location, $routeParams){
 
     //创建战场，需要检查分数够不够
     $scope.createbattle = function () {
+        for(var i= 0,len= $scope.battles.length;i<len;i++){
+            var battle = $scope.battles[i];
+            if(battle.users.length < 3){ //表示不足3人,不可以创建战场
+                var oTips = $('.tips');
+                oTips.css('height', '2em').text('有战场人数不足3人,不允许创建战场');
+                setTimeout(function () {
+                    oTips.css('height', '0').text('');
+                }, 2000);
+                return;
+            }
+        }
+
         $http({
             url : '/battle/validateScore',
             method : 'POST',

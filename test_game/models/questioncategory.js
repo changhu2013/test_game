@@ -4,7 +4,6 @@ var mongoose = require('mongoose')
     , ObjectId = Schema.ObjectId;
 
 var QuestionCategory = new Schema({
-    qcid : String,
     pid : String,
     title : String,
     isParent : Boolean

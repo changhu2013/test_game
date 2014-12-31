@@ -39,7 +39,7 @@
 
     <div class="tool-wrap" ng-show="showToolbar">
 
-        <button class="btn btn-default btn-sm btn-xs" ng-class="toolCls" ng-click="useTool();" type="button">拖后腿 * <i ng-cloak>{{toolNum}}</i></button>
+        <button class="btn btn-default btn-sm btn-xs" ng-if="showTools" ng-class="toolCls" ng-click="useTool();" type="button">拖后腿 * <i ng-cloak>{{toolNum}}</i></button>
 
         <button class="btn btn-default btn-sm btn-xs" type="button">
             第{{questionIndex}}题/共<%=paperNum%>题

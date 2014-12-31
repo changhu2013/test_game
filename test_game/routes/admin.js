@@ -34,6 +34,7 @@ var formater = 'YYYY-MM-DD HH:mm:ss';
 var Log = mongoose.model('Log');
 var Battle = mongoose.model('Battle');
 var StoreBattle = mongoose.model('StoreBattle');
+var QuestionCategory = mongoose.model('QuestionCategory');
 
 var router = express.Router();
 
@@ -103,6 +104,12 @@ router.post('/settings', function(req, res){
     var battleQuestionNum = req.body.battleQuestionNum;
     if(battleQuestionNum != undefined){
         Setting.set('battleQuestionNum', Number(battleQuestionNum));
+    }
+
+    //超时自动提交
+    var timeOut = req.body.timeOut;
+    if(timeOut != undefined){
+        Setting.set('timeOut', Number(timeOut));
     }
 
     res.redirect('/admin#/settings');
@@ -338,5 +345,38 @@ router.get('/report/storebattles', function(req, res){
         });
     });
 });
+
+router.get('/addNode', function (req, res) {
+    var pid = req.query.pid;
+    var qc = new QuestionCategory();
+    qc['pid'] = pid;
+    qc['title'] = '新建节点';
+    qc['isParent'] = true;
+    qc.save(function (err, data) {
+        if(err) throw err;
+        res.send(data);
+    });
+});
+
+router.get('/removeNode', function (req, res) {
+    var _id = req.query._id;
+    QuestionCategory.findByIdAndRemove(_id, function (err, data) {
+        if(err) throw err;
+        res.send(data);
+    });
+});
+
+router.get('/rename', function (req, res) {
+    var _id = req.query._id;
+    var title = req.query.title;
+    QuestionCategory.findByIdAndUpdate(_id, {
+        title: title
+    },function (err, data) {
+        if(err) throw err;
+        res.send(data);
+    });
+});
+
+
 
 module.exports = router;

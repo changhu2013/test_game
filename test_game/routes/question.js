@@ -24,7 +24,7 @@ var User = mongoose.model('User');
 
 //显示题目树结构
 router.post('/category', function(req, res) {
-    var pid = req.body.qcid;
+    var pid = req.body._id;
     if(!pid){
         pid = '0';
     }
@@ -367,6 +367,10 @@ router.post('/timeOutBattle', function (req, res) {
     var sid = req.session.user.sid;
     var bid = req.query.bid; //战场ID
     var qsId = req.query.qs_id;
+
+
+    BattleIo.getBattleMsg(qsId, bid, sid)['end'] = new Date();
+    BattleIo.battleStatus(qsId, bid, sid, 'C'); //战斗结束
 
     var battleData = BattleIo.getBattleMsg(qsId, bid);
     var isBattleEnd = true;

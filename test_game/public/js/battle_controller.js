@@ -11,6 +11,7 @@ battle_controller = function($scope, $http, $timeout, $location, $routeParams){
     $scope.battleStatu = false;
     $scope.showBtn = false;
     $scope.showToolbar = false;
+    $scope.showTools = true;
     $scope.users = [];
     $scope.toolNum = 0;
     $scope.warId = $routeParams.qs_id;
@@ -182,6 +183,7 @@ battle_controller = function($scope, $http, $timeout, $location, $routeParams){
                 }, 1000);
             }
             clearInterval(task);
+            $scope.showTools = false;
             return ;
         }
         $scope.questionIndex++;
@@ -261,7 +263,7 @@ battle_controller = function($scope, $http, $timeout, $location, $routeParams){
     $scope.useTool = function () {
         if($scope.toolNum > 0){
             $scope.toolStatus = true;
-            $scope.toolCls = 'primary';
+            $scope.toolCls = 'btn-primary';
         }
     }
 
@@ -304,7 +306,7 @@ battle_controller = function($scope, $http, $timeout, $location, $routeParams){
             cache: false
         }).success(function (res) {
             clearInterval(autoTask);
-            $scope.showSucc = false;
+            $scope.battleCom.showSucc = false;
         });
     }
 
